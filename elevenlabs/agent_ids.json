@@ -1,0 +1,17 @@
+{
+  "guest_care_agent_id": "agent_6701kt8w3svzen8ajsxjnk852mrj",
+  "tools": {
+    "lookup_velocity_member": "tool_0101kt8vtk26erzrd8yq9ay3pmf2",
+    "check_entitlement": "tool_4901kt8vwdjeezernf04nfc5ag9r"
+  },
+  "voice_id": "M7ya1YbaeFaPXljg9BpK",
+  "kb": [
+    "NQ72uoCNgrQF5YkVVuKj",
+    "4w58F2Cnf3PSQHg2MWv7",
+    "XWQgJ01WyE9YTZs3mbld",
+    "9kCAkcjKYYvfeXr2b6OY"
+  ],
+  "workflow_agent_id": "agent_2601kt8w9rx4fp19evajw1m1nfxk",
+  "live_widget_agent_id": "agent_6701kt8w3svzen8ajsxjnk852mrj",
+  "embed_snippet": "<elevenlabs-convai agent-id=\"agent_6701kt8w3svzen8ajsxjnk852mrj\"></elevenlabs-convai>\n<script src=\"https://unpkg.com/@elevenlabs/convai-widget-embed\" async type=\"text/javascript\"></script>"
+}

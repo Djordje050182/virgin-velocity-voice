@@ -1,0 +1,89 @@
+/* ============================================================
+   tokens.css — design tokens + the three live themes
+   All brand colours sampled from live Virgin/Velocity CSS (see DESIGN.md).
+   Themes switch by setting :root[data-theme]; only tokens change, never layout.
+   ============================================================ */
+
+:root {
+  /* --- brand constants (theme-independent) --- */
+  --va-red: #E10A0A;
+  --va-red-deep: #9A0000;
+  --vel-violet: #2D054E;
+  --vel-purple: #512698;
+  --vel-lilac: #ECE0FF;
+  --vel-pink: #FA7D9C;
+
+  /* --- type --- */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* fluid type scale */
+  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0:  clamp(1rem, 0.95rem + 0.25vw, 1.13rem);
+  --step-1:  clamp(1.33rem, 1.2rem + 0.6vw, 1.6rem);
+  --step-2:  clamp(1.77rem, 1.5rem + 1.3vw, 2.4rem);
+  --step-3:  clamp(2.37rem, 1.9rem + 2.3vw, 3.6rem);
+  --step-4:  clamp(3.16rem, 2.3rem + 4.2vw, 5.6rem);
+  --step-5:  clamp(4.2rem, 2.8rem + 7vw, 8rem);
+
+  /* spacing scale */
+  --sp-1: 0.5rem;  --sp-2: 1rem;   --sp-3: 1.5rem;
+  --sp-4: 2.5rem;  --sp-5: 4rem;   --sp-6: 6.5rem;
+
+  --rail-w: 248px;            /* left nav width */
+  --measure: 62ch;
+  --radius: 4px;              /* max — no pills */
+  --line-w: 1px;
+
+  --t-fast: 180ms;
+  --t-mid: 300ms;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+/* ===== THEME: virgin (default) — warm paper + Virgin red ===== */
+:root[data-theme="virgin"] {
+  --paper:   #F7F3EE;
+  --paper-2: #EFE9E1;
+  --ink:     #14110F;
+  --ink-2:   #4A4640;
+  --line:    #DED6CB;
+  --primary: var(--va-red);
+  --primary-deep: var(--va-red-deep);
+  --accent:  var(--vel-violet);
+  --accent-2: var(--vel-purple);
+  --on-primary: #FFFFFF;
+  --hero-veil: linear-gradient(180deg, rgba(20,17,15,.18), rgba(20,17,15,.62));
+  color-scheme: light;
+}
+
+/* ===== THEME: eleven — monochrome editorial ===== */
+:root[data-theme="eleven"] {
+  --paper:   #FFFFFF;
+  --paper-2: #F4F4F2;
+  --ink:     #0A0A0A;
+  --ink-2:   #5A5A58;
+  --line:    #E2E2DE;
+  --primary: #0A0A0A;          /* monochrome primary */
+  --primary-deep: #000000;
+  --accent:  var(--va-red);    /* red survives only as a hairline accent */
+  --accent-2: #0A0A0A;
+  --on-primary: #FFFFFF;
+  --hero-veil: linear-gradient(180deg, rgba(10,10,10,.20), rgba(10,10,10,.70));
+  color-scheme: light;
+}
+
+/* ===== THEME: dark — dark editorial, red + violet glow ===== */
+:root[data-theme="dark"] {
+  --paper:   #0D0C0F;
+  --paper-2: #17151B;
+  --ink:     #F2ECE3;
+  --ink-2:   #A8A09A;
+  --line:    #2A2730;
+  --primary: #FF2A1F;          /* red lifts slightly to glow on dark */
+  --primary-deep: var(--va-red);
+  --accent:  #B07CF0;          /* lifted Velocity violet */
+  --accent-2: var(--vel-purple);
+  --on-primary: #FFFFFF;
+  --hero-veil: linear-gradient(180deg, rgba(13,12,15,.35), rgba(13,12,15,.80));
+  color-scheme: dark;
+}

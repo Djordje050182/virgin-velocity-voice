@@ -1,0 +1,166 @@
+/* ============================================================
+   base.css — reset, typography, layout primitives, components
+   Hand-written. No utility framework. See DESIGN.md.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+[hidden] { display: none !important; }   /* hidden attr must win over component display rules */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--t-mid) var(--ease), color var(--t-mid) var(--ease);
+}
+
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: inherit; }
+
+/* ---------- typography ---------- */
+.display { font-family: var(--font-display); font-weight: 400; line-height: 0.97; letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 140, "SOFT" 40, "WONK" 1; }
+.display em { font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1; }
+
+h1, .h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--step-4); line-height: 0.98; letter-spacing: -0.02em; }
+h2, .h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); line-height: 1.0; letter-spacing: -0.015em; }
+h3, .h3 { font-family: var(--font-display); font-weight: 500; font-size: var(--step-2); line-height: 1.05; }
+
+.lead { font-size: var(--step-1); line-height: 1.35; max-width: 30ch; }
+p { max-width: var(--measure); }
+.muted { color: var(--ink-2); }
+
+/* eyebrow / kicker — grotesque, tracked, the technical voice */
+.kicker {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: var(--step--1); letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: 0.6em;
+}
+.kicker::before { content: ""; width: 28px; height: var(--line-w); background: var(--primary); display: inline-block; }
+
+/* big data numbers */
+.figure { font-family: var(--font-body); font-weight: 700; font-feature-settings: "tnum" 1; letter-spacing: -0.02em; line-height: 1; }
+
+/* ---------- app layout: left rail + slide deck ---------- */
+.app { display: grid; grid-template-columns: var(--rail-w) 1fr; min-height: 100vh; }
+
+.rail {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  border-right: var(--line-w) solid var(--line);
+  background: var(--paper);
+  padding: var(--sp-3) var(--sp-2);
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  transition: background var(--t-mid) var(--ease), border-color var(--t-mid) var(--ease);
+}
+
+.brandmark { display: flex; align-items: center; gap: 0.6rem; }
+.brandmark .roundel { flex: none; }
+.brandmark .wordmark { font-family: var(--font-display); font-size: 1.05rem; line-height: 1.05; letter-spacing: -0.01em; }
+.brandmark .wordmark small { display:block; font-family: var(--font-body); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2); }
+
+.nav-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.nav-list a {
+  display: grid; grid-template-columns: 1.6rem 1fr; align-items: baseline; gap: 0.5rem;
+  padding: 0.5rem 0.4rem; text-decoration: none; color: var(--ink-2);
+  font-size: 0.92rem; line-height: 1.15; border-radius: var(--radius);
+  border-left: 2px solid transparent; transition: color var(--t-fast), background var(--t-fast);
+}
+.nav-list a .n { font-variant-numeric: tabular-nums; font-size: 0.72rem; color: var(--ink-2); }
+.nav-list a:hover { color: var(--ink); background: var(--paper-2); }
+.nav-list a.active { color: var(--ink); border-left-color: var(--primary); }
+.nav-list a.active .n { color: var(--primary); }
+
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--sp-2); }
+
+/* theme + fallback toggles */
+.toggle-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.toggle-group .label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2); }
+.seg { display: flex; border: var(--line-w) solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.seg button { flex: 1; padding: 0.4rem 0.3rem; background: transparent; border: 0; font-size: 0.72rem; color: var(--ink-2); border-right: var(--line-w) solid var(--line); transition: background var(--t-fast), color var(--t-fast); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* ---------- deck / slides ---------- */
+.deck { scroll-snap-type: y proximity; }
+.slide {
+  min-height: 100vh; padding: var(--sp-6) clamp(var(--sp-3), 6vw, var(--sp-6));
+  display: flex; flex-direction: column; justify-content: center;
+  border-bottom: var(--line-w) solid var(--line);
+  scroll-snap-align: start; position: relative;
+}
+.slide__index { position: absolute; top: var(--sp-4); right: clamp(var(--sp-3), 6vw, var(--sp-6));
+  font-size: 0.72rem; letter-spacing: 0.2em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.slide__inner { width: 100%; max-width: 1180px; }
+
+/* reveal on enter */
+.reveal { opacity: 0; transform: translateY(8px); transition: opacity var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.85rem 1.4rem; border-radius: var(--radius);
+  background: var(--primary); color: var(--on-primary); border: var(--line-w) solid var(--primary);
+  font-weight: 500; letter-spacing: 0.01em; text-decoration: none;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.btn:hover { background: var(--primary-deep); border-color: var(--primary-deep); }
+.btn:active { transform: translateY(1px); }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn--ghost:hover { background: var(--ink); color: var(--paper); }
+.btn .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+/* ---------- cold open hero ---------- */
+.cold {
+  padding: 0; justify-content: flex-end; color: #F2ECE3;
+  background: #0c0b0d;
+}
+.cold__media { position: absolute; inset: 0; overflow: hidden; background: #08070a; }
+.cold__media img { width: 100%; height: 100%; object-fit: cover; object-position: 70% center;
+  filter: grayscale(1) contrast(1.02) brightness(.60); }
+/* Layered scrim: strong on the left (where the left-aligned text sits), lighter on the
+   right so the operators stay visible; plus a gentle top+bottom darken. Theme-independent —
+   the cold open is always dark. Keeps every line legible over a busy photo. */
+.cold__media::after { content: ""; position: absolute; inset: 0; background:
+  linear-gradient(90deg, rgba(8,7,10,.94) 0%, rgba(8,7,10,.82) 30%, rgba(8,7,10,.50) 58%, rgba(8,7,10,.22) 82%, rgba(8,7,10,.12) 100%),
+  linear-gradient(180deg, rgba(8,7,10,.45) 0%, rgba(8,7,10,.10) 40%, rgba(8,7,10,.55) 100%); }
+.cold__inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; width: 100%;
+  padding: clamp(var(--sp-4), 8vw, var(--sp-6)) clamp(var(--sp-3), 6vw, var(--sp-6)) var(--sp-6); }
+.cold .kicker { color: #E9C9C9; }
+.cold .kicker::before { background: var(--primary); }
+.cold__title { font-size: var(--step-5); color: #F7F3EE; max-width: 16ch; text-shadow: 0 1px 24px rgba(0,0,0,.45); }
+.cold__title em { color: #FF3B30; text-shadow: 0 1px 20px rgba(225,10,10,.35); }
+.cold__sub { margin-top: var(--sp-3); font-size: var(--step-1); max-width: 46ch; color: #E4DFD8; line-height: 1.4; text-shadow: 0 1px 16px rgba(0,0,0,.5); }
+.cold__arc { margin-top: var(--sp-3); display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; font-size: 0.9rem; color: #C9C2BA; align-items: center; }
+.cold__arc b { color: #fff; font-weight: 500; }
+.cold__arc .sep { color: var(--primary); }
+
+/* ---------- placeholder (pre-content slides) ---------- */
+.placeholder { border: var(--line-w) dashed var(--line); border-radius: var(--radius);
+  padding: var(--sp-4); color: var(--ink-2); margin-top: var(--sp-3); max-width: var(--measure); }
+.placeholder code { font-size: 0.85rem; color: var(--primary); }
+
+/* ---------- roundel motif (CSS/SVG homage, not the trademark) ---------- */
+.roundel { width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid var(--primary);
+  display: grid; place-items: center; }
+.roundel::after { content: ""; width: 13px; height: 13px; border-radius: 50%; background: var(--primary); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 880px) {
+  .app { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center;
+    border-right: 0; border-bottom: var(--line-w) solid var(--line); }
+  .nav-list { flex-direction: row; flex-wrap: wrap; }
+  .rail-foot { margin: 0; flex-direction: row; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto; }
+  .reveal { transition: opacity var(--t-fast) linear; transform: none; }
+}

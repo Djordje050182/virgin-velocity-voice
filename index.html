@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-AU" data-theme="virgin" data-mode="live">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Virgin Australia × ElevenLabs — Voice that scales the operator</title>
+<meta name="description" content="A proactive, outbound, loyalty-aware voice experience for Virgin Australia, built on ElevenLabs." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ LEFT RAIL ============ -->
+  <aside class="rail">
+    <div class="brandmark">
+      <span class="roundel" aria-hidden="true"></span>
+      <span class="wordmark">Virgin × ElevenLabs<small>Velocity Voice</small></span>
+    </div>
+    <nav aria-label="Slides">
+      <ol class="nav-list" id="navList">
+        <li><a href="#cold"    data-slide><span class="n">01</span><span>The switchboard</span></a></li>
+        <li><a href="#problem" data-slide><span class="n">02</span><span>The problem today</span></a></li>
+        <li><a href="#virgin"  data-slide><span class="n">03</span><span>Virgin right now</span></a></li>
+        <li><a href="#usecase" data-slide><span class="n">04</span><span>The use case</span></a></li>
+        <li><a href="#demo"    data-slide><span class="n">05</span><span>The live demo</span></a></li>
+        <li><a href="#flow"    data-slide><span class="n">06</span><span>How it works</span></a></li>
+        <li><a href="#arch"    data-slide><span class="n">07</span><span>Architecture</span></a></li>
+        <li><a href="#roi"     data-slide><span class="n">08</span><span>ROI calculator</span></a></li>
+        <li><a href="#why"     data-slide><span class="n">09</span><span>Why ElevenLabs</span></a></li>
+        <li><a href="#close"   data-slide><span class="n">10</span><span>Close &amp; next steps</span></a></li>
+      </ol>
+    </nav>
+    <div class="rail-foot">
+      <div class="toggle-group">
+        <span class="label">Look &amp; feel</span>
+        <div class="seg" id="themeSeg" role="group" aria-label="Theme">
+          <button data-theme-btn="virgin" aria-pressed="true">Virgin</button>
+          <button data-theme-btn="eleven" aria-pressed="false">11Labs</button>
+          <button data-theme-btn="dark"   aria-pressed="false">Dark</button>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <span class="label">Demo mode</span>
+        <div class="seg" id="fallbackSeg" role="group" aria-label="Demo mode">
+          <button data-fallback-btn="live" aria-pressed="true">Live</button>
+          <button data-fallback-btn="safe" aria-pressed="false">Fallback</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ DECK ============ -->
+  <main class="deck" id="deck">
+
+    <!-- 01 — COLD OPEN -->
+    <section class="slide cold" id="cold" data-title="The switchboard">
+      <!-- switchboard.png supplied by presenter; public-domain ~1920s exchange photos exist — license-clear before external use. -->
+      <div class="cold__media"><img src="assets/switchboard.png" alt="A 1920s telephone switchboard room: rows of operators connecting calls by hand." /></div>
+      <div class="cold__inner reveal">
+        <span class="kicker">Virgin Australia × ElevenLabs</span>
+        <h1 class="display cold__title">You used to call, and a <em>person</em> put you through.</h1>
+        <p class="cold__sub">Warm. Personal. Exactly the right human, every time. It had one flaw — it didn’t scale. So we replaced it with menus, queues and hold music, and the experience got worse.</p>
+        <div class="cold__arc">
+          <b>Switchboard operator</b><span class="sep">→</span>
+          <span>IVR &amp; contact centres</span><span class="sep">→</span>
+          <span>today’s hold music</span><span class="sep">→</span>
+          <b>agentic voice</b>
+        </div>
+        <p class="cold__sub" style="margin-top:1.1rem;max-width:54ch;">Conversational voice AI gives us both at last: the <b>warmth of the operator</b>, at <b>infinite scale</b>. We sit between the switchboard and HAL. Our focus is voice — and only voice.</p>
+      </div>
+      <span class="slide__index">01 / 10</span>
+    </section>
+
+    <!-- 02 — PROBLEM TODAY -->
+    <section class="slide" id="problem" data-title="The problem today">
+      <div class="slide__inner reveal">
+        <span class="kicker">The problem today</span>
+        <h2>Press 1 for frustration.</h2>
+        <p class="lead muted" style="margin-bottom:var(--sp-3)">This is the current-state experience millions of contacts a year still run into. Press play. It’s about forty seconds.</p>
+        <div class="player" id="badcallPlayer" data-playlist="badcall">
+          <button class="player__btn" aria-label="Play the recording"><span class="ico-play"></span></button>
+          <div class="player__body">
+            <div class="player__title">Virgin Australia — a call to the contact centre, today</div>
+            <div class="player__bar"><span class="player__fill"></span></div>
+            <div class="player__steps">
+              <span data-step="0">IVR menu</span><span data-step="1">“45 minutes”</span><span data-step="2">Wrong system</span><span data-step="3">Frustrated guest</span>
+            </div>
+          </div>
+          <div class="player__time">0:00</div>
+        </div>
+        <p class="fineprint muted">Audio generated with ElevenLabs TTS for illustration. The contrast on the next slides is the point: same channel, completely different experience.</p>
+      </div>
+      <span class="slide__index">02 / 10</span>
+    </section>
+
+    <!-- 03 — VIRGIN RIGHT NOW -->
+    <section class="slide" id="virgin" data-title="Virgin right now">
+      <div class="slide__inner reveal">
+        <span class="kicker">Virgin right now</span>
+        <h2 style="max-width:18ch">A disciplined, loyalty-led airline — with one unclaimed layer.</h2>
+        <div class="stat-grid">
+          <div class="stat"><div class="figure">A$5.8b</div><div class="stat__l">FY25 group revenue</div><div class="stat__s">underlying NPAT ~A$331m, +27.8%</div></div>
+          <div class="stat"><div class="figure">13m+</div><div class="stat__l">Velocity members</div><div class="stat__s">~28% EBIT margin · 80+ partners · the crown jewel</div></div>
+          <div class="stat"><div class="figure">~33%</div><div class="stat__l">domestic share</div><div class="stat__s">market leader; led Qantas Jan 2026</div></div>
+          <div class="stat"><div class="figure">VGN</div><div class="stat__l">ASX-listed Jun 2025</div><div class="stat__s">~21% below IPO → lead with ROI, not novelty <em>(re-verify on the day)</em></div></div>
+        </div>
+        <div class="two-col">
+          <div>
+            <h3>Already on the AI path</h3>
+            <p class="muted">Conversational-AI designers hired (Sep 2025); SabreMosaic for offers; Databricks for data+AI; an OpenAI deal (Nov 2025) for trip planning. The data and LLM layers are being claimed.</p>
+          </div>
+          <div>
+            <h3>The wedge: voice</h3>
+            <p class="muted">No incumbent owns the <b>voice</b> layer. And a regulatory wave is coming — the <b>Aviation Consumer Protection Bill</b> (April 2026): automatic refunds, tiered delay compensation. Carriers fear it could <b>“triple complaint volumes overnight.”</b> A cancellation/refund voice agent absorbs exactly that load.</p>
+          </div>
+        </div>
+      </div>
+      <span class="slide__index">03 / 10</span>
+    </section>
+
+    <!-- 04 — USE CASE -->
+    <section class="slide" id="usecase" data-title="The use case">
+      <div class="slide__inner reveal">
+        <span class="kicker">The use case · our differentiator</span>
+        <h2 style="max-width:20ch">Everyone will demo the angry inbound call. We go the other way.</h2>
+        <p class="lead muted" style="max-width:40ch">Proactive. Outbound. Multi-channel. Member-aware. The airline reaches out <em>first</em>.</p>
+        <ol class="journey">
+          <li><span class="journey__n">1</span><div><b>Ops event fires.</b> Virgin’s disruption system flags flight VA838 — first delayed, then cancelled. <span class="tag">simulated webhook</span></div></li>
+          <li><span class="journey__n">2</span><div><b>Call 1 — delay.</b> Guest Care proactively calls the guest: new departure, reassurance, “I’ll check back in 30.”</div></li>
+          <li><span class="journey__n">3</span><div><b>Call 2 — cancellation.</b> Warm apology, refund vs rebooking. Guest can’t talk → asks to continue by SMS/WhatsApp.</div></li>
+          <li><span class="journey__n">4</span><div><b>Channel hop.</b> Rebooking options arrive as a message thread. Guest picks one. <span class="tag">simulated UI</span></div></li>
+          <li><span class="journey__n">5</span><div><b>Call 3 — confirmation + loyalty gesture.</b> Booking confirmed, and because they’re Velocity Gold/Platinum, a tier-appropriate gesture. <b>Treat every guest like a Platinum member.</b></div></li>
+        </ol>
+      </div>
+      <span class="slide__index">04 / 10</span>
+    </section>
+
+    <!-- 05 — LIVE DEMO -->
+    <section class="slide" id="demo" data-title="The live demo">
+      <div class="slide__inner reveal demo">
+        <span class="kicker">The live demo</span>
+        <h2>Hannah calls the guest. Live, in this page.</h2>
+
+        <div class="demo__controls">
+          <button class="btn" id="opsBtn"><span class="dot"></span><span id="opsBtnLabel">Simulate Virgin ops event</span></button>
+          <div class="tier-pick" id="tierPick" aria-label="Velocity tier">
+            <span class="label">Velocity tier</span>
+            <div class="seg seg--tier">
+              <button data-tier="Red">Red</button><button data-tier="Silver">Silver</button>
+              <button data-tier="Gold" aria-pressed="true">Gold</button><button data-tier="Platinum">Platinum</button>
+            </div>
+          </div>
+        </div>
+        <div class="ops-banner" id="opsBanner" hidden><span class="ops-dot"></span><span id="opsText">—</span></div>
+
+        <div class="demo__grid">
+          <!-- left: call stages + live widget / fallback -->
+          <div class="demo__left">
+            <div class="stage-row" id="stageRow">
+              <button class="stage" data-stage="delay" aria-pressed="true"><b>Call 1</b><span>Delay</span></button>
+              <button class="stage" data-stage="cancellation"><b>Call 2</b><span>Cancellation</span></button>
+              <button class="stage" data-stage="confirmation"><b>Call 3</b><span>Confirmation</span></button>
+            </div>
+
+            <div class="callbox" id="callbox">
+              <div class="callbox__head">
+                <span class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i></span>
+                <div><div class="callbox__who">Hannah · Virgin Australia Guest Care</div>
+                <div class="callbox__meta" id="callMeta">Velocity Gold · VA838 MEL→SYD</div></div>
+              </div>
+              <!-- LIVE: ElevenLabs widget mounts here -->
+              <div id="widgetMount" class="widget-mount"></div>
+              <!-- FALLBACK: pre-recorded clips -->
+              <div id="fallbackMount" class="fallback-mount" hidden></div>
+              <p class="fineprint muted" id="callHint">Click “Start a call”, allow the mic, and talk to Hannah. The agent is the real ElevenLabs voice agent configured for Virgin.</p>
+            </div>
+          </div>
+
+          <!-- right: member card + entitlement + phone mockup -->
+          <div class="demo__right">
+            <div class="member-card" id="memberCard">
+              <div class="member-card__top"><span>VELOCITY</span><span class="member-tier" id="memberTier">GOLD</span></div>
+              <div class="member-card__name" id="memberName">Jordan Sinclair</div>
+              <div class="member-card__row"><span>Points</span><b id="memberPts">82,450</b></div>
+              <div class="member-card__row"><span>Booking</span><b id="memberBkg">VA838 · MEL→SYD · tonight</b></div>
+            </div>
+            <div class="entitlement" id="entitlement" hidden>
+              <div class="entitlement__k">Entitlement · deterministic tool</div>
+              <div class="entitlement__v" id="entVal">—</div>
+              <div class="entitlement__d" id="entDetail"></div>
+            </div>
+            <!-- phone mockup -->
+            <div class="phone" id="phone" hidden>
+              <div class="phone__notch"></div>
+              <div class="phone__head"><span class="phone__av"></span><div><div class="phone__name">Virgin Australia</div><div class="phone__sub">WhatsApp · Business</div></div></div>
+              <div class="phone__thread" id="thread"></div>
+            </div>
+          </div>
+        </div>
+        <div class="emotion">
+          <div class="emotion__k">Roadmap · emotion-adaptive voice <span class="tag">not live — illustration</span></div>
+          <p class="muted" style="margin:.3rem 0 .6rem">Same line, two deliveries — tone could soften as the model detects distress. Pitched as roadmap, not a live capability.</p>
+          <div class="emotion__btns">
+            <button class="btn btn--ghost" data-audio="audio/emotion-neutral.mp3">▶ Neutral</button>
+            <button class="btn btn--ghost" data-audio="audio/emotion-warm.mp3">▶ De-escalating · warm</button>
+          </div>
+        </div>
+        <p class="fineprint muted">Honest framing for the room: the <b>voice agent is real</b>. The ops event, the message thread and the member data are <b>simulated</b> for the demo — in production these fire from Virgin’s disruption workflow and Velocity/Sabre APIs.</p>
+      </div>
+      <span class="slide__index">05 / 10</span>
+    </section>
+
+    <!-- 06 — HOW IT WORKS (workflow diagram) -->
+    <section class="slide" id="flow" data-title="How it works">
+      <div class="slide__inner reveal">
+        <span class="kicker">How it works · the orchestration</span>
+        <h2>One warm conversation. A disciplined graph underneath.</h2>
+        <p class="lead muted" style="max-width:46ch">Built on ElevenLabs’ multi-agent Workflow — subagent nodes, a deterministic tool node, and routing edges. Hover any node.</p>
+        <div id="workflowDiagram" class="diagram"></div>
+        <p class="fineprint muted"><b>Honesty:</b> “Velocity Lookup” is modelled as a subagent to show orchestration; in production it’s a tool/API call into Velocity. The conversation is LLM-driven (fast Gemini Flash); the <b>entitlement decision is a deterministic tool node</b> — the model never improvises who gets a free hotel.</p>
+      </div>
+      <span class="slide__index">06 / 10</span>
+    </section>
+
+    <!-- 07 — ARCHITECTURE -->
+    <section class="slide" id="arch" data-title="Architecture">
+      <div class="slide__inner reveal">
+        <span class="kicker">Architecture · additive, not rip-and-replace</span>
+        <h2>ElevenLabs is the voice + orchestration layer on top of your stack.</h2>
+        <p class="lead muted" style="max-width:46ch">Reuse your OpenAI LLM, your data, your systems. Hover each box.</p>
+        <div id="archDiagram" class="diagram"></div>
+        <p class="fineprint muted">Confirmed systems are labelled as such; <span class="tag">assumption</span> marks vendors to validate in discovery (CRM, telephony/CCaaS). Latency: Flash v2.5 ≈ 75 ms across 32 languages for real-time; Eleven v3 is 70+ languages but not for real-time agents.</p>
+      </div>
+      <span class="slide__index">07 / 10</span>
+    </section>
+
+    <!-- 08 — ROI -->
+    <section class="slide" id="roi" data-title="ROI calculator">
+      <div class="slide__inner reveal">
+        <span class="kicker">ROI calculator · plug in your numbers</span>
+        <h2>The economics, live.</h2>
+        <div class="roi">
+          <div class="roi__inputs" id="roiInputs">
+            <label>Annual contact volume <span class="roi__src">benchmark: millions of contacts/yr</span>
+              <input type="range" id="roiVolume" min="500000" max="8000000" step="100000" value="3000000"><output id="outVolume"></output></label>
+            <label>% serviceable by AI (containment) <span class="roi__src">mature 40–70%; travel >50% achievable</span>
+              <input type="range" id="roiContain" min="10" max="80" step="1" value="55"><output id="outContain"></output></label>
+            <label>Cost per assisted contact (AUD) <span class="roi__src">assisted ~A$9–22; regulated higher</span>
+              <input type="range" id="roiCost" min="4" max="30" step="0.5" value="12"><output id="outCost"></output></label>
+            <label>AI cost per contact (AUD) <span class="roi__src">AI-handled ~A$0.45–0.75</span>
+              <input type="range" id="roiAi" min="0.2" max="2" step="0.05" value="0.6"><output id="outAi"></output></label>
+            <label>Platform cost (AUD / yr) <span class="roi__src">illustrative</span>
+              <input type="range" id="roiPlat" min="100000" max="2000000" step="50000" value="600000"><output id="outPlat"></output></label>
+          </div>
+          <div class="roi__out">
+            <div class="roi__big"><span class="roi__lbl">Net annual saving</span><div class="figure" id="roiSaving">—</div></div>
+            <div class="roi__row"><span>Deflected contacts / yr</span><b id="roiDeflect">—</b></div>
+            <div class="roi__row"><span>Payback period</span><b id="roiPayback">—</b></div>
+            <div class="roi__row"><span>Agent-hours redeployed / yr</span><b id="roiHours">—</b></div>
+            <p class="fineprint muted">Defaults are <b>estimates, not Virgin figures</b>. As deflection rises, fixed costs don’t fall proportionally — pair savings with CSAT-by-bucket and a 72-hr repeat-contact rate. We’ll plug your real numbers in during discovery.</p>
+          </div>
+        </div>
+      </div>
+      <span class="slide__index">08 / 10</span>
+    </section>
+
+    <!-- 09 — WHY ELEVENLABS -->
+    <section class="slide" id="why" data-title="Why ElevenLabs">
+      <div class="slide__inner reveal">
+        <span class="kicker">Why ElevenLabs leads</span>
+        <h2 style="max-width:20ch">Voice is your most emotional channel. Don’t water it down with a stack voice.</h2>
+        <div class="vs-grid">
+          <div class="vs"><h3>vs Hyperscalers</h3><p class="muted">Google CCAI, Amazon Connect+Lex, Azure: cheap to bundle, generic voices. ElevenLabs is the premium voice layer — and you can run <b>Gemini as the LLM inside it</b>.</p></div>
+          <div class="vs"><h3>vs Agentforce Voice</h3><p class="muted">Strongest counter — deep CRM actions, now open via MCP. <b>Concede it honestly.</b> But its native voice is generic; ElevenLabs can be the voice <b>inside</b> an Agentforce/MCP architecture. The axis shifts to voice quality + latency + model-agnostic.</p></div>
+          <div class="vs"><h3>vs CX specialists</h3><p class="muted">PolyAI, Cresta, Sierra, Decagon. PolyAI is strong on containment but higher latency (700–900 ms) and managed-service. ElevenLabs: <b>~75 ms</b>, self-serve speed, best raw naturalness.</p></div>
+          <div class="vs vs--proof"><h3>The proof</h3><p class="muted">Top TTS blind-test Elo · ~75 ms Flash · voice cloning for a branded Virgin voice · SOC 2 Type II, ISO 27001, HIPAA, GDPR, EU residency, zero-retention · live CX: <b>Revolut</b> (8× faster resolution, 4M+), <b>Klarna</b> (35M, first-line phone), <b>Deutsche Telekom</b> (~80% resolution).</p></div>
+        </div>
+        <p class="fineprint muted">Stress-tested honestly: voice quality alone doesn’t resolve issues — containment depends on journey design, KB quality and graceful human handoff. ElevenLabs is the voice + orchestration layer, not a silver bullet.</p>
+      </div>
+      <span class="slide__index">09 / 10</span>
+    </section>
+
+    <!-- 10 — CLOSE -->
+    <section class="slide" id="close" data-title="Close">
+      <div class="slide__inner reveal">
+        <span class="kicker">Close &amp; next steps</span>
+        <h2 style="max-width:18ch">A focused pilot, on your real numbers.</h2>
+        <div class="two-col">
+          <div>
+            <h3>What we agreed today</h3>
+            <ul class="ticks">
+              <li>Voice is the unclaimed layer — and your most emotional channel.</li>
+              <li>The wedge: proactive, member-aware disruption handling.</li>
+              <li>Additive on your stack; reuse your OpenAI + data.</li>
+              <li>Premium voice + ~75 ms + enterprise security.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>The next step</h3>
+            <p class="muted">A 6–8 week paid pilot on one journey — disruption + rebooking for Velocity members — measured on containment, CSAT and cost-to-serve, with a Solutions Engineer to scope the Sabre/Velocity tool-calls.</p>
+            <a class="btn" href="#demo">Re-run the demo</a>
+          </div>
+        </div>
+        <p class="fineprint muted">Interview deliverable for the ElevenLabs Strategic AE role · Virgin Australia · figures time-sensitive, re-verify on the day.</p>
+      </div>
+      <span class="slide__index">10 / 10</span>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/players.js"></script>
+<script src="js/diagrams.js"></script>
+<script src="js/roi.js"></script>
+<script src="js/demo.js"></script>
+</body>
+</html>

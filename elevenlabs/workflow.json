@@ -1,0 +1,172 @@
+{
+  "prevent_subagent_loops": false,
+  "nodes": {
+    "start_node": {
+      "type": "start",
+      "position": {
+        "x": 0.0,
+        "y": 200.0
+      },
+      "edge_order": [
+        "e_delay",
+        "e_cancel",
+        "e_confirm"
+      ]
+    },
+    "delay": {
+      "type": "override_agent",
+      "label": "Guest Care \u00b7 Delay",
+      "position": {
+        "x": 320.0,
+        "y": 0.0
+      },
+      "additional_prompt": "This is the proactive DELAY call. Greet the guest warmly by name, tell them their flight is delayed with the new expected departure, reassure them their seat is held and nothing is needed from them now, then move on to confirm their membership.",
+      "edge_order": [
+        "e_delay_lookup"
+      ]
+    },
+    "cancel": {
+      "type": "override_agent",
+      "label": "Guest Care \u00b7 Cancellation",
+      "position": {
+        "x": 320.0,
+        "y": 200.0
+      },
+      "additional_prompt": "This is the CANCELLATION call. Apologise warmly and sincerely, explain the flight is cancelled, present the two paths (automatic refund OR free rebooking on the next service), and if the guest needs time offer to continue by SMS or WhatsApp. Then confirm their membership.",
+      "edge_order": [
+        "e_cancel_lookup"
+      ]
+    },
+    "confirm_entry": {
+      "type": "override_agent",
+      "label": "Guest Care \u00b7 Confirmation",
+      "position": {
+        "x": 320.0,
+        "y": 400.0
+      },
+      "additional_prompt": "This is the CONFIRMATION call. Warmly confirm the rebooking is done with the new flight details, then proceed to apply the member's entitlement gesture.",
+      "edge_order": [
+        "e_centry_lookup"
+      ]
+    },
+    "lookup": {
+      "type": "override_agent",
+      "label": "Velocity Lookup (subagent)",
+      "position": {
+        "x": 640.0,
+        "y": 200.0
+      },
+      "additional_tool_ids": [
+        "tool_0101kt8vtk26erzrd8yq9ay3pmf2"
+      ],
+      "additional_prompt": "Call lookup_velocity_member to retrieve the guest's Velocity tier, points and recent booking. NOTE: in production this is a tool/API call into the Velocity loyalty platform; it is modelled here as a subagent node to demonstrate the platform's multi-agent orchestration.",
+      "edge_order": [
+        "e_lookup_ent"
+      ]
+    },
+    "entitlement": {
+      "type": "tool",
+      "position": {
+        "x": 960.0,
+        "y": 200.0
+      },
+      "tools": [
+        {
+          "tool_id": "tool_4901kt8vwdjeezernf04nfc5ag9r"
+        }
+      ],
+      "edge_order": [
+        "e_ent_confirm"
+      ]
+    },
+    "confirm": {
+      "type": "override_agent",
+      "label": "Confirmation + Loyalty gesture",
+      "position": {
+        "x": 1280.0,
+        "y": 200.0
+      },
+      "additional_prompt": "Deliver the EXACT entitlement gesture returned by the check_entitlement tool node (e.g. Gold: lounge access or a hotel night; Platinum: a complimentary upgrade). Present it warmly as a thank-you for the guest's patience. Never invent a benefit the tool did not return.",
+      "edge_order": [
+        "e_end"
+      ]
+    },
+    "end_node": {
+      "type": "end",
+      "position": {
+        "x": 1600.0,
+        "y": 200.0
+      },
+      "edge_order": []
+    }
+  },
+  "edges": {
+    "e_delay": {
+      "source": "start_node",
+      "target": "delay",
+      "forward_condition": {
+        "type": "llm",
+        "condition": "The call_stage dynamic variable is 'delay'."
+      }
+    },
+    "e_cancel": {
+      "source": "start_node",
+      "target": "cancel",
+      "forward_condition": {
+        "type": "llm",
+        "condition": "The call_stage dynamic variable is 'cancellation'."
+      }
+    },
+    "e_confirm": {
+      "source": "start_node",
+      "target": "confirm_entry",
+      "forward_condition": {
+        "type": "llm",
+        "condition": "The call_stage dynamic variable is 'confirmation'."
+      }
+    },
+    "e_delay_lookup": {
+      "source": "delay",
+      "target": "lookup",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    },
+    "e_cancel_lookup": {
+      "source": "cancel",
+      "target": "lookup",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    },
+    "e_centry_lookup": {
+      "source": "confirm_entry",
+      "target": "lookup",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    },
+    "e_lookup_ent": {
+      "source": "lookup",
+      "target": "entitlement",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    },
+    "e_ent_confirm": {
+      "source": "entitlement",
+      "target": "confirm",
+      "forward_condition": {
+        "type": "result",
+        "successful": true
+      }
+    },
+    "e_end": {
+      "source": "confirm",
+      "target": "end_node",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    }
+  }
+}
