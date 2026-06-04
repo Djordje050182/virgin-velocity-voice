@@ -22,6 +22,18 @@
   });
   var links = Array.prototype.slice.call(document.querySelectorAll(".nav-list a[data-slide]"));
 
+  /* measurement hook (?measure): writes per-slide overflow into #MEASURE for --dump-dom */
+  if (location.search.indexOf("measure") > -1) {
+    window.addEventListener("load", function () {
+      requestAnimationFrame(function () {
+        var data = slides.map(function (s) { return { id: s.id, over: s.scrollHeight - window.innerHeight }; });
+        var pre = document.createElement("pre"); pre.id = "MEASURE";
+        pre.textContent = "VH=" + window.innerHeight + " " + JSON.stringify(data);
+        document.body.appendChild(pre);
+      });
+    });
+  }
+
   /* screenshot/debug mode */
   if (location.search.indexOf("shot") > -1) {
     document.documentElement.style.scrollBehavior = "auto";

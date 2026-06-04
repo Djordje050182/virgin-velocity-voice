@@ -89,14 +89,18 @@ p { max-width: var(--measure); }
 /* ---------- deck / slides ---------- */
 .deck { scroll-snap-type: y proximity; }
 .slide {
-  min-height: 100vh; padding: var(--sp-6) clamp(var(--sp-3), 6vw, var(--sp-6));
-  display: flex; flex-direction: column; justify-content: center;
+  min-height: 100vh; height: auto;            /* grows past 100vh when content is tall */
+  padding-block: clamp(2rem, 6vh, 6.5rem);
+  padding-inline: clamp(var(--sp-3), 6vw, var(--sp-6));
+  display: flex; flex-direction: column; justify-content: flex-start;
   border-bottom: var(--line-w) solid var(--line);
   scroll-snap-align: start; position: relative;
 }
 .slide__index { position: absolute; top: var(--sp-4); right: clamp(var(--sp-3), 6vw, var(--sp-6));
   font-size: 0.72rem; letter-spacing: 0.2em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.slide__inner { width: 100%; max-width: 1180px; }
+/* margin-block:auto centers SHORT content vertically, but collapses to top
+   alignment when content is taller than the slide — so nothing ever clips off the top. */
+.slide__inner { width: 100%; max-width: 1180px; margin-block: auto; }
 
 /* reveal on enter */
 .reveal { opacity: 0; transform: translateY(8px); transition: opacity var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
