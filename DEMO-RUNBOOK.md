@@ -39,27 +39,34 @@
 - [ ] Have this runbook open on a second screen/phone.
 
 ## 3. The run of show (≈40 min; adjust to discovery)
-| Time | Slide | You do / say |
+Deck is now **13 slides**. You can **hide any slide** live by tapping the dot next to it in the menu.
+| Time | Slides | You do / say |
 |---|---|---|
-| 0–3 | 01 Switchboard | Cold open. The limbic story: operator → IVR → today → agentic voice. "Between the switchboard and HAL. Voice, and only voice." |
-| 3–6 | 02 Problem | Play the 40-sec bad call. Let it sting. "Millions of contacts a year still hit this." |
-| 6–12 | 03 Virgin / 04 Use case | Discovery (MEDDIC). Real figures. Frame the **proactive, member-aware** differentiator. Ask the CCO + Head of AI their priorities. |
-| 12–24 | **05 Live demo** | **The hero.** See §4 below. |
-| 24–30 | 06 Flow / 07 Architecture | Walk the orchestration + where ElevenLabs sits (additive). Hover the nodes. Hit the honesty notes. |
-| 30–35 | 08 ROI / 09 Why | Plug in *their* numbers live. Differentiation (concede Agentforce honestly). |
-| 35–40 | 10 Close | Summarise for both stakeholders. Drive to the paid pilot next step. |
+| 0–2 | 01 Cold open · 02 Agenda | "Remember when someone actually picked up?" Set the frame, then the agenda. |
+| 2–6 | 03 Problem · 04 Virgin · 05 Use case | Play the 40-sec bad call (watch the IVR screen). Discovery (MEDDIC). Frame the **proactive, member-aware** differentiator. |
+| 6–8 | 06 Meet Hannah | Set up the call: she discloses she's AI, verifies identity, knows the tier, only offers what she's allowed to. |
+| 8–22 | **07 Live demo** | **The hero.** See §4 below. |
+| 22–30 | 08 How it works · 09 Architecture | Orchestration + where you fit. Toggle architecture to **Scale across Virgin** (lines of business). Hover the nodes. |
+| 30–35 | 10 Stories · 11 ROI · 12 Why | Proof (toggle Global / ANZ). Plug in *their* numbers. Concede Agentforce honestly. |
+| 35–40 | 13 Close | Land-and-expand: one journey first, then scale. Drive to the paid pilot. |
 
-## 4. The live demo sequence (slide 05) — exact clicks
+## 4. The live demo sequence (slide 07) — exact clicks
+Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
 1. **"Simulate Virgin ops event"** → banner: *VA838 DELAYED*. Say: *"In production this fires from
    your disruption workflow — here it's a button."* (Honest, out loud.)
-2. **Start the call** (ElevenLabs control). Hannah does the **delay call** (Call 1). Talk back to her.
+2. **Start the call** (ElevenLabs control). Hannah does the **delay call**: she says she's a virtual
+   assistant, **verifies George's identity** (give her a date of birth), gives the new departure, and
+   **texts a lounge QR pass** (watch the phone). Talk back to her.
 3. Click **"Escalate: flight now cancelled"** → banner flips to *CANCELLED*; stage moves to **Call 2**.
-4. Start a call again → Hannah does the **cancellation**: refund vs rebook, offers WhatsApp.
-5. The **phone mockup** animates the WhatsApp options. **Click an option** → it advances to **Call 3**.
-6. Start the call → **confirmation + loyalty gesture**. Switch **tier to Platinum** beforehand to show
+4. Start a call again → Hannah does the **cancellation** — more empathetic, refund vs rebook, offers WhatsApp.
+5. The **phone** animates the WhatsApp rebooking options. **Click an option** → it advances to **Call 3**.
+6. Start the call → **confirmation + loyalty gesture**. Switch **tier to Platinum** first to show
    the gesture change (Gold: hotel/lounge → Platinum: upgrade). Point at the deterministic
    **entitlement** card: *"That's a tool node, not the model improvising."*
 7. Optional: play the **emotion-adaptive A/B** clips — "roadmap, not live."
+
+> If the accent ever drifts, that's the voice model. We've raised stability to hold the Australian
+> accent; if you want it warmer/livelier we can trade a little stability back.
 
 ## 5. Fallbacks (resilience)
 - **Live agent fails / network drops:** bottom-left **Demo mode → Fallback**. The three calls become
