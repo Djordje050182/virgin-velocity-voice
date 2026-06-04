@@ -63,30 +63,68 @@
     wfHost.appendChild(svg);
   }
 
-  /* ---------------- ARCHITECTURE (slide 7) ---------------- */
+  /* ---------------- ARCHITECTURE (slide 9) — two toggleable views ---------------- */
   var arHost = document.getElementById("archDiagram");
-  if (arHost) {
-    var AW = 1180, AH = 420, asvg = frame(AW, AH);
+  var archNote = document.getElementById("archNote");
+
+  function buildJourney() {
+    var AW = 1180, AH = 430, asvg = frame(AW, AH);
     var ae = el("g", {}), an = el("g", {}); asvg.appendChild(ae); asvg.appendChild(an);
-    // existing stack (top row + sides), ElevenLabs layer in the middle band
     var box = function (x, y, w, label, sub, cls, tip) { return node(an, x, y, w, 56, label, sub, cls, tip); };
-    var ev = box(430, 175, 320, "ElevenLabs voice + orchestration", "STT · TTS · turn-taking · Workflow", "node--accent",
-      "<b>ElevenLabs (additive)</b><br>Voice (STT/TTS/turn-taking) + multi-agent orchestration (Workflow / subagents / tool nodes). BYO-LLM reuses your OpenAI; RAG over the KB; tool-calls into Sabre/Velocity/CRM; telephony via Twilio/SIP. <b>Not a rip-and-replace.</b>");
+    var ev = box(430, 180, 320, "ElevenLabs voice + orchestration", "STT · TTS · turn-taking · Workflow", "node--accent",
+      "<b>ElevenLabs (additive)</b><br>Voice and multi-agent orchestration. Reuses your OpenAI as the model, RAG over the knowledge base, tool-calls into Sabre / Velocity / CRM, and bridges your telephony. It sits on top of the stack, it doesn't replace it.");
     var top = [
-      box(20, 30, 175, "Sabre PSS", "bookings · CONFIRMED", "", "<b>Sabre PSS</b><br>Passenger service system / bookings. <i>Voice layer:</i> tool-calls read PNRs and write rebookings."),
-      box(215, 30, 175, "SabreMosaic", "offers/pricing · CONFIRMED", "", "<b>SabreMosaic</b><br>Google-Cloud-native offers & pricing. <i>Voice layer:</i> surfaces ancillary offers mid-conversation."),
-      box(410, 30, 175, "Databricks", "data + AI · CONFIRMED", "", "<b>Databricks</b><br>Data + AI platform. <i>Voice layer:</i> feeds analytics, propensity & post-call insight."),
-      box(605, 30, 175, "OpenAI", "LLM / trip-planning · CONFIRMED", "", "<b>OpenAI</b><br>Existing LLM deal (Nov 2025). <i>Voice layer:</i> <b>reuse it as the BYO-LLM inside ElevenLabs</b> — model-agnostic."),
-      box(800, 30, 175, "Velocity", "loyalty · tiers · points", "node--accent", "<b>Velocity loyalty platform</b><br>Member data, tiers, points. <i>Voice layer:</i> the lookup + entitlement tools call this for tier-aware service.")
+      box(20, 30, 175, "Sabre PSS", "bookings · CONFIRMED", "", "<b>Sabre PSS</b><br>Bookings / passenger service system. <i>Voice:</i> reads PNRs, writes rebookings via tool-calls."),
+      box(215, 30, 175, "SabreMosaic", "offers · CONFIRMED", "", "<b>SabreMosaic</b><br>Offers & pricing. <i>Voice:</i> surfaces ancillary offers in the conversation."),
+      box(410, 30, 175, "Databricks", "data + AI · CONFIRMED", "", "<b>Databricks</b><br>Data + AI platform. <i>Voice:</i> propensity, analytics, post-call insight."),
+      box(605, 30, 175, "OpenAI", "LLM · CONFIRMED", "", "<b>OpenAI</b><br>Your existing model deal. <i>Voice:</i> reuse it as the model inside ElevenLabs — we're model-agnostic."),
+      box(800, 30, 175, "Velocity", "loyalty · tiers", "node--accent", "<b>Velocity loyalty platform</b><br>Members, tiers, points. <i>Voice:</i> the lookup + entitlement tools call it for tier-aware service.")
     ];
     var bottom = [
-      box(20, 330, 175, "CRM", "profile/case · ASSUMPTION", "node--tool", "<b>CRM</b><br>Vendor not public — <b>assumption</b>, validate in discovery. <i>Voice layer:</i> logs the case, reads history."),
-      box(215, 330, 205, "Telephony / CCaaS", "ASSUMPTION — validate", "node--tool", "<b>Telephony / CCaaS</b><br><b>Assumption</b> — likely Genesys or Amazon Connect, to validate (don't confuse with the Virgin <i>Atlantic</i> Genesys case study). <i>Voice layer:</i> SIP/CCaaS bridge for inbound + outbound."),
-      box(440, 330, 205, "SMS / WhatsApp", "Twilio or similar", "", "<b>SMS / WhatsApp</b><br>Messaging channels (Twilio or similar). <i>Voice layer:</i> the channel-hop — options sent in writing, conversation continues."),
-      box(665, 330, 205, "Ops / disruption", "event source", "node--accent", "<b>Ops / disruption-management</b><br>The trigger for proactive outbound. <i>Voice layer:</i> a disruption event fires the outbound call.")
+      box(20, 340, 175, "CRM", "case · ASSUMPTION", "node--tool", "<b>CRM</b><br>Vendor not public — <b>assumption</b> to validate. <i>Voice:</i> logs the case, reads history."),
+      box(215, 340, 235, "Genesys Cloud CX", "telephony · per your steer", "node--tool", "<b>Genesys Cloud CX</b><br>Telephony / CCaaS — <b>per your steer, to confirm</b> (note: not the Virgin <i>Atlantic</i> Genesys case study). <i>Voice:</i> ElevenLabs bridges in via SIP / the Genesys Audio Connector for inbound and outbound, so it slots into your existing routing, queues and reporting."),
+      box(470, 340, 175, "SMS / WhatsApp", "Twilio", "", "<b>SMS / WhatsApp</b><br>Messaging (Twilio or similar). <i>Voice:</i> the channel-hop — options in writing, conversation continues."),
+      box(665, 340, 205, "Ops / disruption", "event source", "node--accent", "<b>Ops / disruption management</b><br>The trigger for proactive outbound. <i>Voice:</i> a disruption event fires the call.")
     ];
     top.forEach(function (n) { ae.appendChild(cord(n.cx, n.y + n.h, n.cx, ev.y, "")); });
     bottom.forEach(function (n) { ae.appendChild(cord(n.cx, n.y, n.cx, ev.y + ev.h, "edge--cord")); });
-    arHost.appendChild(asvg);
+    return asvg;
+  }
+
+  function buildScale() {
+    var AW = 1180, AH = 430, asvg = frame(AW, AH);
+    var ae = el("g", {}), an = el("g", {}); asvg.appendChild(ae); asvg.appendChild(an);
+    var hub = node(an, 470, 187, 240, 60, "ElevenLabs voice layer", "one layer · many journeys", "node--accent",
+      "<b>One voice + orchestration layer</b><br>The same platform you'd pilot on disruption serves every other voice conversation Virgin has. Start with one high-impact journey, then expand.");
+    var lobs = [
+      { x: 30, y: 30, l: "Consumer support", s: "disruption · refunds · changes", t: "<b>Consumer support</b><br>The pilot. Highest volume, most emotional, biggest cost-to-serve." },
+      { x: 30, y: 180, l: "Velocity loyalty", s: "points · tiers · redemptions", t: "<b>Velocity servicing</b><br>13m+ members. Points, redemptions, tier queries — a natural second journey." },
+      { x: 30, y: 330, l: "Corporate & business", s: "agents · duty of care", t: "<b>Corporate / business travel</b><br>Managed travel, re-accommodation, duty-of-care notifications." },
+      { x: 920, y: 30, l: "Cargo & freight", s: "bookings · tracking", t: "<b>Cargo & freight</b><br>Booking status, capacity, track-and-trace — a B2B voice line entirely separate from consumer." },
+      { x: 920, y: 180, l: "Charter & regional", s: "resources sector", t: "<b>Charter / regional (VARA)</b><br>Fly-in fly-out and resources-sector charter — scheduling and crew/passenger comms." },
+      { x: 920, y: 330, l: "Holidays & trade", s: "packages · agents", t: "<b>Holidays & trade</b><br>Packages and the travel-agent line — quoting, changes, support." }
+    ];
+    lobs.forEach(function (b) {
+      var n = node(an, b.x, b.y, 230, 56, b.l, b.s, b.x < 200 ? "" : "node--accent", b.t);
+      var fromRight = b.x > 200;
+      ae.appendChild(cord(fromRight ? n.x : n.x + n.w, n.cy, fromRight ? hub.x + hub.w : hub.x, hub.cy, b.y === 180 ? "edge--cord" : ""));
+    });
+    return asvg;
+  }
+
+  function setArch(view) {
+    if (!arHost) return;
+    arHost.innerHTML = "";
+    arHost.appendChild(view === "scale" ? buildScale() : buildJourney());
+    document.querySelectorAll("#archToggle button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-arch") === view)); });
+    if (archNote) archNote.innerHTML = view === "scale"
+      ? "The pilot is one journey. The opportunity is every voice conversation Virgin has, across consumer, loyalty, corporate, cargo, charter and trade. <span class='tag'>lines of business to confirm with you</span>"
+      : "Confirmed systems are labelled. <span class='tag'>assumption</span> marks things to validate with you. Latency: Flash v2 for real-time English at ~75ms; v2.5 is multilingual at the same speed; Eleven v3 covers 70+ languages but isn't for real-time agents.";
+  }
+  if (arHost) {
+    setArch("journey");
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("#archToggle button"); if (b) setArch(b.getAttribute("data-arch"));
+    });
   }
 })();

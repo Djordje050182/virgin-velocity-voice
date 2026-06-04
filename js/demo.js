@@ -9,7 +9,7 @@
 
   var state = { tier: "Gold", stage: "delay", opsStep: 0, mode: "live" };
 
-  var GUEST = { name: "Jordan Sinclair", flight: "VA838", route: "MEL→SYD" };
+  var GUEST = { name: "George Sinclair", flight: "VA838", route: "MEL→SYD" };
   var TIERS = {
     Red:      { pts: "2,140",  label: "RED" },
     Silver:   { pts: "24,800", label: "SILVER" },
@@ -126,6 +126,32 @@
     thread.appendChild(t); thread.scrollTop = thread.scrollHeight;
     setTimeout(function () { t.remove(); then(); }, 1100);
   }
+  function fauxQR() {
+    // a QR-looking SVG block (illustrative, not a scannable code)
+    var cells = "", n = 11;
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var corner = (x < 3 && y < 3) || (x > n - 4 && y < 3) || (x < 3 && y > n - 4);
+      var on = corner || ((x * 7 + y * 13 + x * y) % 3 === 0);
+      if (on) cells += '<rect x="' + (x * 8) + '" y="' + (y * 8) + '" width="8" height="8"/>';
+    }
+    return '<svg class="qr" viewBox="0 0 ' + (n * 8) + ' ' + (n * 8) + '" fill="#111">' + cells + '</svg>';
+  }
+  var loungeDone = false;
+  function showLoungePass() {
+    if (loungeDone) return;
+    if (state.tier !== "Gold" && state.tier !== "Platinum") return;
+    loungeDone = true;
+    $("phone").hidden = false;
+    var thread = $("thread"); thread.innerHTML = "";
+    setTimeout(function () {
+      thread.appendChild(bubble("in", "Hi " + GUEST.name.split(" ")[0] + " 👋 Virgin Australia here. While you wait, here's complimentary lounge access — show this at the door:"));
+      thread.scrollTop = thread.scrollHeight;
+      typing(thread, function () {
+        thread.appendChild(bubble("in", "<div class='qrcard'>" + fauxQR() + "<div><b>Virgin Australia Lounge</b><span>Velocity " + state.tier + " · complimentary</span></div></div>"));
+        thread.scrollTop = thread.scrollHeight;
+      });
+    }, 400);
+  }
   var hopDone = false;
   function runChannelHop() {
     if (hopDone) return; hopDone = true;
@@ -158,7 +184,8 @@
   function setStage(stage) {
     state.stage = stage;
     document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === stage)); });
-    paintEntitlement(stage !== "delay" ? true : true); // show on all; entitlement differs by stage
+    paintEntitlement(true); // entitlement card differs by stage
+    if (stage === "delay") showLoungePass();
     if (stage === "cancellation") runChannelHop();
     if (state.mode !== "safe") mountWidget(); else renderFallback();
   }
