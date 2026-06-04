@@ -130,12 +130,12 @@
         <div class="reasons">
           <div class="reasons__k">Why people call an airline in the first place</div>
           <ol class="reasons__list">
-            <li><b>Disruptions</b><span>delays, cancellations, missed connections</span></li>
-            <li><b>Refunds &amp; compensation</b><span>“where's my money?”</span></li>
-            <li><b>Changes</b><span>dates, names, seats, upgrades</span></li>
-            <li><b>Baggage</b><span>delayed, damaged, lost</span></li>
-            <li><b>Check-in &amp; boarding</b><span>day-of-travel friction</span></li>
-            <li><b>Velocity</b><span>points, tiers, redemptions</span></li>
+            <li><i data-ic="alert" class="reasons__ic"></i><b>Disruptions</b><span>delays, cancellations, missed connections</span></li>
+            <li><i data-ic="refund" class="reasons__ic"></i><b>Refunds &amp; compensation</b><span>“where's my money?”</span></li>
+            <li><i data-ic="swap" class="reasons__ic"></i><b>Changes</b><span>dates, names, seats, upgrades</span></li>
+            <li><i data-ic="bag" class="reasons__ic"></i><b>Baggage</b><span>delayed, damaged, lost</span></li>
+            <li><i data-ic="ticket" class="reasons__ic"></i><b>Check-in &amp; boarding</b><span>day-of-travel friction</span></li>
+            <li><i data-ic="star" class="reasons__ic"></i><b>Velocity</b><span>points, tiers, redemptions</span></li>
           </ol>
           <p class="fineprint muted">The top driver is disruption, and it's also the most emotional and the most expensive to handle. That's where we'd point voice first. <span class="tag">audio is ElevenLabs TTS; the screen is illustrative</span></p>
         </div>
@@ -190,6 +190,7 @@
       <div class="slide__inner reveal">
         <span class="kicker">The live demo, set up</span>
         <h2 style="max-width:20ch">In a moment, you'll hear Virgin call a guest.</h2>
+        <div class="soundwave" id="soundwave" aria-hidden="true"></div>
         <div class="meet">
           <div class="meet__card">
             <span class="wave wave--static"><i></i><i></i><i></i><i></i><i></i></span>
@@ -434,11 +435,11 @@
             <h3>Then the expansion</h3>
             <p class="muted">The same voice layer scales well beyond consumer support:</p>
             <ul class="lob">
-              <li>Velocity loyalty servicing</li>
-              <li>Corporate &amp; business travel</li>
-              <li>Cargo &amp; freight booking and tracking</li>
-              <li>Charter &amp; regional (resources sector)</li>
-              <li>Holidays &amp; packages, trade &amp; agents</li>
+              <li><i data-ic="star"></i>Velocity loyalty servicing</li>
+              <li><i data-ic="briefcase"></i>Corporate &amp; business travel</li>
+              <li><i data-ic="box"></i>Cargo &amp; freight booking and tracking</li>
+              <li><i data-ic="plane"></i>Charter &amp; regional (resources sector)</li>
+              <li><i data-ic="sun"></i>Holidays &amp; packages, trade &amp; agents</li>
             </ul>
           </div>
         </div>
@@ -465,6 +466,7 @@
 <script src="js/diagrams.js"></script>
 <script src="js/roi.js"></script>
 <script src="js/stories.js"></script>
+<script src="js/icons.js"></script>
 <script src="js/demo.js"></script>
 </body>
 </html>

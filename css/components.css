@@ -202,6 +202,29 @@ body.rail-open .rail-toggle span:nth-child(3){ transform: translateY(-7px) rotat
 .agenda b { font-weight: 500; }
 .agenda p { margin-top: 0.3rem; font-size: 0.9rem; }
 
+/* ---------- line icons ---------- */
+.ic { width: 20px; height: 20px; display: block; }
+[data-ic] { display: inline-flex; line-height: 0; }
+
+/* reasons: icon sits above the label, in brand red */
+.reasons__list li { position: relative; }
+.reasons__ic { color: var(--primary); margin-bottom: 0.45rem; }
+.reasons__ic .ic { width: 24px; height: 24px; }
+
+/* lines of business: icon replaces the arrow bullet */
+.lob li { display: flex; align-items: center; gap: 0.7rem; padding-left: 0; }
+.lob li::before { content: none; }
+.lob li [data-ic] { color: var(--primary); flex: none; }
+
+/* soundwave hero (Meet Hannah) */
+.soundwave { display: flex; align-items: center; gap: 3px; height: 96px; margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-2); overflow: hidden; }
+.soundwave span { flex: 1 1 0; min-width: 2px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+  transform-origin: center; animation: swpulse 1.8s ease-in-out infinite; opacity: .85; }
+@keyframes swpulse { 0%,100% { transform: scaleY(.45); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .soundwave span { animation: none; } }
+
 /* ---------- agenda timings + dual-lens ---------- */
 .agenda li { grid-template-columns: 2.4rem 1fr auto; align-items: start; }
 .agenda__t { font-size: 0.72rem; color: var(--primary); font-weight: 500; white-space: nowrap; padding-top: 0.2rem; }
