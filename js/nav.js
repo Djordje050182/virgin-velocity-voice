@@ -11,6 +11,7 @@
   /* build the menu */
   slides.forEach(function (s, i) {
     var num = ("0" + (i + 1)).slice(-2);
+    var ix = s.querySelector(".slide__index"); if (ix) ix.textContent = num; // keep slide numbers in sync
     var li = document.createElement("li");
     li.innerHTML =
       '<a href="#' + s.id + '" data-slide><span class="n">' + num + '</span>' +

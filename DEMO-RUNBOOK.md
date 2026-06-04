@@ -7,7 +7,7 @@
 ---
 
 ## 0. The single most important pre-flight check — DO THIS FIRST (the night before AND 10 min before)
-1. Open the live URL in **Chrome**, go to slide 07 (The live demo).
+1. Open the live URL in **Chrome**, go to slide 08 (The live demo).
 2. Click the ElevenLabs control and **allow the microphone**. Talk to Hannah. Confirm:
    - she responds in a warm Australian voice,
    - audio plays **out of the page**,
@@ -30,7 +30,7 @@
 
 ## 2. Pre-flight checklist (5 minutes before)
 - [ ] Live URL open in Chrome, **not** localhost.
-- [ ] Slide 07 mic tested, Hannah responds, audio audible.
+- [ ] Slide 08 mic tested, Hannah responds, audio audible.
 - [ ] Meet "Share tab audio" confirmed with a test listener.
 - [ ] Theme set to **Virgin** (bottom-left), Demo mode **Live**.
 - [ ] Velocity tier set to **Gold** (you'll switch to Platinum live as a flourish).
@@ -46,14 +46,16 @@ Deck is now **13 slides**. You can **hide any slide** live by tapping the dot ne
 | 2–6 | 03 Problem · 04 Virgin · 05 Use case | Play the 40-sec bad call (watch the IVR screen). Discovery (MEDDIC). Frame the **proactive, member-aware** differentiator. |
 | 6–8 | 06 Meet Hannah | Set up the call: she discloses she's AI, verifies identity, knows the tier, only offers what she's allowed to. |
 | 8–22 | **07 Live demo** | **The hero.** See §4 below. |
-| 22–30 | 08 How it works · 09 Architecture | Orchestration + where you fit. Toggle architecture to **Scale across Virgin** (lines of business). Hover the nodes. |
+| 22–30 | 08 How it works · 09 Architecture | Orchestration + guardrails. Toggle architecture: **disruption journey → Agentic ecosystem** (ElevenLabs ↔ Databricks ↔ Agentforce via MCP, on Genesys) **→ Scale across Virgin**. Then the **intelligence-layer** slide: voice inside Agentforce, not versus it. |
 | 30–35 | 10 Stories · 11 ROI · 12 Why | Proof (toggle Global / ANZ). Plug in *their* numbers. Concede Agentforce honestly. |
 | 35–40 | 13 Close | Land-and-expand: one journey first, then scale. Drive to the paid pilot. |
 
-## 4. The live demo sequence (slide 07) — exact clicks
+## 4. The live demo sequence (slide 08) — exact clicks
 Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
 1. **"Simulate Virgin ops event"** → banner: *VA838 DELAYED*. Say: *"In production this fires from
    your disruption workflow — here it's a button."* (Honest, out loud.)
+   - Point at the **live system-activity pipeline** under the button — it lights up Genesys → ElevenLabs →
+     Databricks → Agentforce → TTS as Hannah works. *"This is the data flow and tool-calling, in real time."*
 2. **Start the call** (ElevenLabs control). Hannah does the **delay call**: she says she's a virtual
    assistant, **verifies George's identity** (give her a date of birth), gives the new departure, and
    **texts a lounge QR pass** (watch the phone). Talk back to her.

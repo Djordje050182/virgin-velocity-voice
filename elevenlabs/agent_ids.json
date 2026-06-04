@@ -2,7 +2,8 @@
   "guest_care_agent_id": "agent_6701kt8w3svzen8ajsxjnk852mrj",
   "tools": {
     "lookup_velocity_member": "tool_0101kt8vtk26erzrd8yq9ay3pmf2",
-    "check_entitlement": "tool_4901kt8vwdjeezernf04nfc5ag9r"
+    "check_entitlement": "tool_4901kt8vwdjeezernf04nfc5ag9r",
+    "fulfil_in_agentforce": "tool_5501kt99ahwdfefbkhn1w6fs8je8"
   },
   "voice_id": "M7ya1YbaeFaPXljg9BpK",
   "kb": [

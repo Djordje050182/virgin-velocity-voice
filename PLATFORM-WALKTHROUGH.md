@@ -31,6 +31,7 @@ subagent → **Entitlement** tool node → Confirmation → End.*
   confirmation."*
 - Point at the **Velocity Lookup subagent**: *"Modelled as a subagent to show the orchestration. In
   production this is a tool call into your Velocity platform — I'd build it that way for real."*
+- Point at the **Agentforce tool node** (`fulfil_in_agentforce`): *"When a workflow belongs to Service Cloud — rebook, refund, raise a case — the agent hands it to your Agentforce agent over MCP, waits, and speaks the result. We're the voice inside Agentforce."*
 - Point at the **Entitlement tool node**: *"This is a dedicated tool node. It's guaranteed to run, and
   it's deterministic — the model never decides who gets a hotel or an upgrade. That's where the
   guardrail lives for benefits."*

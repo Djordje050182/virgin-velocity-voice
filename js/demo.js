@@ -32,6 +32,54 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
+  /* ---------- live system-activity pipeline ---------- */
+  var pipeToken = 0;
+  function pipeSet(nodes) {
+    document.querySelectorAll(".pipe").forEach(function (p) {
+      p.classList.toggle("on", nodes.indexOf(p.getAttribute("data-node")) > -1);
+    });
+  }
+  function pipeCap(html) { var c = $("pipeCaption"); if (c) c.innerHTML = html; }
+  function pipeFlash(node, html) { // light one node briefly (used by real tool calls)
+    var el = document.querySelector('.pipe[data-node="' + node + '"]'); if (!el) return;
+    el.classList.add("on"); if (html) pipeCap(html);
+    setTimeout(function () { el.classList.remove("on"); }, 1600);
+  }
+  function pipePlay(steps) {
+    var my = ++pipeToken, i = 0;
+    (function step() {
+      if (my !== pipeToken || i >= steps.length) return;
+      var s = steps[i++]; pipeSet(s.nodes); pipeCap(s.cap);
+      setTimeout(step, s.ms);
+    })();
+  }
+  var SEQ = {
+    delay: [
+      { nodes: ["caller", "genesys"], cap: "Proactive call placed through <b>Genesys</b> telephony", ms: 1000 },
+      { nodes: ["stt"], cap: "Listening — speech-to-text", ms: 700 },
+      { nodes: ["brain"], cap: "Reasoning on a fast model", ms: 800 },
+      { nodes: ["databricks"], cap: "<b>Databricks</b>: fetching George's booking (← Sabre) and Velocity tier", ms: 1300 },
+      { nodes: ["brain"], cap: "Deciding the next best action", ms: 700 },
+      { nodes: ["tts"], cap: "Hannah speaks — text-to-speech", ms: 700 },
+      { nodes: ["out"], cap: "Guest hears the update, and a lounge pass is sent", ms: 1200 }
+    ],
+    cancellation: [
+      { nodes: ["caller", "genesys"], cap: "Call connected via <b>Genesys</b>", ms: 900 },
+      { nodes: ["stt", "brain"], cap: "Understanding the guest", ms: 800 },
+      { nodes: ["databricks"], cap: "<b>Databricks</b>: pulling rebooking options (← Sabre)", ms: 1200 },
+      { nodes: ["agentforce"], cap: "<b>Agentforce</b>: raising the case + rebooking in Service Cloud", ms: 1500 },
+      { nodes: ["brain"], cap: "Confirming what was done", ms: 700 },
+      { nodes: ["tts", "out"], cap: "Hannah explains the options, offers WhatsApp", ms: 1200 }
+    ],
+    confirmation: [
+      { nodes: ["caller", "genesys"], cap: "Call-back via <b>Genesys</b>", ms: 900 },
+      { nodes: ["databricks"], cap: "<b>Databricks</b>: re-checking the booking", ms: 1000 },
+      { nodes: ["agentforce"], cap: "<b>Agentforce</b>: confirming booking + applying the loyalty gesture", ms: 1500 },
+      { nodes: ["tts", "out"], cap: "Hannah confirms and thanks George", ms: 1200 }
+    ]
+  };
+  function pipeline(stage) { pipePlay(SEQ[stage] || SEQ.delay); }
+
   /* ---------- UI cards (deterministic, always reliable) ---------- */
   function paintMember() {
     var t = TIERS[state.tier];
@@ -76,14 +124,19 @@
         var cfg = ev.detail.config;
         cfg.clientTools = Object.assign(cfg.clientTools || {}, {
           lookup_velocity_member: function () {
-            paintMember();
+            paintMember(); pipeFlash("databricks", "<b>Databricks</b>: returning George's record (← Sabre)");
             var t = TIERS[state.tier];
             return { name: GUEST.name, tier: state.tier, points: t.pts, recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
           },
           check_entitlement: function (p) {
             var e = entitlement((p && p.tier) || state.tier, (p && p.disruption_type) || state.stage);
-            paintEntitlement(true);
+            paintEntitlement(true); pipeFlash("agentforce", "<b>Agentforce</b>: applying the entitlement in Service Cloud");
             return { gesture: e.v, detail: e.d };
+          },
+          fulfil_in_agentforce: function (p) {
+            var action = (p && p.action) || "rebook";
+            pipeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned in Service Cloud ✓");
+            return { status: "done", action: action, reference: "SC-" + (state.tier[0]) + "48210", message: action + " completed in Service Cloud" };
           }
         });
         cfg.dynamicVariables = Object.assign(cfg.dynamicVariables || {}, { call_stage: state.stage, velocity_tier: state.tier, guest_name: GUEST.name.split(" ")[0] });
@@ -185,6 +238,7 @@
     state.stage = stage;
     document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === stage)); });
     paintEntitlement(true); // entitlement card differs by stage
+    pipeline(stage); // animate the system-activity pipeline for this call
     if (stage === "delay") showLoungePass();
     if (stage === "cancellation") runChannelHop();
     if (state.mode !== "safe") mountWidget(); else renderFallback();

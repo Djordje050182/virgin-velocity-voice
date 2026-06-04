@@ -112,15 +112,48 @@
     return asvg;
   }
 
+  function buildEcosystem() {
+    var W = 1180, H = 430, svg = frame(W, H);
+    var ae = el("g", {}), an = el("g", {}); svg.appendChild(ae); svg.appendChild(an);
+    var b = function (x, y, w, h, l, s, c, t) { return node(an, x, y, w, h, l, s, c, t); };
+    // left: guest -> genesys -> hub
+    var guest = b(20, 40, 150, 52, "Guest", "voice in / out", "",
+      "<b>The guest</b><br>Speaks naturally. Inbound or proactive outbound.");
+    var gen = b(20, 190, 150, 52, "Genesys", "telephony · CCaaS", "node--tool",
+      "<b>Genesys Cloud CX</b><br>The telephony layer — routing, queues, recording, reporting. ElevenLabs bridges in via SIP / the Genesys Audio Connector. <i>Additive, not a replacement.</i> <span style='color:#ffb3b3'>per your steer, to confirm</span>");
+    var hub = b(330, 110, 280, 120, "ElevenLabs", "voice + intelligence layer", "node--accent",
+      "<b>ElevenLabs</b><br>STT · a fast model · multi-agent orchestration · TTS (~75ms). The conversational brain that listens, reasons, and decides which system to call. BYO-LLM reuses your OpenAI.");
+    var subt = el("text", { x: 470, y: 200, "text-anchor": "middle", class: "nsub" }); subt.textContent = "STT · fast LLM · orchestration · TTS"; an.appendChild(subt);
+    // right spokes via MCP
+    var dbx = b(760, 50, 230, 64, "Databricks", "lakehouse · READ", "node--data",
+      "<b>Databricks</b><br>The unified data layer — booking and member context, sourced from <b>Sabre PSS, SabreMosaic and Velocity</b>. ElevenLabs reads it as a tool over <b>MCP</b> or a secure API.");
+    var dsrc = el("text", { x: 875, y: 130, "text-anchor": "middle", class: "elabel" }); dsrc.textContent = "← Sabre · SabreMosaic · Velocity"; an.appendChild(dsrc);
+    var af = b(760, 250, 230, 64, "Agentforce", "Service Cloud · ACT", "node--act",
+      "<b>Agentforce (Salesforce)</b><br>Where a workflow belongs to the CRM — rebook, raise a case, push a refund — ElevenLabs calls your Agentforce agent over <b>MCP</b>, waits, and speaks the result back. <b>Voice inside Agentforce, not versus it.</b>");
+    // edges
+    ae.appendChild(cord(guest.x + guest.w, guest.cy, hub.x, hub.cy - 20));
+    ae.appendChild(cord(gen.x + gen.w, gen.cy, hub.x, hub.cy + 20));
+    var e1 = cord(hub.x + hub.w, hub.cy - 25, dbx.x, dbx.cy, "edge--cord"); ae.appendChild(e1);
+    var e2 = cord(hub.x + hub.w, hub.cy + 25, af.x, af.cy, "edge--cord"); ae.appendChild(e2);
+    var l1 = el("text", { x: 690, y: 120, "text-anchor": "middle", class: "elabel" }); l1.textContent = "read · MCP"; ae.appendChild(l1);
+    var l2 = el("text", { x: 690, y: 270, "text-anchor": "middle", class: "elabel" }); l2.textContent = "act · MCP"; ae.appendChild(l2);
+    return svg;
+  }
+
   function setArch(view) {
     if (!arHost) return;
     arHost.innerHTML = "";
-    arHost.appendChild(view === "scale" ? buildScale() : buildJourney());
+    arHost.appendChild(view === "scale" ? buildScale() : view === "ecosystem" ? buildEcosystem() : buildJourney());
     document.querySelectorAll("#archToggle button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-arch") === view)); });
-    if (archNote) archNote.innerHTML = view === "scale"
-      ? "The pilot is one journey. The opportunity is every voice conversation Virgin has, across consumer, loyalty, corporate, cargo, charter and trade. <span class='tag'>lines of business to confirm with you</span>"
+    if (archNote) archNote.innerHTML =
+      view === "scale" ? "The pilot is one journey. The opportunity is every voice conversation Virgin has, across consumer, loyalty, corporate, cargo, charter and trade. <span class='tag'>lines of business to confirm with you</span>"
+      : view === "ecosystem" ? "ElevenLabs is the voice + intelligence layer: it reads from Databricks and acts through Agentforce over MCP, riding your Genesys telephony. <span class='tag'>simulated for the demo — live MCP/tool calls in production</span>"
       : "Confirmed systems are labelled. <span class='tag'>assumption</span> marks things to validate with you. Latency: Flash v2 for real-time English at ~75ms; v2.5 is multilingual at the same speed; Eleven v3 covers 70+ languages but isn't for real-time agents.";
   }
+
+  // intelligence-layer slide reuses the ecosystem diagram
+  var layerHost = document.getElementById("layerDiagram");
+  if (layerHost) layerHost.appendChild(buildEcosystem());
   if (arHost) {
     setArch("journey");
     document.addEventListener("click", function (e) {

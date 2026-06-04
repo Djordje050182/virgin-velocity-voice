@@ -3,6 +3,17 @@
    ============================================================ */
 
 .fineprint { font-size: var(--step--1); margin-top: var(--sp-2); max-width: 64ch; }
+
+/* decorative brand motif — faint roundel + switchboard cords, top-right of text slides.
+   Gives every slide a visual signature so it doesn't read as a wall of text. */
+.slide:not(.cold)::before {
+  content: ""; position: absolute; top: 0; right: 0; width: min(42vw, 480px); height: min(42vw, 480px);
+  pointer-events: none; z-index: 0; opacity: .55;
+  background-repeat: no-repeat; background-position: top right; background-size: contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'%3E%3Cg fill='none' stroke='%23E10A0A' stroke-width='1.3' opacity='0.07'%3E%3Ccircle cx='360' cy='120' r='100'/%3E%3Ccircle cx='360' cy='120' r='66'/%3E%3Ccircle cx='360' cy='120' r='32'/%3E%3Cpath d='M40,40 C200,40 200,200 360,200'/%3E%3Cpath d='M80,20 C260,20 260,260 440,260'/%3E%3Cpath d='M10,120 C170,120 170,300 330,300'/%3E%3C/g%3E%3C/svg%3E");
+}
+.slide__inner, .cold__inner { position: relative; z-index: 1; }
+:root[data-theme="dark"] .slide:not(.cold)::before { opacity: .9; }
 .tag { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
   border: 1px solid var(--accent); border-radius: 3px; padding: 0.1em 0.45em; white-space: nowrap; }
 
@@ -124,6 +135,8 @@
 .node:hover rect { stroke: var(--primary); }
 .node--accent rect { stroke: var(--accent); }
 .node--tool rect { stroke: var(--primary); stroke-dasharray: 4 3; }
+.node--data rect { stroke: #FF6A1A; }
+.node--act rect { stroke: #00A1E0; }
 .node text { font-family: var(--font-body); fill: var(--ink); }
 .node .nlabel { font-weight: 500; font-size: 13px; }
 .node .nsub { fill: var(--ink-2); font-size: 10px; }
@@ -188,6 +201,49 @@ body.rail-open .rail-toggle span:nth-child(3){ transform: translateY(-7px) rotat
 .agenda li span { font-family: var(--font-display); font-size: var(--step-2); color: var(--primary); line-height: 1; }
 .agenda b { font-weight: 500; }
 .agenda p { margin-top: 0.3rem; font-size: 0.9rem; }
+
+/* ---------- agenda timings + dual-lens ---------- */
+.agenda li { grid-template-columns: 2.4rem 1fr auto; align-items: start; }
+.agenda__t { font-size: 0.72rem; color: var(--primary); font-weight: 500; white-space: nowrap; padding-top: 0.2rem; }
+.lenses { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-3); }
+.lens { font-size: 0.8rem; padding: 0.6rem 0.8rem; border-radius: var(--radius); border-left: 3px solid; background: var(--paper-2); display: block; }
+.lens--cco { border-color: var(--primary); }
+.lens--ai { border-color: var(--accent); }
+.lens.lens--ai, .lens.lens--cco { display: inline-block; padding: 0.15em 0.5em; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; vertical-align: middle; background: transparent; }
+
+/* ---------- discovery (MEDDIC) ---------- */
+.disco { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin: var(--sp-3) 0; }
+.disco__item { background: var(--paper); padding: var(--sp-3); }
+.disco__item:nth-child(4){ grid-column: span 1; }
+.disco__m { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary); display: block; margin-bottom: 0.4rem; }
+.disco__item b { font-weight: 500; display: block; margin-bottom: 0.3rem; }
+.disco__item p { font-size: 0.8rem; }
+
+/* ---------- mutual action plan (close) ---------- */
+.map { margin-top: var(--sp-3); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-2) var(--sp-3); background: var(--paper-2); }
+.map__k { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.7rem; }
+.map__steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
+.map__steps li { border-left: 2px solid var(--line); padding-left: 0.8rem; }
+.map__steps span { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.map__steps b { display: block; font-weight: 500; margin: 0.15rem 0; }
+.map__steps p { font-size: 0.74rem; }
+
+/* ---------- live system-activity pipeline (demo) ---------- */
+.pipeline { display: flex; gap: 0.4rem; align-items: stretch; margin: var(--sp-2) 0 0.6rem; overflow-x: auto; padding-bottom: 0.3rem; }
+.pipe { flex: 1 1 0; min-width: 78px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0.55rem 0.4rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem; background: var(--paper); opacity: 0.55; transition: opacity .2s, border-color .2s, background .2s, transform .2s; position: relative; }
+.pipe__ic { font-size: 1.1rem; line-height: 1; }
+.pipe__l { font-size: 0.66rem; line-height: 1.1; font-weight: 500; }
+.pipe__l small { display: block; font-weight: 400; color: var(--ink-2); font-size: 0.58rem; }
+.pipe:not(:last-child)::after { content: "→"; position: absolute; right: -0.52rem; top: 50%; transform: translateY(-50%); color: var(--line); font-size: 0.7rem; z-index: 1; }
+.pipe.on { opacity: 1; border-color: var(--ink); background: var(--paper); transform: translateY(-2px); }
+.pipe--el.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.pipe--data.on { border-color: #FF6A1A; box-shadow: inset 0 0 0 1px #FF6A1A; }   /* databricks orange */
+.pipe--act.on { border-color: #00A1E0; box-shadow: inset 0 0 0 1px #00A1E0; }    /* salesforce blue */
+.pipe.on .pipe__ic { animation: ping .7s ease; }
+@keyframes ping { 0%{transform:scale(1)} 40%{transform:scale(1.35)} 100%{transform:scale(1)} }
+.pipe-caption { font-size: 0.82rem; color: var(--ink); min-height: 1.3em; display: flex; align-items: center; gap: 0.5rem; }
+.pipe-caption b { color: var(--primary); }
 
 /* ---------- bad-call: IVR "video" (slide 03) ---------- */
 .badcall { display: grid; grid-template-columns: 280px 1fr; gap: var(--sp-3); align-items: start; max-width: 880px; margin-bottom: var(--sp-3); }

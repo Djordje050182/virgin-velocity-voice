@@ -76,14 +76,14 @@
         }
       ],
       "edge_order": [
-        "e_ent_confirm"
+        "e_ent_af"
       ]
     },
     "confirm": {
       "type": "override_agent",
       "label": "Confirmation + Loyalty gesture",
       "position": {
-        "x": 1280.0,
+        "x": 1480.0,
         "y": 200.0
       },
       "additional_prompt": "Deliver the EXACT entitlement gesture returned by the check_entitlement tool node (e.g. Gold: lounge access or a hotel night; Platinum: a complimentary upgrade). Present it warmly as a thank-you for the guest's patience. Never invent a benefit the tool did not return.",
@@ -94,10 +94,25 @@
     "end_node": {
       "type": "end",
       "position": {
-        "x": 1600.0,
+        "x": 1800.0,
         "y": 200.0
       },
       "edge_order": []
+    },
+    "agentforce": {
+      "type": "tool",
+      "position": {
+        "x": 1120.0,
+        "y": 200.0
+      },
+      "tools": [
+        {
+          "tool_id": "tool_5501kt99ahwdfefbkhn1w6fs8je8"
+        }
+      ],
+      "edge_order": [
+        "e_af_confirm"
+      ]
     }
   },
   "edges": {
@@ -153,19 +168,27 @@
         "type": "unconditional"
       }
     },
-    "e_ent_confirm": {
-      "source": "entitlement",
-      "target": "confirm",
-      "forward_condition": {
-        "type": "result",
-        "successful": true
-      }
-    },
     "e_end": {
       "source": "confirm",
       "target": "end_node",
       "forward_condition": {
         "type": "unconditional"
+      }
+    },
+    "e_ent_af": {
+      "source": "entitlement",
+      "target": "agentforce",
+      "forward_condition": {
+        "type": "result",
+        "successful": true
+      }
+    },
+    "e_af_confirm": {
+      "source": "agentforce",
+      "target": "confirm",
+      "forward_condition": {
+        "type": "result",
+        "successful": true
       }
     }
   }
