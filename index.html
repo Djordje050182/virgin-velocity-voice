@@ -262,6 +262,19 @@
         <h2>One warm conversation, a disciplined graph underneath.</h2>
         <p class="lead muted" style="max-width:46ch">Built on ElevenLabs' multi-agent workflow: subagent nodes, a deterministic tool node, and routing between them. Hover any node.</p>
         <div id="workflowDiagram" class="diagram"></div>
+        <div class="guards">
+          <div class="guards__k">Guardrails — configured on the agent, not just hoped for</div>
+          <ul class="guards__list">
+            <li><b>Stays in scope</b><span>focus guardrail; declines off-topic</span></li>
+            <li><b>Prompt-injection protected</b><span>won't be talked out of its role</span></li>
+            <li><b>No invented policy or pricing</b><span>knowledge base + tools only</span></li>
+            <li><b>Entitlements are tool-gated</b><span>deterministic, never improvised</span></li>
+            <li><b>Identity check + PII care</b><span>never reads back card numbers</span></li>
+            <li><b>Content moderation</b><span>abuse/violence handled</span></li>
+            <li><b>Human escalation</b><span>distress or out-of-policy</span></li>
+            <li><b>Enterprise data</b><span>zero-retention &amp; PII redaction available</span></li>
+          </ul>
+        </div>
         <p class="fineprint muted">Two things worth saying to your team. First, we model the Velocity lookup as a subagent here to show the orchestration. In production it's a tool call into Velocity. Second, the conversation runs on a fast model, but the entitlement decision is a deterministic tool node, so the model never decides who gets a free hotel.</p>
       </div>
       <span class="slide__index">08</span>

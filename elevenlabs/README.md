@@ -69,6 +69,15 @@ Stored at the agent's **top-level `workflow`** field (not `conversation_config.w
 - **Velocity 13m+ members** is Virgin's official total figure (the first-call brief said "8m");
   policy/comp figures in the KB are illustrative for the demo, not official Virgin policy.
 
+## Guardrails (configured via API on both agents)
+- **focus** on (stays in scope) · **prompt_injection** on (can't be re-roled).
+- **content moderation** on for sexual / violence / harassment (threshold high, streaming, end_call).
+  **self_harm deliberately NOT auto-end** — the prompt routes it to help + a human instead.
+- Prompt-level guardrails (scope, no invented policy/pricing, tool-gated entitlements, PII care,
+  no medical/legal advice, neutrality, anti-injection, escalation) — see `guest_care_prompt.txt`.
+- Privacy: zero-retention mode and PII redaction are **available** to enable with the customer's
+  security team (not toggled here to keep demo transcripts intact).
+
 ## What needed the dashboard? — **Nothing.**
 Agents, sub-agent/workflow nodes, tool nodes, routing edges, KB upload, RAG indexing, voice add,
 public/override settings: **all created via API.** Optional dashboard step only if you want to

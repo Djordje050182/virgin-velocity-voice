@@ -7,7 +7,7 @@
 ---
 
 ## 0. The single most important pre-flight check — DO THIS FIRST (the night before AND 10 min before)
-1. Open the live URL in **Chrome**, go to slide 05 (The live demo).
+1. Open the live URL in **Chrome**, go to slide 07 (The live demo).
 2. Click the ElevenLabs control and **allow the microphone**. Talk to Hannah. Confirm:
    - she responds in a warm Australian voice,
    - audio plays **out of the page**,
@@ -25,12 +25,12 @@
 - In Meet, choose **Present → A tab → (this Chrome tab)**, and **tick "Share tab audio."**
   (Sharing the *whole screen* or a *window* will NOT carry page audio — it must be a **tab**.)
 - The brief and the interview instructions both insist on **share-tab-only**. Do exactly that.
-- Do a 10-second test with a colleague: play the slide-02 bad-call clip and confirm they hear it.
+- Do a 10-second test with a colleague: play the slide-03 bad-call clip and confirm they hear it.
 - Keep your **system volume up**; the page audio rides the tab-audio share.
 
 ## 2. Pre-flight checklist (5 minutes before)
 - [ ] Live URL open in Chrome, **not** localhost.
-- [ ] Slide 05 mic tested, Hannah responds, audio audible.
+- [ ] Slide 07 mic tested, Hannah responds, audio audible.
 - [ ] Meet "Share tab audio" confirmed with a test listener.
 - [ ] Theme set to **Virgin** (bottom-left), Demo mode **Live**.
 - [ ] Velocity tier set to **Gold** (you'll switch to Platinum live as a flourish).
@@ -93,5 +93,5 @@ Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
 - Share price / membership figures are **time-sensitive — re-verify the morning of**.
 - The switchboard hero image should be **licence-cleared** before any external/public reuse.
 - The KB policy/compensation figures are **illustrative**, not official Virgin policy.
-- If they ask to see the build: the workflow is real on the platform — open the **workflow agent**
-  in the ElevenLabs dashboard, or walk `elevenlabs/README.md` + `workflow.json`.
+- If they ask to see the build: walk the ElevenLabs dashboard — see **PLATFORM-WALKTHROUGH.md**
+  (the workflow agent shows the orchestration; guardrails are real in the Security/Guardrails tab).
