@@ -278,6 +278,42 @@ elevenlabs-convai { position: fixed; z-index: 2147483000; }
 .map__steps b { display: block; font-weight: 500; margin: 0.15rem 0; }
 .map__steps p { font-size: 0.74rem; }
 
+/* ---------- trail map (slide before the demo) ---------- */
+.trail { list-style: none; padding: 0; margin: var(--sp-4) 0 var(--sp-3); display: grid; grid-template-columns: repeat(5, 1fr); }
+.trail__stop { position: relative; padding: 0 0.9rem; display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+.trail__stop::before { content: ""; position: absolute; top: 23px; left: 50%; right: -50%; height: 2px; background: var(--line); z-index: 0; }
+.trail__stop:last-child::before { display: none; }
+.trail__ic { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--primary); color: var(--primary);
+  display: grid; place-items: center; background: var(--paper); position: relative; z-index: 1; margin-bottom: 0.4rem; }
+.trail__ic .ic { width: 22px; height: 22px; }
+.trail__k { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
+.trail__stop b { font-weight: 500; }
+.trail__stop p { font-size: 0.78rem; }
+.trail__stop .tag { margin-top: 0.2rem; }
+.tag--live { color: #fff !important; background: var(--primary); border-color: var(--primary) !important; }
+.trail__foot { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-top: var(--sp-3);
+  border-top: 1px solid var(--line); padding-top: var(--sp-2); font-size: 0.92rem; max-width: 1100px; }
+.trail__foot b { font-weight: 500; }
+.hl-data { color: #C2410C; font-weight: 500; } .hl-act { color: #0369A1; font-weight: 500; }
+
+/* ---------- demo "do this now" step cue ---------- */
+.demo-step { display: flex; align-items: center; gap: 0.7rem; margin: var(--sp-2) 0 var(--sp-3);
+  padding: 0.7rem 1rem; border-radius: var(--radius); border: 1px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 7%, var(--paper)); font-weight: 500; max-width: 760px; }
+.demo-step__n { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-size: 0.85rem; flex: none; }
+.demo-step b { font-weight: 700; }
+.pipe-label { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); margin-top: var(--sp-3); margin-bottom: 0.4rem; }
+
+@media (max-width: 880px) {
+  .trail { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .trail__stop { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.6rem; padding: 0; }
+  .trail__stop::before { display: none; }
+  .trail__ic { margin-bottom: 0; }
+  .trail__stop p { width: 100%; }
+  .trail__foot { grid-template-columns: 1fr; }
+}
+
 /* ---------- live system-activity pipeline (demo) ---------- */
 .pipeline { display: flex; gap: 0.4rem; align-items: stretch; margin: var(--sp-2) 0 0.6rem; overflow-x: auto; padding-bottom: 0.3rem; }
 .pipe { flex: 1 1 0; min-width: 78px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0.55rem 0.4rem; text-align: center;

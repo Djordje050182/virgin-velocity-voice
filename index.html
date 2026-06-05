@@ -206,16 +206,48 @@
             <li><b>She only offers what she's allowed to.</b> The benefits come from a rules engine, not the model's imagination.</li>
           </ul>
         </div>
+        <div class="emotion">
+          <div class="emotion__k">Roadmap · emotion-adaptive voice <span class="tag">not live — illustration</span></div>
+          <p class="muted" style="margin:.3rem 0 .6rem">Same line, two deliveries — the tone can soften as the model picks up on distress. Roadmap, not the first build.</p>
+          <div class="emotion__btns">
+            <button class="btn btn--ghost" data-audio="audio/emotion-neutral.mp3">▶ Neutral</button>
+            <button class="btn btn--ghost" data-audio="audio/emotion-warm.mp3">▶ Warmer, de-escalating</button>
+          </div>
+        </div>
         <p class="fineprint muted">This is a real conversation, live in the page. Talk back to her naturally. If anything misbehaves on the day, there's a fallback with pre-recorded versions of each call.</p>
       </div>
       <span class="slide__index">06</span>
     </section>
 
-    <!-- 07 — LIVE DEMO -->
+    <!-- TRAIL MAP — primes the story right before the demo -->
+    <section class="slide" id="trail" data-title="The demo, mapped">
+      <div class="slide__inner reveal">
+        <span class="kicker">The live demo, mapped</span>
+        <h2 style="max-width:24ch">Here's the route. One disruption, three calls, one looked-after guest.</h2>
+        <ol class="trail">
+          <li class="trail__stop"><span class="trail__ic" data-ic="zap"></span><span class="trail__k">Trigger</span><b>Ops event</b><p class="muted">VA838 is delayed, then cancelled.</p><span class="tag">simulated</span></li>
+          <li class="trail__stop"><span class="trail__ic" data-ic="phone"></span><span class="trail__k">Call 1</span><b>The delay</b><p class="muted">Hannah calls George, checks his ID, sends a lounge pass.</p><span class="tag tag--live">live voice</span></li>
+          <li class="trail__stop"><span class="trail__ic" data-ic="phone"></span><span class="trail__k">Call 2</span><b>The cancellation</b><p class="muted">A warm apology and options. “Text me instead.”</p><span class="tag tag--live">live voice</span></li>
+          <li class="trail__stop"><span class="trail__ic" data-ic="chat"></span><span class="trail__k">Channel hop</span><b>WhatsApp</b><p class="muted">Rebooking options arrive; George picks one.</p><span class="tag">simulated</span></li>
+          <li class="trail__stop"><span class="trail__ic" data-ic="check"></span><span class="trail__k">Call 3</span><b>Confirmation</b><p class="muted">Rebooked, plus a gesture matched to his tier.</p><span class="tag tag--live">live voice</span></li>
+        </ol>
+        <div class="trail__foot">
+          <div><b>What I'll do:</b> trigger the event, then start each call. You're listening to Hannah talk to George — I'll narrate as we go, and you can ask anything.</div>
+          <div><b>Under the hood</b> (you'll see it light up live): Genesys telephony → ElevenLabs → <span class="hl-data">Databricks live read</span> → <span class="hl-act">Salesforce live act</span> → back to voice.</div>
+        </div>
+      </div>
+      <span class="slide__index">07</span>
+    </section>
+
+    <!-- LIVE DEMO -->
     <section class="slide" id="demo" data-title="The live demo">
       <div class="slide__inner reveal demo">
         <span class="kicker">The live demo</span>
         <h2>Hannah calls the guest. Live, in this page.</h2>
+
+        <!-- single, always-visible "do this now" cue — updates as the story moves -->
+        <div class="demo-step" id="demoStep"><span class="demo-step__n">1</span><span id="demoStepText">Start here — click <b>“Simulate Virgin ops event.”</b> Then start each call and talk to Hannah as the guest.</span></div>
+
         <div class="demo__controls">
           <button class="btn" id="opsBtn"><span class="dot"></span><span id="opsBtnLabel">Simulate Virgin ops event</span></button>
           <div class="tier-pick" id="tierPick" aria-label="Velocity tier">
@@ -227,19 +259,6 @@
           </div>
         </div>
         <div class="ops-banner" id="opsBanner" hidden><span class="ops-dot"></span><span id="opsText">—</span></div>
-
-        <!-- live system-activity pipeline: lights up as Hannah works -->
-        <div class="pipeline" id="pipeline" aria-label="Live system activity">
-          <div class="pipe" data-node="caller"><span class="pipe__ic">🎙️</span><span class="pipe__l">Guest</span></div>
-          <div class="pipe" data-node="genesys"><span class="pipe__ic">☎</span><span class="pipe__l">Genesys<small>telephony</small></span></div>
-          <div class="pipe pipe--el" data-node="stt"><span class="pipe__ic">〜</span><span class="pipe__l">STT<small>ElevenLabs</small></span></div>
-          <div class="pipe pipe--el" data-node="brain"><span class="pipe__ic">◆</span><span class="pipe__l">Reason + orchestrate<small>fast model</small></span></div>
-          <div class="pipe pipe--data" data-node="databricks"><span class="pipe__ic">▤</span><span class="pipe__l">Databricks<small>data ← Sabre</small></span></div>
-          <div class="pipe pipe--act" data-node="agentforce"><span class="pipe__ic">⚡</span><span class="pipe__l">Agentforce<small>Service Cloud</small></span></div>
-          <div class="pipe pipe--el" data-node="tts"><span class="pipe__ic">♪</span><span class="pipe__l">TTS<small>Hannah</small></span></div>
-          <div class="pipe" data-node="out"><span class="pipe__ic">🔊</span><span class="pipe__l">Guest hears</span></div>
-        </div>
-        <div class="pipe-caption" id="pipeCaption">Idle — start a call to watch the system work. <span class="tag">simulated</span></div>
 
         <div class="demo__grid">
           <div class="demo__left">
@@ -278,15 +297,21 @@
             </div>
           </div>
         </div>
-        <div class="emotion">
-          <div class="emotion__k">Roadmap · emotion-adaptive voice <span class="tag">not live — illustration</span></div>
-          <p class="muted" style="margin:.3rem 0 .6rem">Same line, two deliveries. The tone can soften as the model picks up on distress. We'd put this on the roadmap, not in the first build.</p>
-          <div class="emotion__btns">
-            <button class="btn btn--ghost" data-audio="audio/emotion-neutral.mp3">▶ Neutral</button>
-            <button class="btn btn--ghost" data-audio="audio/emotion-warm.mp3">▶ Warmer, de-escalating</button>
-          </div>
+        <!-- under the hood: the live system pipeline, sitting below the conversation -->
+        <div class="pipe-label">Under the hood — lights up live as Hannah works</div>
+        <div class="pipeline" id="pipeline" aria-label="Live system activity">
+          <div class="pipe" data-node="caller"><span class="pipe__ic">🎙️</span><span class="pipe__l">Guest</span></div>
+          <div class="pipe" data-node="genesys"><span class="pipe__ic">☎</span><span class="pipe__l">Genesys<small>telephony</small></span></div>
+          <div class="pipe pipe--el" data-node="stt"><span class="pipe__ic">〜</span><span class="pipe__l">STT<small>ElevenLabs</small></span></div>
+          <div class="pipe pipe--el" data-node="brain"><span class="pipe__ic">◆</span><span class="pipe__l">Reason<small>fast model</small></span></div>
+          <div class="pipe pipe--data" data-node="databricks"><span class="pipe__ic">▤</span><span class="pipe__l">Databricks<small>read ← Sabre</small></span></div>
+          <div class="pipe pipe--act" data-node="agentforce"><span class="pipe__ic">⚡</span><span class="pipe__l">Salesforce<small>act</small></span></div>
+          <div class="pipe pipe--el" data-node="tts"><span class="pipe__ic">♪</span><span class="pipe__l">TTS<small>Hannah</small></span></div>
+          <div class="pipe" data-node="out"><span class="pipe__ic">🔊</span><span class="pipe__l">Guest hears</span></div>
         </div>
-        <p class="fineprint muted">To be straight with you: the voice agent is real. The ops event, the message thread and the member record are simulated for today. In production they'd come from your disruption workflow and your Velocity and Sabre systems.</p>
+        <div class="pipe-caption" id="pipeCaption">Idle — start a call to watch the system work. <span class="tag">simulated</span></div>
+
+        <p class="fineprint muted">To be straight with you: the voice agent is real, and the Databricks read &amp; Salesforce case are live. The ops event and the WhatsApp thread are simulated for today.</p>
       </div>
       <span class="slide__index">07</span>
     </section>

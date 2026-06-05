@@ -84,6 +84,19 @@
   };
   function pipeline(stage) { pipePlay(SEQ[stage] || SEQ.delay); }
 
+  /* ---------- "do this now" step cue (keeps the presenter + room oriented) ---------- */
+  var STEP = {
+    delay:        [2, "Click <b>“Start a call”</b> below — Hannah calls George about the delay. Talk to her as the guest."],
+    cancellation: [3, "Click <b>“Start a call”</b> — Hannah handles the cancellation. When the <b>WhatsApp</b> options appear, pick one."],
+    confirmation: [4, "Click <b>“Start a call”</b> — Hannah confirms the rebooking and adds the loyalty gesture."]
+  };
+  function setStep(stage) {
+    var s = STEP[stage]; if (!s) return;
+    var box = $("demoStep"); if (!box) return;
+    box.querySelector(".demo-step__n").textContent = s[0];
+    $("demoStepText").innerHTML = s[1];
+  }
+
   /* ---------- UI cards (deterministic, always reliable) ---------- */
   function paintMember() {
     var t = TIERS[state.tier];
@@ -282,6 +295,7 @@
     state.stage = stage;
     document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === stage)); });
     paintEntitlement(true); // entitlement card differs by stage
+    setStep(stage); // update the "do this now" cue
     pipeline(stage); // animate the system-activity pipeline for this call
     if (stage === "delay") showLoungePass();
     if (stage === "cancellation") runChannelHop();
