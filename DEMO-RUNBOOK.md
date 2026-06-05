@@ -30,6 +30,11 @@
 
 ## 2. Pre-flight checklist (5 minutes before)
 - [ ] Live URL open in Chrome, **not** localhost.
+- [ ] **Demo proxy running** in a terminal: `cd integrations && python3 proxy.py` (leave it open).
+      One proxy serves BOTH live integrations: the member lookup (→ Databricks, keeps the warehouse
+      warm) and the fulfilment action (→ a real Salesforce Service Cloud Case). If it's not running,
+      the demo silently falls back to cached data / a fake case ref — nothing breaks. Verify:
+      `curl localhost:8799/health` → `warehouse: SUCCEEDED, salesforce: true`.
 - [ ] Slide 08 mic tested, Hannah responds, audio audible.
 - [ ] Meet "Share tab audio" confirmed with a test listener.
 - [ ] Theme set to **Virgin** (bottom-left), Demo mode **Live**.
@@ -39,7 +44,8 @@
 - [ ] Have this runbook open on a second screen/phone.
 
 ## 3. The run of show (≈40 min; adjust to discovery)
-Deck is now **13 slides**. You can **hide any slide** live by tapping the dot next to it in the menu.
+Deck is now **14 slides** (added **How we built this** — the live-orchestration story, before Close).
+You can **hide any slide** live by tapping the dot next to it in the menu.
 | Time | Slides | You do / say |
 |---|---|---|
 | 0–2 | 01 Cold open · 02 Agenda | "Remember when someone actually picked up?" Set the frame, then the agenda. |
@@ -48,7 +54,8 @@ Deck is now **13 slides**. You can **hide any slide** live by tapping the dot ne
 | 8–22 | **07 Live demo** | **The hero.** See §4 below. |
 | 22–30 | 08 How it works · 09 Architecture | Orchestration + guardrails. Toggle architecture: **disruption journey → Agentic ecosystem** (ElevenLabs ↔ Databricks ↔ Agentforce via MCP, on Genesys) **→ Scale across Virgin**. Then the **intelligence-layer** slide: voice inside Agentforce, not versus it. |
 | 30–35 | 10 Stories · 11 ROI · 12 Why | Proof (toggle Global / ANZ). Plug in *their* numbers. Concede Agentforce honestly. |
-| 35–40 | 13 Close | Land-and-expand: one journey first, then scale. Drive to the paid pilot. |
+| 35–38 | 13 How we built this | The orchestration story: walk the 1→7 runtime diagram. "ElevenLabs conducts — it reads **live** from Databricks (Sabre/Amadeus/Velocity) and creates a **real** Salesforce Case. Voice drives your stack." Strong for the Head of AI. |
+| 38–40 | 14 Close | Land-and-expand: one journey first, then scale. Drive to the paid pilot. |
 
 ## 4. The live demo sequence (slide 08) — exact clicks
 Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
@@ -70,6 +77,27 @@ Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
 > If the accent ever drifts, that's the voice model. We've raised stability to hold the Australian
 > accent; if you want it warmer/livelier we can trade a little stability back.
 
+## 4b. Narrating slide 13 — "How we built this" (≈60 sec, for the Head of AI)
+Pull up the **runtime diagram** and walk the numbers.
+
+> "Everything I just showed you is real — here's how. The key idea: **ElevenLabs is the conductor.**
+> [point centre] It listens, reasons on a fast model, and decides — turn by turn — which of your
+> systems to call.
+>
+> Watch the flow. **①–②** a disruption fires the call and George starts speaking; we transcribe in
+> real time. **③** we reason and decide we need his record. **④** so we **read, live** — a real query
+> into **Databricks** that joins his Velocity loyalty with his Sabre booking and Amadeus fare. That
+> number on screen came back from the lakehouse just now. **⑤–⑥** we decide to act, and we create a
+> **real case in your Salesforce Service Cloud**, through Agentforce — refresh Cases and you'll watch
+> it appear. **⑦** then Hannah speaks the result. One conversation.
+>
+> The point for you: we're not another tool bolted on the side. We're the **orchestration layer that
+> conducts the stack you already own** — Sabre, Amadeus, Databricks, Salesforce. Voice that drives
+> your systems, not versus them. And note the secure proxy in the middle — **the voice agent never
+> holds a credential.**"
+
+Honesty beat to land: *"The data's synthetic, but the lookup and the case are genuinely live — that's the integration pattern, working today."*
+
 ## 5. Fallbacks (resilience)
 - **Live agent fails / network drops:** bottom-left **Demo mode → Fallback**. The three calls become
   pre-recorded clips (Hannah's side) you press play on: Call 1 delay, Call 2 cancellation, Call 3
@@ -81,9 +109,15 @@ Guest is **George Sinclair**, Velocity **Gold**, on **VA838 MEL→SYD**.
 - **Everything is in JS memory** (no localStorage) — a refresh resets cleanly to the start.
 
 ## 6. Honesty lines to say out loud (the Head of AI will probe)
-- "The **voice agent is real**. The ops trigger, the WhatsApp thread and the member record are
-  **simulated** for today — in production they're your disruption workflow and Velocity/Sabre APIs."
-- "**Velocity Lookup** is a subagent here to show orchestration; in production it's a tool/API call."
+- "The **voice agent is real**, and so is the **data**: when Hannah looks George up, that's a **live
+  query into Databricks** joining a Velocity loyalty record with a Sabre-style booking — the same
+  pattern you'd run over your real Velocity + Sabre + Amadeus feeds. The ops trigger and WhatsApp
+  thread are still simulated for today." *(The data is synthetic, but the lakehouse call is real.)*
+- "**Velocity Lookup** runs as a tool that calls our Databricks proxy; in production it points at
+  your harmonised data — no app logic change, just the connection."
+- "And when Hannah **fulfils** the rebooking, that's a **real Case created in a live Salesforce
+  Service Cloud org** via Agentforce/CRM APIs — voice *inside* your Salesforce, not versus it.
+  You can refresh Cases in the org and watch them appear." *(Real org + API; data synthetic.)*
 - "**Entitlement is a deterministic tool node** — the fast model never improvises who gets a hotel."
 - "Real-time English uses **Flash v2** (~75 ms); **v2.5** is the multilingual variant — same latency
   tier. **Eleven v3** is 70+ languages but not for real-time agents." *(Don't conflate them.)*

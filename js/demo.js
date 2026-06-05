@@ -6,6 +6,10 @@
   "use strict";
   var AGENT_ID = "agent_6701kt8w3svzen8ajsxjnk852mrj"; // live "Guest Care" agent (public)
   var WIDGET_SRC = "https://unpkg.com/@elevenlabs/convai-widget-embed";
+  // Local proxy → Databricks (run integrations/databricks/proxy.py during the demo).
+  // Each tier maps to a real "George Sinclair" hero record in the lakehouse.
+  var PROXY = "http://localhost:8799";
+  var MEMBER_IDS = { Red: "VA8380001", Silver: "VA8380002", Gold: "VA8380003", Platinum: "VA8380004" };
 
   var state = { tier: "Gold", stage: "delay", opsStep: 0, mode: "live" };
 
@@ -110,6 +114,11 @@
   function mountWidget() {
     var host = $("widgetMount"); if (!host) return;
     host.innerHTML = "";
+    // Remove any prior instance. The widget renders a FIXED bottom-right launcher; if it lives
+    // inside a slide whose ancestor has a transform (.reveal), that transform becomes its
+    // containing block and it shifts/clips per slide. Mounting on <body> keeps it viewport-fixed
+    // and consistently on top.
+    document.querySelectorAll("elevenlabs-convai").forEach(function (e) { e.remove(); });
     var w = document.createElement("elevenlabs-convai");
     w.setAttribute("agent-id", AGENT_ID);
     w.setAttribute("dynamic-variables", JSON.stringify({
@@ -124,9 +133,25 @@
         var cfg = ev.detail.config;
         cfg.clientTools = Object.assign(cfg.clientTools || {}, {
           lookup_velocity_member: function () {
-            paintMember(); pipeFlash("databricks", "<b>Databricks</b>: returning George's record (← Sabre)");
+            paintMember();
+            pipeFlash("databricks", "<b>Databricks</b>: querying Velocity ⋈ Sabre (live)…");
             var t = TIERS[state.tier];
-            return { name: GUEST.name, tier: state.tier, points: t.pts, recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
+            // Hardcoded fallback so the call never breaks if the proxy/warehouse is unavailable.
+            var fallback = { name: GUEST.name, tier: state.tier, points: t.pts,
+                             recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
+            return fetch(PROXY + "/member?id=" + MEMBER_IDS[state.tier], { cache: "no-store" })
+              .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+              .then(function (rec) {
+                if (!rec || rec.error) throw 0;
+                pipeFlash("databricks", "<b>Databricks</b>: " + rec.name + " · " + rec.tier + " · " + rec.points + " pts · " + rec.flight_number + " (← Sabre, live)");
+                return { name: rec.name, tier: rec.tier, points: rec.points,
+                         recent_booking: (rec.recent_booking || (GUEST.flight + " " + GUEST.route)) + " tonight",
+                         source: "Databricks live (Velocity ⋈ Sabre)" };
+              })
+              .catch(function () {
+                pipeFlash("databricks", "<b>Databricks</b>: returning George's record (← Sabre)");
+                return fallback;
+              });
           },
           check_entitlement: function (p) {
             var e = entitlement((p && p.tier) || state.tier, (p && p.disruption_type) || state.stage);
@@ -135,14 +160,32 @@
           },
           fulfil_in_agentforce: function (p) {
             var action = (p && p.action) || "rebook";
-            pipeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned in Service Cloud ✓");
-            return { status: "done", action: action, reference: "SC-" + (state.tier[0]) + "48210", message: action + " completed in Service Cloud" };
+            pipeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: creating case (live)…");
+            // Fallback fake reference so the call never breaks if the proxy/org is unavailable.
+            var fallback = { status: "done", action: action, reference: "SC-" + (state.tier[0]) + "48210",
+                             message: action + " completed in Service Cloud" };
+            var qs = "action=" + encodeURIComponent(action) +
+                     "&member=" + encodeURIComponent(GUEST.name) +
+                     "&tier=" + encodeURIComponent(state.tier) +
+                     "&flight=" + encodeURIComponent(GUEST.flight) +
+                     "&route=" + encodeURIComponent("MEL→SYD");
+            return fetch(PROXY + "/fulfil?" + qs, { cache: "no-store" })
+              .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+              .then(function (res) {
+                if (!res || res.error) throw 0;
+                pipeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: case " + res.reference + " created (live) ✓");
+                return res;
+              })
+              .catch(function () {
+                pipeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned in Service Cloud ✓");
+                return fallback;
+              });
           }
         });
         cfg.dynamicVariables = Object.assign(cfg.dynamicVariables || {}, { call_stage: state.stage, velocity_tier: state.tier, guest_name: GUEST.name.split(" ")[0] });
       } catch (e) { /* never let wiring break the live call */ }
     });
-    host.appendChild(w);
+    document.body.appendChild(w);   // top-level, not inside a transformed slide
     ensureScript();
   }
 
@@ -169,7 +212,8 @@
     $("callHint").textContent = live
       ? "Click “Start a call”, allow the mic, and talk to Hannah — the real ElevenLabs agent configured for Virgin."
       : "Fallback mode: pre-recorded calls if the network or mic misbehaves on the day.";
-    if (live) mountWidget(); else renderFallback();
+    if (live) { mountWidget(); }
+    else { document.querySelectorAll("elevenlabs-convai").forEach(function (e) { e.remove(); }); renderFallback(); }
   }
 
   /* ---------- WhatsApp channel-hop simulation ---------- */

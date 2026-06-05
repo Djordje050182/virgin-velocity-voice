@@ -202,6 +202,9 @@ body.rail-open .rail-toggle span:nth-child(3){ transform: translateY(-7px) rotat
 .agenda b { font-weight: 500; }
 .agenda p { margin-top: 0.3rem; font-size: 0.9rem; }
 
+/* keep the ElevenLabs call widget consistently above all slide content */
+elevenlabs-convai { position: fixed; z-index: 2147483000; }
+
 /* ---------- photography (PD vintage, duotone for cohesion) ---------- */
 .photo { margin: 0; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #0c0b0d; }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) brightness(.98); }

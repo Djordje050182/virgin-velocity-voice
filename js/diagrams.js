@@ -74,11 +74,12 @@
     var ev = box(430, 180, 320, "ElevenLabs voice + orchestration", "STT · TTS · turn-taking · Workflow", "node--accent",
       "<b>ElevenLabs (additive)</b><br>Voice and multi-agent orchestration. Reuses your OpenAI as the model, RAG over the knowledge base, tool-calls into Sabre / Velocity / CRM, and bridges your telephony. It sits on top of the stack, it doesn't replace it.");
     var top = [
-      box(20, 30, 175, "Sabre PSS", "bookings · CONFIRMED", "", "<b>Sabre PSS</b><br>Bookings / passenger service system. <i>Voice:</i> reads PNRs, writes rebookings via tool-calls."),
-      box(215, 30, 175, "SabreMosaic", "offers · CONFIRMED", "", "<b>SabreMosaic</b><br>Offers & pricing. <i>Voice:</i> surfaces ancillary offers in the conversation."),
-      box(410, 30, 175, "Databricks", "data + AI · CONFIRMED", "", "<b>Databricks</b><br>Data + AI platform. <i>Voice:</i> propensity, analytics, post-call insight."),
-      box(605, 30, 175, "OpenAI", "LLM · CONFIRMED", "", "<b>OpenAI</b><br>Your existing model deal. <i>Voice:</i> reuse it as the model inside ElevenLabs — we're model-agnostic."),
-      box(800, 30, 175, "Velocity", "loyalty · tiers", "node--accent", "<b>Velocity loyalty platform</b><br>Members, tiers, points. <i>Voice:</i> the lookup + entitlement tools call it for tier-aware service.")
+      box(20, 30, 175, "Sabre PSS", "engine room · CONFIRMED", "", "<b>Sabre PSS (SabreSonic)</b><br>The <b>engine room</b> — reservations, ticketing & departure control; the system of record for bookings/orders. <i>Voice:</i> reads PNRs, writes rebookings via tool-calls."),
+      box(215, 30, 175, "SabreMosaic", "offers/orders · CONFIRMED", "", "<b>SabreMosaic</b><br>Modern offer & order retailing — AI dynamic pricing & ancillaries (Google Cloud). <i>Voice:</i> surfaces personalised offers mid-conversation."),
+      box(410, 30, 175, "Amadeus", "shop window · CONFIRMED", "", "<b>Amadeus</b><br>The <b>shop window</b> — distribution / GDS pushing fares, seatmaps & ancillaries to travel agents and corporates (EDIFACT today, NDC next). <i>Voice:</i> agent-booked trips surface in the same call."),
+      box(605, 30, 175, "Databricks", "data + AI · LIVE", "node--data", "<b>Databricks</b><br>Unified lakehouse harmonising Sabre + Amadeus + Velocity. <b>Live in this demo:</b> the lookup tool runs a real SQL join here."),
+      box(800, 30, 175, "OpenAI", "LLM · CONFIRMED", "", "<b>OpenAI</b><br>Your existing model deal. <i>Voice:</i> reuse it as the model inside ElevenLabs — we're model-agnostic."),
+      box(995, 30, 175, "Velocity", "loyalty · tiers", "node--accent", "<b>Velocity loyalty platform</b><br>13m+ members, tiers, points. <i>Voice:</i> the lookup + entitlement tools call it for tier-aware service.")
     ];
     var bottom = [
       box(20, 340, 175, "CRM", "case · ASSUMPTION", "node--tool", "<b>CRM</b><br>Vendor not public — <b>assumption</b> to validate. <i>Voice:</i> logs the case, reads history."),
@@ -123,11 +124,10 @@
       "<b>Genesys Cloud CX</b><br>The telephony layer — routing, queues, recording, reporting. ElevenLabs bridges in via SIP / the Genesys Audio Connector. <i>Additive, not a replacement.</i> <span style='color:#ffb3b3'>per your steer, to confirm</span>");
     var hub = b(330, 110, 280, 120, "ElevenLabs", "voice + intelligence layer", "node--accent",
       "<b>ElevenLabs</b><br>STT · a fast model · multi-agent orchestration · TTS (~75ms). The conversational brain that listens, reasons, and decides which system to call. BYO-LLM reuses your OpenAI.");
-    var subt = el("text", { x: 470, y: 200, "text-anchor": "middle", class: "nsub" }); subt.textContent = "STT · fast LLM · orchestration · TTS"; an.appendChild(subt);
     // right spokes via MCP
-    var dbx = b(760, 50, 230, 64, "Databricks", "lakehouse · READ", "node--data",
-      "<b>Databricks</b><br>The unified data layer — booking and member context, sourced from <b>Sabre PSS, SabreMosaic and Velocity</b>. ElevenLabs reads it as a tool over <b>MCP</b> or a secure API.");
-    var dsrc = el("text", { x: 875, y: 130, "text-anchor": "middle", class: "elabel" }); dsrc.textContent = "← Sabre · SabreMosaic · Velocity"; an.appendChild(dsrc);
+    var dbx = b(760, 50, 230, 64, "Databricks", "lakehouse · LIVE", "node--data",
+      "<b>Databricks</b><br>The unified lakehouse — booking & member context harmonised from <b>Sabre PSS, SabreMosaic, Amadeus and Velocity</b>. <b>Live in this demo:</b> ElevenLabs runs a real SQL join here via a secure proxy (MCP-ready).");
+    var dsrc = el("text", { x: 875, y: 130, "text-anchor": "middle", class: "elabel" }); dsrc.textContent = "← Sabre · Amadeus · SabreMosaic · Velocity"; an.appendChild(dsrc);
     var af = b(760, 250, 230, 64, "Agentforce", "Service Cloud · ACT", "node--act",
       "<b>Agentforce (Salesforce)</b><br>Where a workflow belongs to the CRM — rebook, raise a case, push a refund — ElevenLabs calls your Agentforce agent over <b>MCP</b>, waits, and speaks the result back. <b>Voice inside Agentforce, not versus it.</b>");
     // edges
@@ -140,6 +140,83 @@
     return svg;
   }
 
+  /* ---------------- RUNTIME ORCHESTRATION (How we built this) ----------------
+     Tells the story: ElevenLabs is the conductor. One conversation; it listens,
+     reasons, reads LIVE from Databricks, acts LIVE in Salesforce, and speaks. */
+  function buildRuntime() {
+    var W = 1180, H = 470, svg = frame(W, H);
+    var ae = el("g", {}), an = el("g", {}); svg.appendChild(ae); svg.appendChild(an);
+    var b = function (x, y, w, h, l, s, c, t) { return node(an, x, y, w, h, l, s, c, t); };
+
+    // numbered story badge (inline-styled so no CSS dependency)
+    function badge(x, y, n, label) {
+      var g = el("g", { transform: "translate(" + x + "," + y + ")" });
+      var c = el("circle", { cx: 0, cy: 0, r: 13 }); c.style.cssText = "fill:var(--va-red)";
+      g.appendChild(c);
+      var t = el("text", { x: 0, y: 4, "text-anchor": "middle" });
+      t.style.cssText = "fill:#fff;font:700 12px 'Space Grotesk',sans-serif"; t.textContent = n; g.appendChild(t);
+      if (label) { var lt = el("text", { x: 19, y: 5, class: "elabel" }); lt.textContent = label; g.appendChild(lt); }
+      an.appendChild(g);
+    }
+
+    // left rail: guest / telephony / disruption trigger
+    var guest = b(20, 40, 150, 54, "Guest", "voice in / out", "",
+      "<b>The guest</b><br>Speaks naturally — inbound, or a proactive outbound call.");
+    var gen = b(20, 200, 150, 54, "Genesys", "telephony · CCaaS", "node--tool",
+      "<b>Genesys Cloud CX</b><br>Your telephony. ElevenLabs bridges in via SIP / Audio Connector. <span style='color:#ffb3b3'>per your steer, to confirm</span>");
+    var ops = b(20, 360, 150, 54, "Ops / disruption", "event trigger", "node--accent",
+      "<b>Disruption event</b><br>A VA838 delay/cancel fires the proactive call.");
+
+    // centre: ElevenLabs — the conductor (custom tall box with capability lines)
+    var hx = 330, hy = 60, hw = 300, hh = 350;
+    var hg = el("g", { class: "node node--accent", transform: "translate(" + hx + "," + hy + ")" });
+    hg.appendChild(el("rect", { x: 0, y: 0, width: hw, height: hh, rx: 8 }));
+    var ht = el("text", { x: hw / 2, y: 38, "text-anchor": "middle", class: "nlabel" }); ht.textContent = "ElevenLabs"; hg.appendChild(ht);
+    var hs = el("text", { x: hw / 2, y: 60, "text-anchor": "middle", class: "nsub" }); hs.textContent = "the orchestration layer — conducts every turn"; hg.appendChild(hs);
+    [["Listen", "speech-to-text"],
+     ["Reason", "a fast model picks the next action"],
+     ["Read or act", "calls the right system as a tool"],
+     ["Speak", "text-to-speech · ~75 ms"]].forEach(function (r, i) {
+      var ry = 110 + i * 56;
+      var a = el("text", { x: 34, y: ry, class: "nlabel", "text-anchor": "start" });
+      a.style.cssText = "font-size:14px"; a.textContent = r[0]; hg.appendChild(a);
+      var s = el("text", { x: 34, y: ry + 18, class: "nsub", "text-anchor": "start" }); s.textContent = r[1]; hg.appendChild(s);
+    });
+    an.appendChild(hg);
+    bind(hg, "<b>ElevenLabs — the conductor</b><br>One conversation. It listens, reasons on a fast model, decides which system to call, and speaks the result — turn by turn, in real time. Every other box is a tool it orchestrates.");
+    var hub = { x: hx, y: hy, w: hw, h: hh, cx: hx + hw / 2, cy: hy + hh / 2 };
+
+    // right: secure tool layer → live systems
+    var proxy = b(720, 205, 150, 60, "Tool layer", "secure proxy · MCP-ready", "node--tool",
+      "<b>Tool / action layer</b><br>A secure proxy holds the credentials and brokers each tool call — Databricks SQL and Salesforce REST today, MCP-ready for production. <b>The voice agent never holds a secret.</b>");
+    var dbx = b(950, 70, 210, 64, "Databricks", "READ · live", "node--data",
+      "<b>Databricks — live read</b><br>Velocity ⋈ Sabre · Amadeus, harmonised. The member lookup runs a <b>real SQL join</b> here, mid-call.");
+    var sf = b(950, 330, 210, 64, "Agentforce", "Service Cloud · ACT · live", "node--act",
+      "<b>Agentforce / Service Cloud — live act</b><br>ElevenLabs calls in to <b>create a real Case</b> / rebook. Voice inside Agentforce, not versus it.");
+
+    // cords: in (guest/telephony/ops → hub), out to tools, return path
+    ae.appendChild(cord(guest.x + guest.w, guest.cy, hub.x, hub.cy - 130));
+    ae.appendChild(cord(gen.x + gen.w, gen.cy, hub.x, hub.cy - 40));
+    ae.appendChild(cord(ops.x + ops.w, ops.cy, hub.x, hub.cy + 110, "edge--cord"));
+    ae.appendChild(cord(hub.x + hub.w, hub.cy - 30, proxy.x, proxy.cy, "edge--cord"));
+    ae.appendChild(cord(proxy.x + proxy.w, proxy.cy, dbx.x, dbx.cy, "edge--cord"));
+    ae.appendChild(cord(proxy.x + proxy.w, proxy.cy, sf.x, sf.cy, "edge--cord"));
+    ae.appendChild(cord(hub.x, hub.cy + 110, gen.x + gen.w, gen.cy + 10, ""));
+
+    // the 1→7 story, around the path
+    badge(250, ops.cy, "1", "disruption → call");
+    badge(250, gen.cy, "2", "caller speaks");
+    badge(672, 150, "3", "reason");
+    badge(905, 104, "4", "read — live");
+    badge(672, 300, "5", "decide");
+    badge(905, 364, "6", "act — live");
+    badge(250, guest.cy, "7", "Hannah speaks");
+    return svg;
+  }
+
+  var rtHost = document.getElementById("runtimeDiagram");
+  if (rtHost) rtHost.appendChild(buildRuntime());
+
   function setArch(view) {
     if (!arHost) return;
     arHost.innerHTML = "";
@@ -147,7 +224,7 @@
     document.querySelectorAll("#archToggle button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-arch") === view)); });
     if (archNote) archNote.innerHTML =
       view === "scale" ? "The pilot is one journey. The opportunity is every voice conversation Virgin has, across consumer, loyalty, corporate, cargo, charter and trade. <span class='tag'>lines of business to confirm with you</span>"
-      : view === "ecosystem" ? "ElevenLabs is the voice + intelligence layer: it reads from Databricks and acts through Agentforce over MCP, riding your Genesys telephony. <span class='tag'>simulated for the demo — live MCP/tool calls in production</span>"
+      : view === "ecosystem" ? "ElevenLabs is the voice + intelligence layer: it reads <b>live</b> from Databricks (harmonising Sabre, Amadeus &amp; Velocity) and acts through Agentforce over MCP, riding your Genesys telephony. <span class='tag'>Databricks lookup is live; Agentforce act simulated</span>"
       : "Confirmed systems are labelled. <span class='tag'>assumption</span> marks things to validate with you. Latency: Flash v2 for real-time English at ~75ms; v2.5 is multilingual at the same speed; Eleven v3 covers 70+ languages but isn't for real-time agents.";
   }
 
