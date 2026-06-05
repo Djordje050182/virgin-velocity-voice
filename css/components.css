@@ -202,6 +202,30 @@ body.rail-open .rail-toggle span:nth-child(3){ transform: translateY(-7px) rotat
 .agenda b { font-weight: 500; }
 .agenda p { margin-top: 0.3rem; font-size: 0.9rem; }
 
+/* ---------- photography (PD vintage, duotone for cohesion) ---------- */
+.photo { margin: 0; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #0c0b0d; }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) brightness(.98); }
+.photo--tint::after { content: ""; position: absolute; inset: 0; background: var(--primary); mix-blend-mode: multiply; opacity: .14; pointer-events: none; }
+.photo--asis img { filter: contrast(1.03); }  /* already hand-tinted — leave its colour */
+.photo figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem 0.9rem 0.6rem;
+  font-size: 0.72rem; letter-spacing: 0.02em; color: #F2ECE3; background: linear-gradient(180deg, transparent, rgba(8,7,10,.8)); }
+.photo figcaption b { color: #fff; font-weight: 500; }
+
+/* split layout: content + a tall image panel */
+.split { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: var(--sp-4); align-items: stretch; margin-top: var(--sp-3); }
+.split .photo { min-height: 340px; }
+
+/* full-width image band */
+.band { margin: var(--sp-3) 0; height: clamp(180px, 26vh, 300px); }
+
+/* a slide with a real photo doesn't need the faint corner motif too */
+.slide:has(.photo)::before { display: none; }
+
+@media (max-width: 880px) {
+  .split { grid-template-columns: 1fr; }
+  .split .photo { min-height: 220px; }
+}
+
 /* ---------- line icons ---------- */
 .ic { width: 20px; height: 20px; display: block; }
 [data-ic] { display: inline-flex; line-height: 0; }
