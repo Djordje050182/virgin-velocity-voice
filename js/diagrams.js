@@ -425,7 +425,7 @@
     function fstart() { fstop(); fplaying = true; setMode("auto"); fshow(fcur); ftimer = setTimeout(ftick, SPEED); }
     function fmanual() { fstop(); fplaying = false; setMode("manual"); }
 
-    frender(); fstart();
+    frender(); fmanual(); fshow(0);   // default to manual - presenter drives with Next
     document.addEventListener("click", function (e) {
       var tb = e.target.closest("#flowToggle button");
       if (tb) {

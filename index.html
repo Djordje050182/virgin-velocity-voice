@@ -420,32 +420,7 @@
       <span class="slide__index">08</span>
     </section>
 
-    <!-- HOW WE BUILT THIS (interactive runtime) -->
-    <section class="slide" id="built" data-title="How we built this">
-      <div class="slide__inner reveal">
-        <span class="kicker">How we built this</span>
-        <h2 style="max-width:22ch">ElevenLabs orchestrates every system.</h2>
-        <div class="proof-strip">
-          <figure class="proof"><img src="assets/proof-workflow.png" alt="The real ElevenLabs multi-agent workflow graph." /><figcaption><b>ElevenLabs workflow</b> - the live multi-agent agent, routing by call stage.</figcaption></figure>
-          <figure class="proof"><img src="assets/proof-tools.png" alt="The real ElevenLabs client tools." /><figcaption><b>The tools</b> - lookup, entitlement, and fulfil in Salesforce.</figcaption></figure>
-          <figure class="proof"><img src="assets/proof-databricks.png" alt="The real Databricks tables." /><figcaption><b>Databricks tables</b> - Velocity ⋈ Sabre &amp; Amadeus, queried live.</figcaption></figure>
-          <figure class="proof">
-            <div class="sf-shot">
-              <div class="sf-shot__bar">Salesforce · Service Cloud</div>
-              <div class="sf-shot__body">
-                <div class="sf-shot__num">Case 00001019</div>
-                <div class="sf-shot__subj">VA838 MEL→SYD — Rebooking (ElevenLabs voice)</div>
-                <div class="sf-shot__meta"><span>Status: New</span><span>Priority: High</span><span>Origin: Phone</span></div>
-              </div>
-            </div>
-            <figcaption><b>Salesforce case</b> - a real Service Cloud case, created live by Hannah.</figcaption>
-          </figure>
-        </div>
-        <div id="runtimeDiagram" class="diagram"></div>
-        <p class="fineprint muted">Real: the voice agent, the Databricks read (live SQL) and the Salesforce case (live OAuth). Synthetic: the member data and the ops trigger. A secure proxy holds every credential, so the voice agent never touches a secret. <span class="tag">Databricks read + Salesforce act are live; data is synthetic</span></p>
-      </div>
-      <span class="slide__index">10</span>
-    </section>
+    <!-- (How we built this removed - presenter jumps into the ElevenLabs platform live here) -->
 
     <!-- ARCHITECTURE - animated dual-flow -->
     <section class="slide" id="arch" data-title="Architecture">
@@ -458,8 +433,8 @@
             <button data-flow="inbound">Reactive inbound <small>the same pattern</small></button>
           </div>
           <div class="seg seg--arch arch2__mode" id="flowMode" role="group" aria-label="Playback mode">
-            <button data-mode="auto" aria-pressed="true">Auto</button>
-            <button data-mode="manual">Manual</button>
+            <button data-mode="auto">Auto</button>
+            <button data-mode="manual" aria-pressed="true">Manual</button>
           </div>
           <button class="btn btn--reset flow-nav" id="flowPrev" title="Previous step" aria-label="Previous step">‹</button>
           <button class="btn btn--reset flow-nav" id="flowNext" title="Next step">Next ›</button>
@@ -520,14 +495,20 @@
     <section class="slide" id="why" data-title="Why ElevenLabs">
       <div class="slide__inner reveal">
         <span class="kicker">Why us</span>
-        <h2 style="max-width:22ch">Voice is the one layer too important to hand to whatever your stack ships by default.</h2>
-        <div class="vs-grid">
-          <div class="vs"><h3>Hyperscalers</h3><p class="muted">Google, Amazon, Azure. Cheap to bundle and fine for an IVR, but the voice is generic and the experience is commoditised. Run Gemini, GPT, Claude or an open model like Qwen as the brain inside ElevenLabs and you keep the model choice while getting the better voice.</p></div>
-          <div class="vs"><h3>Salesforce / Agentforce Voice</h3><p class="muted">The natural incumbent here, with deep CRM actions and now MCP. We don't compete with that, we sit inside it: ElevenLabs runs the conversation and the latency, Salesforce runs the transaction. You get both.</p></div>
-          <div class="vs"><h3>CX specialists</h3><p class="muted">PolyAI, Cresta, Sierra, Decagon. Genuinely strong on containment and journey design, but most run as managed services at higher latency. We're faster (~75 ms), self-serve, model-agnostic, and the voice sounds materially better.</p></div>
-          <div class="vs vs--proof"><h3>What backs it up</h3><p class="muted">Top of independent text-to-speech (TTS) blind-test rankings. ~75 ms latency. A cloned, branded Virgin voice down the track. SOC 2 Type II, ISO 27001, HIPAA, GDPR, EU data residency, zero retention. Live today at Revolut, Klarna and Deutsche Telekom.</p></div>
+        <h2 style="max-width:20ch">Voice is the one layer too important to outsource.</h2>
+        <div class="why-grid">
+          <div class="why-tile"><span class="why-tile__ic" data-ic="mic"></span><h3>Best-in-class voice</h3><p>#1 in independent blind tests</p></div>
+          <div class="why-tile"><span class="why-tile__ic" data-ic="zap"></span><h3>~75 ms latency</h3><p>real-time, natural turn-taking</p></div>
+          <div class="why-tile"><span class="why-tile__ic" data-ic="swap"></span><h3>Model-agnostic</h3><p>Gemini · GPT · Claude · Qwen</p></div>
+          <div class="why-tile"><span class="why-tile__ic" data-ic="shield"></span><h3>Enterprise-secure</h3><p>SOC 2 · ISO 27001 · GDPR · zero retention</p></div>
+          <div class="why-tile"><span class="why-tile__ic" data-ic="box"></span><h3>Sits in your stack</h3><p>inside Salesforce &amp; Genesys, not a rip-and-replace</p></div>
+          <div class="why-tile"><span class="why-tile__ic" data-ic="users"></span><h3>Proven at scale</h3><p>Revolut · Klarna · Deutsche Telekom</p></div>
         </div>
-        <p class="fineprint muted"><b>For Tom:</b> model-agnostic, evaluable and secure, so the AI org keeps control of the brain. <b>For Sarah:</b> the voice your members come to associate with Virgin. Voice quality alone won't resolve an issue, that takes journey design, good knowledge and a graceful handoff to your people. But the voice itself is the part you don't outsource.</p>
+        <div class="lenses">
+          <span class="lens lens--cco">For Sarah - the voice your members come to associate with Virgin.</span>
+          <span class="lens lens--ai">For Tom - model-agnostic, evaluable and secure; the AI org keeps the brain.</span>
+        </div>
+        <p class="fineprint muted">Hyperscalers, Salesforce and the CX specialists each play a part - voice is the layer you own yourself.</p>
       </div>
       <span class="slide__index">12</span>
     </section>
