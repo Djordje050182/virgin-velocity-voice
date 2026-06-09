@@ -76,6 +76,39 @@
       <span class="slide__index">01</span>
     </section>
 
+    <!-- 03 - PROBLEM TODAY -->
+    <section class="slide" id="problem" data-title="The problem today">
+      <div class="slide__inner reveal">
+        <span class="kicker">The problem today</span>
+        <h2>Press 1 for frustration.</h2>
+        <p class="lead muted" style="margin-bottom:var(--sp-3)">This is what we're here to solve.</p>
+        <div class="badcall">
+          <!-- animated "video" screen, synced to the audio -->
+          <div class="ivr" id="ivrScreen">
+            <div class="ivr__bar"><span class="ivr__net">Virgin Australia</span><span class="ivr__time" id="ivrTimer">00:00</span></div>
+            <div class="ivr__stage" id="ivrStage"></div>
+          </div>
+          <div class="player" id="badcallPlayer" data-playlist="badcall">
+            <button class="player__btn" aria-label="Play the recording"><span class="ico-play"></span></button>
+            <div class="player__body">
+              <div class="player__title">A call to the contact centre, today</div>
+              <div class="player__bar"><span class="player__fill"></span></div>
+              <div class="player__steps">
+                <span data-step="0">IVR menu</span><span data-step="1">“45 minutes”</span><span data-step="2">Wrong system</span><span data-step="3">Frustrated guest</span>
+              </div>
+            </div>
+            <div class="player__time">0:00</div>
+          </div>
+        </div>
+        <p class="fineprint muted"><span class="tag">audio is ElevenLabs TTS; the screen is illustrative</span></p>
+        <aside class="snote">
+          <p><b>Play the call and let it breathe.</b> The IVR loop, the hold, the wrong transfer do the work - don't talk over it.</p>
+          <p>One line afterwards: this is the most emotional and most expensive moment in the business, and it's the channel no one has fixed yet. That hands you straight into the opportunity slide.</p>
+        </aside>
+      </div>
+      <span class="slide__index">03</span>
+    </section>
+
     <!-- 02 - AGENDA -->
     <section class="slide" id="agenda" data-title="Agenda">
       <div class="slide__inner reveal">
@@ -115,34 +148,6 @@
       <span class="slide__index">02</span>
     </section>
 
-    <!-- WHO WE ARE (credibility / money slide) -->
-    <section class="slide" id="who" data-title="Who we are">
-      <div class="slide__inner reveal">
-        <span class="kicker">Who we are</span>
-        <h2 style="max-width:24ch">The voice layer the world's leading products already run on.</h2>
-        <p class="lede muted" style="max-width:60ch">ElevenLabs is an AI research lab and product company building the most realistic voices in the world, and the full conversational-AI platform on top of them. Not a feature bolted onto something else. Voice is the whole company.</p>
-        <div class="stat-grid">
-          <div class="stat"><div class="figure">2022</div><div class="stat__l">Founded as an AI research lab</div><div class="stat__s">now a full conversational-AI platform</div></div>
-          <div class="stat"><div class="figure">$3.3B+</div><div class="stat__l">Backed by a16z, ICONIQ, Sequoia</div><div class="stat__s"><em>among the fastest-growing AI companies</em></div></div>
-          <div class="stat"><div class="figure">70+</div><div class="stat__l">Languages, one platform</div><div class="stat__s">a single agent that serves global members</div></div>
-          <div class="stat"><div class="figure">#1</div><div class="stat__l">In independent voice blind tests</div><div class="stat__s"><em>quality is the moat</em></div></div>
-        </div>
-        <div class="cap-row">
-          <div class="cap"><b>Conversational voice agents</b><span>the product behind Hannah</span></div>
-          <div class="cap"><b>Text-to-speech &amp; voice cloning</b><span>a branded Virgin voice</span></div>
-          <div class="cap"><b>Speech-to-text (Scribe)</b><span>transcription &amp; understanding</span></div>
-          <div class="cap"><b>Dubbing &amp; localisation</b><span>every market, every language</span></div>
-        </div>
-        <p class="fineprint muted">Trusted in production by Revolut, Klarna, Deutsche Telekom, Cisco and a long list of Fortune 500s. <span class="tag">headline figures to re-verify on the day</span></p>
-        <aside class="snote">
-          <p><b>This is the credibility beat - keep it to ~90 seconds.</b> The point isn't to brag, it's to earn the right to talk about Virgin's world with authority. We're not a startup hobby project; voice is the entire company and the world's best products already trust it.</p>
-          <p><b>For Tom:</b> research lab, model-agnostic, top of the blind tests - serious AI org. <b>For Sarah:</b> the voices real consumer brands choose. Bridge straight into "so here's what we heard about yours."</p>
-          <p>Figures (valuation, language count, blind-test ranking) are directional - confirm current numbers before the day so you can state them with confidence.</p>
-        </aside>
-      </div>
-      <span class="slide__index">03</span>
-    </section>
-
     <!-- 03 - DISCOVERY -->
     <section class="slide" id="discovery" data-title="What we heard">
       <div class="slide__inner reveal">
@@ -173,39 +178,6 @@
           <p><b>This is the qualification beat - listen more than you talk.</b> Goal: surface the deadline and timing, understand how the decision gets made, and pin the one number that defines success for them.</p>
           <p>The Aviation Consumer Protection Bill (2026) is almost certainly the forcing function - anchor the urgency to it. A confirmed date plus a volume fear gives you the event and the ROI hook in one.</p>
           <p>Internally, map answers to MEDPICC: Metrics, Economic buyer, Decision criteria, Decision process, Identify pain, Champion, Competition.</p>
-        </aside>
-      </div>
-      <span class="slide__index">03</span>
-    </section>
-
-    <!-- 03 - PROBLEM TODAY -->
-    <section class="slide" id="problem" data-title="The problem today">
-      <div class="slide__inner reveal">
-        <span class="kicker">The problem today</span>
-        <h2>Press 1 for frustration.</h2>
-        <p class="lead muted" style="margin-bottom:var(--sp-3)">This is what we're here to solve.</p>
-        <div class="badcall">
-          <!-- animated "video" screen, synced to the audio -->
-          <div class="ivr" id="ivrScreen">
-            <div class="ivr__bar"><span class="ivr__net">Virgin Australia</span><span class="ivr__time" id="ivrTimer">00:00</span></div>
-            <div class="ivr__stage" id="ivrStage"></div>
-          </div>
-          <div class="player" id="badcallPlayer" data-playlist="badcall">
-            <button class="player__btn" aria-label="Play the recording"><span class="ico-play"></span></button>
-            <div class="player__body">
-              <div class="player__title">A call to the contact centre, today</div>
-              <div class="player__bar"><span class="player__fill"></span></div>
-              <div class="player__steps">
-                <span data-step="0">IVR menu</span><span data-step="1">“45 minutes”</span><span data-step="2">Wrong system</span><span data-step="3">Frustrated guest</span>
-              </div>
-            </div>
-            <div class="player__time">0:00</div>
-          </div>
-        </div>
-        <p class="fineprint muted"><span class="tag">audio is ElevenLabs TTS; the screen is illustrative</span></p>
-        <aside class="snote">
-          <p><b>Play the call and let it breathe.</b> The IVR loop, the hold, the wrong transfer do the work - don't talk over it.</p>
-          <p>One line afterwards: this is the most emotional and most expensive moment in the business, and it's the channel no one has fixed yet. That hands you straight into the opportunity slide.</p>
         </aside>
       </div>
       <span class="slide__index">03</span>
