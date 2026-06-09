@@ -451,13 +451,18 @@
     <section class="slide" id="arch" data-title="Architecture">
       <div class="slide__inner reveal arch2">
         <span class="kicker">How it all comes together</span>
-        <h2 style="max-width:26ch">One voice layer, two ways in - the same Genesys → ElevenLabs → your systems pattern.</h2>
+        <h2 style="max-width:24ch">Proactive and reactive patterns.</h2>
         <div class="arch2__toolbar">
           <div class="seg seg--arch" id="flowToggle" role="group" aria-label="Call pattern">
             <button data-flow="outbound" aria-pressed="true">Proactive outbound <small>what we demoed</small></button>
             <button data-flow="inbound">Reactive inbound <small>the same pattern</small></button>
           </div>
-          <button class="btn btn--reset flow-play" id="flowPlay" title="Play or pause the animation">❚❚ Pause</button>
+          <div class="seg seg--arch arch2__mode" id="flowMode" role="group" aria-label="Playback mode">
+            <button data-mode="auto" aria-pressed="true">Auto</button>
+            <button data-mode="manual">Manual</button>
+          </div>
+          <button class="btn btn--reset flow-nav" id="flowPrev" title="Previous step" aria-label="Previous step">‹</button>
+          <button class="btn btn--reset flow-nav" id="flowNext" title="Next step">Next ›</button>
           <span class="live-badge ok" title="Proven live in today's demo"><span class="ld"></span>Databricks read &amp; Salesforce case proven live</span>
         </div>
         <div id="flowDiagram" class="diagram flowsvg"></div>

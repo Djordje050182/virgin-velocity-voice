@@ -798,7 +798,8 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
 .arch2__toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-2); }
 .arch2 .seg--arch button { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; padding: 0.45rem 0.95rem; }
 .arch2 .seg--arch button small { font-size: 0.6rem; opacity: 0.75; font-weight: 400; letter-spacing: 0.02em; }
-.flow-play { font-size: 0.78rem; padding: 0.5rem 0.9rem; }
+.arch2__mode button { flex-direction: row !important; }
+.flow-nav { font-size: 0.82rem; padding: 0.5rem 0.85rem; }
 .arch2 .live-badge { margin-left: auto; }
 
 .flow-svg .flnode rect { fill: var(--paper); stroke: var(--line); stroke-width: 1.5; transition: stroke .3s, filter .3s; }
@@ -807,6 +808,10 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
 .flow-svg .flnode--data rect { fill: color-mix(in srgb, #FF6A1A 9%, var(--paper)); }
 .flow-svg .flnode--act rect  { fill: color-mix(in srgb, #00A1E0 9%, var(--paper)); }
 .flow-svg .flnode--tool rect { fill: color-mix(in srgb, var(--ink) 4%, var(--paper)); }
+.flow-svg .flnode--hero rect { stroke: var(--vel-violet); stroke-width: 2;
+  filter: drop-shadow(0 8px 22px rgba(45, 5, 78, 0.22)); }
+.flow-svg .flnode--hero .nlabel { font-size: 16.5px; }
+.flow-svg .flnode--hero .nsub { font-size: 11.5px; }
 .flow-svg .flnode.act rect { stroke: var(--primary); stroke-width: 2.5;
   filter: drop-shadow(0 0 7px color-mix(in srgb, var(--primary) 55%, transparent)); }
 .flow-svg .fltag { font: 700 9px "Space Grotesk", sans-serif; fill: var(--ink-2); letter-spacing: .08em; }

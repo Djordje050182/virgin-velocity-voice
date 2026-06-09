@@ -343,12 +343,12 @@
     var fsvg = frame(FW, FH); fsvg.setAttribute("class", "flow-svg");
     var eg = el("g", {}), nodeg = el("g", {}); fsvg.appendChild(eg); fsvg.appendChild(nodeg);
     var N = {};
-    N.cust = fnode(nodeg, 24, 170, 140, 92, "Customer", ["mobile / phone"], "");
-    N.gen  = fnode(nodeg, 250, 92, 210, 246, "Genesys Cloud", ["Cloud telephony · CCaaS", "Architect call flow", "Audio Connector", "Dialer + AMD (outbound)"], "flnode--tool");
-    N.el   = fnode(nodeg, 540, 116, 240, 198, "ElevenLabs", ["Hannah · Conversational AI", "Bidirectional WSS audio", "Reason on a fast model", "Webhook / server tools"], "flnode--accent");
-    N.tool = fnode(nodeg, 852, 188, 150, 74, "Webhook tools", ["secure proxy", "holds credentials"], "flnode--tool");
-    N.dbx  = fnode(nodeg, 1046, 84, 150, 92, "Databricks", ["SQL Statement", "Execution API"], "flnode--data", "READ");
-    N.sf   = fnode(nodeg, 1046, 270, 150, 92, "Salesforce", ["Service Cloud", "Support Case"], "flnode--act", "ACT");
+    N.cust = fnode(nodeg, 24, 178, 124, 80, "Customer", ["mobile / phone"], "");
+    N.gen  = fnode(nodeg, 226, 150, 166, 136, "Genesys", ["Cloud telephony", "Architect flow", "Audio Connector", "Dialer + AMD"], "flnode--tool");
+    N.el   = fnode(nodeg, 458, 138, 286, 162, "ElevenLabs", ["Hannah · Conversational AI", "Bidirectional WSS audio", "Reason on a fast model", "Webhook / server tools", "The orchestration layer"], "flnode--accent flnode--hero");
+    N.tool = fnode(nodeg, 818, 184, 148, 72, "Webhook tools", ["secure proxy", "holds credentials"], "flnode--tool");
+    N.dbx  = fnode(nodeg, 1014, 92, 162, 94, "Databricks", ["SQL Statement", "Execution API"], "flnode--data", "READ");
+    N.sf   = fnode(nodeg, 1014, 272, 162, 94, "Salesforce", ["Service Cloud", "Support Case"], "flnode--act", "ACT");
 
     var E = {};
     function edge(id, a, b) { var p = cord(a.x, a.y, b.x, b.y, "edge-f"); p.id = id; eg.appendChild(p); E[id] = p; }
@@ -384,8 +384,7 @@
 
     var stepsHost = document.getElementById("flowSteps");
     var noteHost = document.getElementById("flowNote");
-    var playBtn = document.getElementById("flowPlay");
-    var fmode = "outbound", fidx = 0, ftimer = null, fplaying = true;
+    var fmode = "outbound", fcur = 0, ftimer = null, fplaying = true, SPEED = 1450;
 
     function fclear() {
       Object.keys(E).forEach(function (k) { E[k].classList.remove("flow"); });
@@ -394,12 +393,12 @@
     function firePacket(pathId, dir) {
       var path = document.getElementById(pathId); if (!path) return;
       var c = el("circle", { r: 5, class: "pkt" });
-      var am = el("animateMotion", { dur: "1.2s", begin: "indefinite", fill: "remove" });
+      var am = el("animateMotion", { dur: "0.8s", begin: "indefinite", fill: "remove" });
       if (dir === "rev") { am.setAttribute("keyPoints", "1;0"); am.setAttribute("keyTimes", "0;1"); am.setAttribute("calcMode", "linear"); }
       var mp = el("mpath", {}); mp.setAttribute("href", "#" + pathId); mp.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + pathId);
       am.appendChild(mp); c.appendChild(am); path.parentNode.appendChild(c);
       try { am.beginElement(); } catch (e) {}
-      setTimeout(function () { if (c.parentNode) c.parentNode.removeChild(c); }, 1350);
+      setTimeout(function () { if (c.parentNode) c.parentNode.removeChild(c); }, 950);
     }
     function frender() {
       if (!stepsHost) return;
@@ -412,29 +411,34 @@
       });
     }
     function fshow(i) {
-      var steps = FLOWS[fmode]; i = (i % steps.length + steps.length) % steps.length;
+      var steps = FLOWS[fmode]; fcur = (i % steps.length + steps.length) % steps.length;
       fclear();
-      var s = steps[i];
+      var s = steps[fcur];
       s.n.forEach(function (k) { if (N[k]) N[k].g.classList.add("act"); });
       s.e.forEach(function (pair) { var p = E[pair[0]]; if (p) p.classList.add("flow"); firePacket(pair[0], pair[1]); });
-      if (noteHost) noteHost.innerHTML = "<b>Step " + (i + 1) + " of " + steps.length + "</b> · " + s.c;
-      if (stepsHost) stepsHost.querySelectorAll(".flow-step").forEach(function (b, bi) { b.classList.toggle("on", bi === i); });
+      if (noteHost) noteHost.innerHTML = "<b>Step " + (fcur + 1) + " of " + steps.length + "</b> · " + s.c;
+      if (stepsHost) stepsHost.querySelectorAll(".flow-step").forEach(function (b, bi) { b.classList.toggle("on", bi === fcur); });
     }
-    function ftick() { fshow(fidx); fidx = (fidx + 1) % FLOWS[fmode].length; if (fplaying) ftimer = setTimeout(ftick, 2600); }
+    function setMode(m) { document.querySelectorAll("#flowMode button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === m)); }); }
     function fstop() { if (ftimer) { clearTimeout(ftimer); ftimer = null; } }
-    function fstart() { fstop(); fplaying = true; if (playBtn) playBtn.textContent = "❚❚ Pause"; ftick(); }
+    function ftick() { fshow(fcur + 1); if (fplaying) ftimer = setTimeout(ftick, SPEED); }
+    function fstart() { fstop(); fplaying = true; setMode("auto"); fshow(fcur); ftimer = setTimeout(ftick, SPEED); }
+    function fmanual() { fstop(); fplaying = false; setMode("manual"); }
 
     frender(); fstart();
     document.addEventListener("click", function (e) {
       var tb = e.target.closest("#flowToggle button");
       if (tb) {
-        fmode = tb.getAttribute("data-flow"); fidx = 0;
+        fmode = tb.getAttribute("data-flow"); fcur = 0;
         document.querySelectorAll("#flowToggle button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-flow") === fmode)); });
-        frender(); fstart(); return;
+        frender(); if (fplaying) fstart(); else fshow(0); return;
       }
+      var mb = e.target.closest("#flowMode button");
+      if (mb) { if (mb.getAttribute("data-mode") === "auto") fstart(); else fmanual(); return; }
+      if (e.target.closest("#flowNext")) { fmanual(); fshow(fcur + 1); return; }
+      if (e.target.closest("#flowPrev")) { fmanual(); fshow(fcur - 1); return; }
       var sb = e.target.closest(".flow-step");
-      if (sb) { fstop(); fplaying = false; if (playBtn) playBtn.textContent = "▶ Play"; fidx = +sb.getAttribute("data-i"); fshow(fidx); fidx = (fidx + 1) % FLOWS[fmode].length; return; }
-      if (e.target.closest("#flowPlay")) { if (fplaying) { fstop(); fplaying = false; playBtn.textContent = "▶ Play"; } else { fstart(); } return; }
+      if (sb) { fmanual(); fshow(+sb.getAttribute("data-i")); return; }
     });
   }
 })();
