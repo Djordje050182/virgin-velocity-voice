@@ -43,6 +43,26 @@
 .stat__s { font-size: var(--step--1); color: var(--ink-2); margin-top: 0.25rem; }
 .stat__s em { color: var(--primary); font-style: normal; }
 
+.lede { font-size: var(--step-1); line-height: 1.45; margin: 0.6rem 0 0.4rem; }
+
+/* persona slide */
+.persona { display: grid; grid-template-columns: minmax(200px, 280px) 1fr; gap: var(--sp-4); align-items: center; margin: var(--sp-3) 0; }
+.persona__orb { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; text-align: center; }
+.persona__name { font-family: "Fraunces", Georgia, serif; font-size: 1.2rem; font-weight: 600; }
+.persona__name span { color: var(--ink-2); font-style: italic; font-weight: 400; }
+.persona__tier { font-size: 0.8rem; color: var(--primary); font-weight: 600; letter-spacing: .02em; }
+.persona__list { list-style: none; padding: 0; margin: 0.6rem 0; display: grid; gap: 0.5rem; }
+.persona__list li { padding-left: 1.1rem; position: relative; line-height: 1.4; }
+.persona__list li::before { content: "›"; position: absolute; left: 0; color: var(--va-red); font-weight: 700; }
+@media (max-width: 760px) { .persona { grid-template-columns: 1fr; } }
+
+/* ---------- capability row (Who we are / credibility slide) ---------- */
+.cap-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); margin: var(--sp-2) 0 var(--sp-3); }
+.cap { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.7rem 0.85rem; background: var(--paper); }
+.cap b { display: block; font-size: 0.9rem; }
+.cap span { display: block; font-size: 0.74rem; color: var(--ink-2); margin-top: 0.2rem; line-height: 1.3; }
+@media (max-width: 760px) { .cap-row { grid-template-columns: 1fr 1fr; } }
+
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-top: var(--sp-3); }
 .two-col h3 { margin-bottom: 0.6rem; }
 
@@ -331,6 +351,233 @@ elevenlabs-convai { position: fixed; z-index: 2147483000; }
 .pipe-caption { font-size: 0.82rem; color: var(--ink); min-height: 1.3em; display: flex; align-items: center; gap: 0.5rem; }
 .pipe-caption b { color: var(--primary); }
 
+/* ============ Slide 8 — voice orb hero ============ */
+.demo-stage { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); margin-top: var(--sp-2); }
+.orb-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+
+.orb { position: relative; width: clamp(160px, 19vw, 210px); aspect-ratio: 1; border-radius: 50%;
+  cursor: pointer; border: none; padding: 0; background: transparent; }
+.orb__grad { position: absolute; inset: 0; border-radius: 50%;
+  background:
+    radial-gradient(58% 58% at 32% 28%, var(--vel-lilac), transparent 70%),
+    conic-gradient(from 200deg, var(--va-red), #ff8a6b, var(--vel-lilac), var(--vel-purple), var(--va-red));
+  box-shadow: 0 12px 44px rgba(45,5,78,.28); transition: transform .4s ease, filter .4s ease; }
+.orb__core { position: absolute; top: 50%; left: 50%; width: 34%; aspect-ratio: 1; transform: translate(-50%,-50%);
+  border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18); z-index: 2; }
+.orb__core svg { width: 44%; height: 44%; fill: var(--ink); }
+.orb:hover .orb__grad { transform: scale(1.03); }
+.orb.incall .orb__grad { animation: orbspin 9s linear infinite; }
+.orb.speaking .orb__grad { animation: orbspin 6s linear infinite, orbpulse 1.8s ease-in-out infinite; }
+.orb.speaking::after { content: ""; position: absolute; inset: -7%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(225,10,10,.20), transparent); animation: orbpulse 1.8s ease-in-out infinite; }
+@keyframes orbspin { to { transform: rotate(360deg); } }
+@keyframes orbpulse { 0%,100% { filter: saturate(1) brightness(1); } 50% { filter: saturate(1.3) brightness(1.09); } }
+@media (prefers-reduced-motion: reduce) { .orb.incall .orb__grad, .orb.speaking .orb__grad, .orb.speaking::after { animation: none; } }
+
+.orb-status { font-size: 0.92rem; color: var(--ink-2); min-height: 1.3em; text-align: center; max-width: 40ch; }
+.orb-status b { color: var(--primary); }
+
+/* photo orb (persona slide) - gradient ring framing a face */
+.orb--photo { cursor: default; }
+.orb--photo .orb__grad { animation: orbspin 22s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .orb--photo .orb__grad { animation: none; } }
+.orb__photo { position: absolute; inset: 7%; border-radius: 50%; object-fit: cover; width: 86%; height: 86%; z-index: 2;
+  box-shadow: 0 4px 18px rgba(0,0,0,.22); background: var(--vel-violet); }
+.orb__initial { position: absolute; inset: 7%; border-radius: 50%; z-index: 1; display: flex; align-items: center; justify-content: center;
+  font-family: "Fraunces", Georgia, serif; font-size: clamp(2.4rem, 5vw, 3.6rem); color: #fff;
+  background: radial-gradient(60% 60% at 35% 30%, var(--vel-lilac), var(--vel-violet)); }
+
+/* system spokes the voice fires off to */
+.spokes { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.spoke { display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.4rem 0.85rem; font-size: 0.72rem; background: var(--paper);
+  opacity: .5; transition: opacity .25s ease, transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.spoke b { font-weight: 600; } .spoke small { color: var(--ink-2); }
+.spoke__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none; transition: background .25s; }
+.spoke.on { opacity: 1; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+.spoke--data.on { border-color: #FF6A1A; } .spoke--data.on .spoke__dot { background: #FF6A1A; }
+.spoke--act.on  { border-color: #00A1E0; } .spoke--act.on  .spoke__dot { background: #00A1E0; }
+.spoke--wa.on   { border-color: #25D366; } .spoke--wa.on   .spoke__dot { background: #25D366; }
+.spoke--human.on{ border-color: var(--vel-purple); } .spoke--human.on .spoke__dot { background: var(--vel-purple); }
+
+/* supporting cards appear at the right beat */
+.reveal-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; align-items: start; }
+@media (max-width: 820px) { .reveal-row { grid-template-columns: 1fr; } }
+.member-card__src { font-size: 0.62rem; margin-top: 0.6rem; letter-spacing: .02em; }
+.member-card__src b { color: #2BD27A; }
+
+/* tier-coloured Velocity card */
+.member-card { color: #fff; }
+.member-card--Red      { background: linear-gradient(135deg, #7A0000, #E10A0A); color: #fff; }
+.member-card--Silver   { background: linear-gradient(135deg, #aeb6c2, #e7ebf1); color: #16191f; }
+.member-card--Gold     { background: linear-gradient(135deg, #b8862b, #f0c860); color: #211802; }
+.member-card--Platinum { background: linear-gradient(135deg, #2D054E, #512698); color: #fff; }
+.member-card--Silver .member-card__row, .member-card--Gold .member-card__row { border-top-color: rgba(0,0,0,.16); }
+
+/* Salesforce workflow card (mirrors entitlement, in SF blue) */
+.sf-card { margin-top: var(--sp-2); border: 1px solid #00A1E0; border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-3); background: var(--paper); }
+.sf-card .entitlement__k { color: #0a7bbf; }
+
+/* live-connection badge */
+.live-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;
+  border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.75rem; color: var(--ink-2); }
+.live-badge .ld { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none; }
+.live-badge.ok .ld  { background: #1AA34A; box-shadow: 0 0 0 3px rgba(26,163,74,.18); }
+.live-badge.bad .ld { background: #C0392B; }
+
+/* reset button */
+.btn--reset { background: transparent; border: 1px solid var(--line); color: var(--ink-2); }
+.btn--reset:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ============ nav: reorder, rail show/hide, presenter notes ============ */
+.nav-tools { display: inline-flex; align-items: center; gap: 0.1rem; opacity: 0; transition: opacity .15s; }
+.nav-list li:hover .nav-tools, .nav-list li:focus-within .nav-tools { opacity: 1; }
+.nav-mv { background: none; border: none; color: var(--ink-2); cursor: pointer; font-size: 0.58rem; line-height: 1; padding: 2px 3px; }
+.nav-mv:hover { color: var(--primary); }
+
+.rail-actions { display: flex; gap: 0.4rem; }
+.rail-actions button { flex: 1; border: 1px solid var(--line); background: transparent; color: var(--ink-2);
+  border-radius: var(--radius); padding: 0.45rem 0.4rem; font-size: 0.7rem; cursor: pointer; white-space: nowrap; }
+.rail-actions button:hover { border-color: var(--ink); color: var(--ink); }
+body.notes-on #notesBtn { border-color: var(--va-red); color: var(--va-red); }
+
+/* full-rail show/hide for presenting */
+body.rail-hidden .app { grid-template-columns: 0 1fr; }
+body.rail-hidden .rail { display: none; }
+.rail-show { position: fixed; top: 0.8rem; left: 0.8rem; z-index: 70; display: none;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px;
+  padding: 0.4rem 0.8rem; font-size: 0.74rem; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+body.rail-hidden .rail-show { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+/* presenter notes panel (toggle with the Notes button or the "N" key) */
+.notes-panel { position: fixed; right: 0; bottom: 0; width: min(460px, 94vw); max-height: 48vh; overflow: auto;
+  background: var(--ink); color: #fff; border-top-left-radius: 14px; box-shadow: 0 -8px 30px rgba(0,0,0,.3);
+  transform: translateY(110%); transition: transform .28s ease; z-index: 80; }
+body.notes-on .notes-panel { transform: translateY(0); }
+.notes-panel__h { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.7rem 1rem; font-size: 0.74rem; letter-spacing: .03em; position: sticky; top: 0; background: var(--ink);
+  border-bottom: 1px solid rgba(255,255,255,.15); }
+.notes-panel__h b { color: var(--va-red); text-transform: uppercase; letter-spacing: .12em; }
+.notes-panel__x { background: none; border: none; color: #fff; cursor: pointer; font-size: 0.85rem; opacity: .7; }
+.notes-panel__x:hover { opacity: 1; }
+.notes-panel__b { padding: 0.9rem 1rem; font-size: 0.92rem; line-height: 1.5; }
+.notes-panel__b p { margin: 0 0 0.6rem; } .notes-panel__b p:last-child { margin-bottom: 0; }
+.notes-panel__b .muted { color: rgba(255,255,255,.55); }
+.snote { display: none; }
+
+/* opportunity: "what voice AI handles" badges on the call-driver grid */
+.ai-yes, .ai-part { display: inline-block; margin-left: .4rem; font-size: 0.56rem; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 999px; vertical-align: middle; }
+.ai-yes { background: rgba(26,163,74,.14); color: #1AA34A; }
+.ai-part { background: rgba(0,0,0,.06); color: var(--ink-2); }
+
+/* clean bulleted list for "What we heard" (slide 3) */
+.wh-list { list-style: none; margin: 0; padding: 0; }
+.wh-list li { position: relative; padding-left: 1.1rem; margin-bottom: 0.7rem; line-height: 1.5; font-size: 0.95rem; }
+.wh-list li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: var(--va-red); }
+
+/* opportunity: benefits cards (slide 5) */
+.benefits { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2) var(--sp-3); margin-top: var(--sp-3); }
+.benefit { border-left: 2px solid var(--va-red); padding-left: 0.9rem; }
+.benefit b { display: block; margin-bottom: 0.2rem; font-size: 1rem; }
+.benefit p { margin: 0; font-size: 0.9rem; }
+@media (max-width: 820px) { .benefits { grid-template-columns: 1fr; } }
+
+/* agenda styled like the Virgin Australia booking search bar */
+.va-search { margin-top: var(--sp-3); max-width: 940px; }
+.va-search__tabs { display: flex; gap: 0.4rem; padding-left: 0.6rem; }
+.va-tab { border: none; background: var(--va-red); color: #fff; opacity: .8; font-weight: 600; font-size: 0.9rem;
+  padding: 0.6rem 1.1rem; border-radius: 12px 12px 0 0; cursor: default; text-align: left; }
+.va-tab small { display: block; font-weight: 400; opacity: .85; font-size: 0.64rem; }
+.va-tab.is-active { background: #fff; color: var(--va-red); opacity: 1; }
+.va-search__panel { background: linear-gradient(135deg, #E10A0A, #b00505); border-radius: 0 16px 16px 16px;
+  padding: var(--sp-3); color: #fff; box-shadow: 0 14px 40px rgba(225,10,10,.28); }
+.va-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: var(--sp-3); }
+.va-pill { border: 1.5px solid rgba(255,255,255,.55); border-radius: 999px; padding: 0.4rem 0.9rem; font-size: 0.8rem; font-weight: 500; }
+.va-pill.is-active { background: #fff; color: var(--va-red); border-color: #fff; }
+.va-toggle { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; margin-left: auto; }
+.va-toggle__sw { width: 38px; height: 20px; border-radius: 999px; background: rgba(255,255,255,.35); position: relative; flex: none; }
+.va-toggle__sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .2s; }
+.va-toggle.on .va-toggle__sw { background: rgba(255,255,255,.9); }
+.va-toggle.on .va-toggle__sw::after { left: 20px; background: var(--va-red); }
+.va-route { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--sp-3); }
+.va-route__l { display: block; font-size: 0.72rem; opacity: .85; font-weight: 500; }
+.va-route__v { display: block; font-family: var(--font-display); font-size: clamp(1.4rem, 1rem + 2vw, 2.4rem); line-height: 1.05; border-bottom: 2px solid rgba(255,255,255,.5); padding-bottom: 0.3rem; }
+.va-route__plane { font-size: 1.6rem; }
+@media (max-width: 700px) { .va-route { grid-template-columns: 1fr; } .va-route__plane { transform: rotate(90deg); } }
+
+/* thank-you slide: readability scrim over the aspirational image */
+#thanks .cold__media::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(20,5,40,.72), rgba(20,5,40,.3) 55%, rgba(20,5,40,.12)); }
+
+/* slide 7: Meet Hannah - orb + trust points side by side */
+.meet-stage { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-4); align-items: center; margin: var(--sp-3) 0; }
+@media (max-width: 760px) { .meet-stage { grid-template-columns: 1fr; justify-items: center; } }
+
+/* slide 9: tighter 3-column reveal row so it fits one screen, compact phone */
+.reveal-row--3 { grid-template-columns: 1fr 1fr minmax(190px, 230px); align-items: start; }
+@media (max-width: 820px) { .reveal-row--3 { grid-template-columns: 1fr; } }
+.demo .phone { width: 100%; max-width: 230px; }
+.demo .phone__thread { min-height: 140px; max-height: 220px; }
+#endCallBtn, #endMeetBtn { margin-top: 0.3rem; }
+
+/* slide 9: 3-column live demo (cards | orb | WhatsApp) so it fits one screen */
+.demo-stage--live { display: grid; grid-template-columns: minmax(210px, 1fr) auto minmax(200px, 280px); gap: var(--sp-3); align-items: start; margin-top: var(--sp-2); }
+.ds-side { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.ds-side--right { align-items: center; }
+.demo-stage--live .orb { width: clamp(118px, 12vw, 158px); }
+.demo-stage--live .orb-status { font-size: 0.82rem; }
+.demo-stage--live .member-card__name { font-size: var(--step-0); margin: 0.4rem 0 0.55rem; }
+.demo-stage--live .entitlement__v { font-size: var(--step-0); }
+.demo-stage--live .member-card__row { flex-direction: column; align-items: flex-start; gap: 0.1rem; padding: 0.4rem 0; }
+.demo-stage--live .member-card__row span { font-size: 0.6rem; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.demo-stage--live .member-card__row b { font-size: 0.92rem; }
+.demo-stage--live .phone { max-width: 230px; }
+.demo-stage--live .phone__thread { min-height: 110px; max-height: 190px; }
+@media (max-width: 900px) { .demo-stage--live { grid-template-columns: 1fr; } .ds-side--right { align-items: stretch; } }
+
+/* compact the live-demo slide so the lounge pass + Salesforce case stay on-screen */
+#demo .slide__inner h2 { font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2.3rem); max-width: 26ch; margin-bottom: 0.4rem; }
+#demo .stage-row { margin: 0.5rem 0; }
+#demo .stage-row .stage { padding: 0.45rem 0.7rem; }
+#demo .demo-stage--live { gap: var(--sp-2); margin-top: 0.4rem; }
+#demo .demo-stage--live .orb { width: clamp(108px, 10vw, 140px); }
+#demo .entitlement, #demo .sf-card { padding: 0.6rem 0.8rem; margin-top: 0.6rem; }
+.demo-step--slim { padding: 0.45rem 0.85rem; font-size: 0.85rem; margin: 0.5rem 0; max-width: none; }
+.demo-step--slim .demo-step__n { width: 20px; height: 20px; font-size: 0.72rem; }
+.demo-step__dot { color: var(--va-red); font-weight: 700; font-size: 1rem; line-height: 1; }
+
+/* "this is the real thing" proof strip (built slide) - auto-fit so 3 or 4 both work */
+.proof-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: var(--sp-3); margin: var(--sp-2) 0 var(--sp-3); }
+/* keep the orchestration diagram from pushing the screengrabs off-screen */
+#built .diagram svg { max-height: 40vh; width: auto; max-width: 100%; display: block; margin: 0 auto; }
+/* styled Salesforce case "screenshot" built from real API data */
+.sf-shot { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+.sf-shot__bar { background: #00A1E0; color: #fff; font-size: 0.64rem; font-weight: 600; letter-spacing: .03em; padding: 0.45rem 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+.sf-shot__bar::before { content: ""; width: 14px; height: 9px; border-radius: 9px; background: #fff; box-shadow: 5px 0 0 -2px #fff, -5px 0 0 -2px #fff; opacity: .95; }
+.sf-shot__body { padding: 0.65rem 0.75rem; color: #16191f; }
+.sf-shot__num { font-size: 0.8rem; font-weight: 700; }
+.sf-shot__subj { font-size: 0.68rem; color: #444; margin: 0.2rem 0 0.55rem; line-height: 1.3; }
+.sf-shot__meta { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.sf-shot__meta span { font-size: 0.58rem; background: #eef4f7; color: #0a6e96; border-radius: 4px; padding: 0.14rem 0.45rem; font-weight: 500; }
+.proof { margin: 0; }
+.proof img { width: 100%; border: 1px solid var(--line); border-radius: 8px; display: block; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+.proof figcaption { font-size: 0.72rem; color: var(--ink-2); margin-top: 0.45rem; line-height: 1.3; }
+.proof figcaption b { color: var(--ink); }
+@media (max-width: 760px) { .proof-strip { grid-template-columns: 1fr; } }
+
+/* fixed Virgin brand mark, top-right of every slide (drop assets/va-logo.png in to show the logo) */
+.brandmark-fixed { position: fixed; top: 0.9rem; right: 1.3rem; z-index: 45; display: flex; flex-direction: column;
+  align-items: flex-end; gap: 0.15rem; pointer-events: none; }
+.brandmark-fixed img { height: 30px; width: auto; display: block; }
+.brandmark-fixed__tag { font-family: var(--font-display); font-style: italic; font-size: 0.82rem; color: var(--vel-violet); }
+body.rail-hidden .brandmark-fixed { right: 1.3rem; }
+@media (max-width: 760px) { .brandmark-fixed { display: none; } }
+/* the corner now holds the brand mark, so hide the decorative per-slide numbers (the rail still numbers) */
+.slide__index { display: none; }
+
 /* ---------- bad-call: IVR "video" (slide 03) ---------- */
 .badcall { display: grid; grid-template-columns: 280px 1fr; gap: var(--sp-3); align-items: start; max-width: 880px; margin-bottom: var(--sp-3); }
 .ivr { border: 8px solid #15131a; border-radius: 26px; background: #0b0a0d; color: #eee; overflow: hidden; aspect-ratio: 9/16; max-height: 360px; box-shadow: 0 20px 50px rgba(0,0,0,.22); }
@@ -357,7 +604,7 @@ elevenlabs-convai { position: fixed; z-index: 2147483000; }
 .reasons__list li { background: var(--paper); padding: 0.7rem 0.8rem; display: flex; flex-direction: column; }
 .reasons__list b { font-weight: 500; }
 .reasons__list span { font-size: 0.72rem; color: var(--ink-2); }
-.reasons__list li:first-child { background: color-mix(in srgb, var(--primary) 8%, var(--paper)); }
+/* (all driver cells share the same background - no single highlighted box) */
 
 /* ---------- meet Hannah (slide 06) ---------- */
 .meet { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-top: var(--sp-3); align-items: start; }
@@ -403,10 +650,10 @@ elevenlabs-convai { position: fixed; z-index: 2147483000; }
 .lob li::before { content: "→"; position: absolute; left: 0; color: var(--primary); }
 
 /* QR lounge pass in phone */
-.qrcard { display: flex; gap: 0.6rem; align-items: center; }
-.qr { width: 76px; height: 76px; background: #fff; padding: 4px; border-radius: 6px; flex: none; }
-.qrcard b { display: block; font-size: 0.8rem; }
-.qrcard span { font-size: 0.68rem; color: #555; }
+.qrcard { display: flex; gap: 0.7rem; align-items: center; }
+.qr { width: 60px; height: 60px; background: #fff; padding: 4px; border-radius: 6px; flex: none; }
+.qrcard b { display: block; font-size: 0.78rem; line-height: 1.2; }
+.qrcard span { display: block; font-size: 0.66rem; color: #555; margin-top: 0.15rem; }
 
 /* ============================================================
    MOBILE — the rail collapses to a slide-over; everything stacks

@@ -168,13 +168,13 @@ HERO = [("VA8380001", "Red", 2140, 180, "2019-07-04", 26, "Economy", "Y", "Seat 
         ("VA8380004", "Platinum", 318900, 1480, "2009-05-12", 420, "Business", "J", "Lounge pass, Priority boarding")]
 for i, (mid, tier, pts, sc, since, lf, cabin, fclass, ancs) in enumerate(HERO, 1):
     members.append({
-        "member_id": mid, "first_name": "George", "last_name": "Sinclair", "tier": tier,
-        "points_balance": pts, "status_credits": sc, "email": "george.sinclair@example.com",
+        "member_id": mid, "first_name": "Djordje", "last_name": "Gvozdenovic", "tier": tier,
+        "points_balance": pts, "status_credits": sc, "email": "djordje.gvozdenovic@example.com",
         "phone": f"+6140083800{i}", "home_airport": "MEL", "member_since": since, "lifetime_flights": lf,
     })
     bookings.append({
         "pnr": "VA838" + tier[0], "order_id": f"ORD-838{tier[0]}0001", "ticket_number": f"795-838000000{i}",
-        "member_id": mid, "passenger": "George Sinclair", "flight_number": "VA838", "origin": "MEL",
+        "member_id": mid, "passenger": "Djordje Gvozdenovic", "flight_number": "VA838", "origin": "MEL",
         "destination": "SYD", "departure_utc": "2026-06-15T09:45:00Z", "arrival_utc": "2026-06-15T11:10:00Z",
         "cabin": cabin, "fare_class": fclass, "pnr_status": "HK", "ancillaries": ancs,
         "channel": "virginaustralia.com", "pss_source": "SabreSonic",

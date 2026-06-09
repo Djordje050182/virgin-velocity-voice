@@ -1,26 +1,27 @@
-/* demo.js — the live-demo slide orchestration.
-   The VOICE AGENT IS REAL (ElevenLabs widget). The ops event, member data and the
-   WhatsApp thread are SIMULATED for the demo and driven deterministically by the UI,
-   so the visual story never depends on the model. State is in JS memory only. */
+/* demo.js - slide 8 live demo, rebuilt around the Virgin voice orb.
+   The voice agent is REAL: we drive it with the @elevenlabs/client SDK
+   (Conversation.startSession), so the orb is the call control and onModeChange
+   shimmers it while Hannah speaks. The orb fires off to live systems - Databricks
+   (read) and Salesforce/Agentforce (the workflow) - which light up as spokes.
+   Member data + the WhatsApp thread are synthetic; the connections are real. */
 (function () {
   "use strict";
-  var AGENT_ID = "agent_6701kt8w3svzen8ajsxjnk852mrj"; // live "Guest Care" agent (public)
-  var WIDGET_SRC = "https://unpkg.com/@elevenlabs/convai-widget-embed";
-  // Local proxy → Databricks (run integrations/databricks/proxy.py during the demo).
-  // Each tier maps to a real "George Sinclair" hero record in the lakehouse.
-  var PROXY = "http://localhost:8799";
+  var AGENT_ID = "agent_6701kt8w3svzen8ajsxjnk852mrj"; // live "Guest Care" agent (public) - the disruption demo
+  var MEET_AGENT_ID = "agent_0501ktn3jtvver39s7vxwj7wjpxd"; // dedicated "Meet Hannah" intro agent (public, no tools)
+  var SDK_URL = "https://esm.sh/@elevenlabs/client";     // ESM CDN - no build step
+  var PROXY = "http://localhost:8799";                   // local proxy → Databricks + Salesforce
   var MEMBER_IDS = { Red: "VA8380001", Silver: "VA8380002", Gold: "VA8380003", Platinum: "VA8380004" };
 
   var state = { tier: "Gold", stage: "delay", opsStep: 0, mode: "live" };
 
-  var GUEST = { name: "George Sinclair", flight: "VA838", route: "MEL→SYD" };
+  var GUEST = { name: "Djordje Gvozdenovic", first: "Djordje", flight: "VA838", route: "MEL→SYD" };
   var TIERS = {
-    Red:      { pts: "2,140",  label: "RED" },
-    Silver:   { pts: "24,800", label: "SILVER" },
-    Gold:     { pts: "82,450", label: "GOLD" },
-    Platinum: { pts: "318,900",label: "PLATINUM" }
+    Red:      { pts: "2,140",   label: "RED" },
+    Silver:   { pts: "24,800",  label: "SILVER" },
+    Gold:     { pts: "82,450",  label: "GOLD" },
+    Platinum: { pts: "318,900", label: "PLATINUM" }
   };
-  // Deterministic entitlement rules — mirror of KB doc 01. NEVER LLM-improvised.
+  // Deterministic entitlement rules - never LLM-improvised.
   function entitlement(tier, stage) {
     var cancel = (stage === "cancellation" || stage === "confirmation");
     if (tier === "Platinum") return cancel
@@ -36,74 +37,51 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
-  /* ---------- live system-activity pipeline ---------- */
-  var pipeToken = 0;
-  function pipeSet(nodes) {
-    document.querySelectorAll(".pipe").forEach(function (p) {
-      p.classList.toggle("on", nodes.indexOf(p.getAttribute("data-node")) > -1);
+  /* ---------- spokes + caption ---------- */
+  function cap(html) { var c = $("pipeCaption"); if (c) c.innerHTML = html; }
+  function spokeSet(names) {
+    document.querySelectorAll(".spoke").forEach(function (s) {
+      s.classList.toggle("on", names.indexOf(s.getAttribute("data-spoke")) > -1);
     });
   }
-  function pipeCap(html) { var c = $("pipeCaption"); if (c) c.innerHTML = html; }
-  function pipeFlash(node, html) { // light one node briefly (used by real tool calls)
-    var el = document.querySelector('.pipe[data-node="' + node + '"]'); if (!el) return;
-    el.classList.add("on"); if (html) pipeCap(html);
-    setTimeout(function () { el.classList.remove("on"); }, 1600);
+  var spokeTimers = {};
+  function spokeFlash(name, html, hold) {
+    var el = document.querySelector('.spoke[data-spoke="' + name + '"]');
+    if (el) {
+      el.classList.add("on");
+      clearTimeout(spokeTimers[name]);
+      spokeTimers[name] = setTimeout(function () { el.classList.remove("on"); }, hold || 2500);
+    }
+    if (html) cap(html);
   }
-  function pipePlay(steps) {
-    var my = ++pipeToken, i = 0;
-    (function step() {
-      if (my !== pipeToken || i >= steps.length) return;
-      var s = steps[i++]; pipeSet(s.nodes); pipeCap(s.cap);
-      setTimeout(step, s.ms);
-    })();
-  }
-  var SEQ = {
-    delay: [
-      { nodes: ["caller", "genesys"], cap: "Proactive call placed through <b>Genesys</b> telephony", ms: 1000 },
-      { nodes: ["stt"], cap: "Listening — speech-to-text", ms: 700 },
-      { nodes: ["brain"], cap: "Reasoning on a fast model", ms: 800 },
-      { nodes: ["databricks"], cap: "<b>Databricks</b>: fetching George's booking (← Sabre) and Velocity tier", ms: 1300 },
-      { nodes: ["brain"], cap: "Deciding the next best action", ms: 700 },
-      { nodes: ["tts"], cap: "Hannah speaks — text-to-speech", ms: 700 },
-      { nodes: ["out"], cap: "Guest hears the update, and a lounge pass is sent", ms: 1200 }
-    ],
-    cancellation: [
-      { nodes: ["caller", "genesys"], cap: "Call connected via <b>Genesys</b>", ms: 900 },
-      { nodes: ["stt", "brain"], cap: "Understanding the guest", ms: 800 },
-      { nodes: ["databricks"], cap: "<b>Databricks</b>: pulling rebooking options (← Sabre)", ms: 1200 },
-      { nodes: ["agentforce"], cap: "<b>Agentforce</b>: raising the case + rebooking in Service Cloud", ms: 1500 },
-      { nodes: ["brain"], cap: "Confirming what was done", ms: 700 },
-      { nodes: ["tts", "out"], cap: "Hannah explains the options, offers WhatsApp", ms: 1200 }
-    ],
-    confirmation: [
-      { nodes: ["caller", "genesys"], cap: "Call-back via <b>Genesys</b>", ms: 900 },
-      { nodes: ["databricks"], cap: "<b>Databricks</b>: re-checking the booking", ms: 1000 },
-      { nodes: ["agentforce"], cap: "<b>Agentforce</b>: confirming booking + applying the loyalty gesture", ms: 1500 },
-      { nodes: ["tts", "out"], cap: "Hannah confirms and thanks George", ms: 1200 }
-    ]
-  };
-  function pipeline(stage) { pipePlay(SEQ[stage] || SEQ.delay); }
 
-  /* ---------- "do this now" step cue (keeps the presenter + room oriented) ---------- */
+  /* ---------- orb visual state ---------- */
+  function orbState(cls) {
+    var o = $("orb"); if (!o) return;
+    o.classList.remove("incall", "speaking");
+    if (cls) o.classList.add(cls);
+  }
+  function status(html) { var s = $("orbStatus"); if (s) s.innerHTML = html; }
+
+  /* ---------- "do this now" cue ---------- */
   var STEP = {
-    delay:        [2, "Click <b>“Start a call”</b> below — Hannah calls George about the delay. Talk to her as the guest."],
-    cancellation: [3, "Click <b>“Start a call”</b> — Hannah handles the cancellation. When the <b>WhatsApp</b> options appear, pick one."],
-    confirmation: [4, "Click <b>“Start a call”</b> — Hannah confirms the rebooking and adds the loyalty gesture."]
+    delay:        [2, "Tap the orb - Hannah calls about the delay. She looks Djordje up (Databricks) and texts a <b>lounge pass</b> on WhatsApp."],
+    cancellation: [3, "Tap the orb - Hannah handles the cancellation, then sends <b>rebooking options</b> on WhatsApp. Pick one."],
+    confirmation: [4, "Tap the orb - Hannah confirms the rebooking and logs a <b>real Salesforce case</b>."]
   };
   function setStep(stage) {
     var s = STEP[stage]; if (!s) return;
-    var box = $("demoStep"); if (!box) return;
-    box.querySelector(".demo-step__n").textContent = s[0];
-    $("demoStepText").innerHTML = s[1];
+    var t = $("demoStepText"); if (t) t.innerHTML = s[1];
   }
 
-  /* ---------- UI cards (deterministic, always reliable) ---------- */
+  /* ---------- cards ---------- */
   function paintMember() {
     var t = TIERS[state.tier];
     $("memberTier").textContent = t.label;
     $("memberName").textContent = GUEST.name;
     $("memberPts").textContent = t.pts;
     $("memberBkg").textContent = GUEST.flight + " · " + GUEST.route + " · tonight";
+    var card = $("memberCard"); if (card) card.className = "member-card member-card--" + state.tier;
     $("callMeta").textContent = "Velocity " + state.tier + " · " + GUEST.flight + " " + GUEST.route;
   }
   function paintEntitlement(show) {
@@ -111,125 +89,165 @@
     $("entVal").textContent = e.v; $("entDetail").textContent = e.d;
     $("entitlement").hidden = !show;
   }
-
-  /* ---------- live widget ---------- */
-  var scriptLoaded = false;
-  function ensureScript() {
-    if (scriptLoaded) return;
-    var s = document.createElement("script"); s.src = WIDGET_SRC; s.async = true; s.type = "text/javascript";
-    document.body.appendChild(s); scriptLoaded = true;
+  function showSf(ref) {
+    var c = $("sfCard"); if (!c) return;
+    c.hidden = false;
+    $("sfVal").textContent = "Case " + ref + " · created";
   }
+
+  /* ---------- live connection badge ---------- */
+  function checkLive() {
+    var b = $("liveBadge"), t = $("liveBadgeText"); if (!b) return;
+    fetch(PROXY + "/health", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (h) {
+        if (!h || !h.ok) throw 0;
+        b.className = "live-badge ok";
+        t.textContent = "Databricks ✓  Salesforce ✓  live";
+      })
+      .catch(function () { b.className = "live-badge bad"; t.textContent = "proxy offline - cached data"; });
+  }
+
+  /* ---------- client tools (called BY the real voice agent) ---------- */
+  function clientTools() {
+    return {
+      lookup_velocity_member: function () {
+        paintMember();
+        spokeFlash("databricks", "<b>Databricks</b>: querying Velocity ⋈ Sabre (live)…", 4000);
+        var t = TIERS[state.tier];
+        var fallback = { name: GUEST.name, tier: state.tier, points: t.pts,
+                         recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
+        return fetch(PROXY + "/member?id=" + MEMBER_IDS[state.tier], { cache: "no-store" })
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+          .then(function (rec) {
+            if (!rec || rec.error) throw 0;
+            var src = $("memberSrc"); if (src) src.hidden = false;
+            spokeFlash("databricks", "<b>Databricks</b> returned " + rec.name + " · " + rec.tier + " · " + rec.points + " pts · " + rec.flight_number + " (live)", 4500);
+            return { name: rec.name, tier: rec.tier, points: rec.points,
+                     recent_booking: (rec.recent_booking || (GUEST.flight + " " + GUEST.route)) + " tonight",
+                     source: "Databricks live (Velocity ⋈ Sabre)" };
+          })
+          .catch(function () { spokeFlash("databricks", "<b>Databricks</b>: returning Djordje's record (cached)", 3000); return fallback; });
+      },
+      check_entitlement: function (p) {
+        var e = entitlement((p && p.tier) || state.tier, (p && p.disruption_type) || state.stage);
+        paintEntitlement(true);
+        return { gesture: e.v, detail: e.d };
+      },
+      fulfil_in_agentforce: function (p) {
+        var action = (p && p.action) || "rebook";
+        spokeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: running the workflow (live)…", 5000);
+        var fallback = { status: "done", action: action, reference: "SC-" + state.tier[0] + "48210",
+                         message: action + " completed in Service Cloud" };
+        var qs = "action=" + encodeURIComponent(action) + "&member=" + encodeURIComponent(GUEST.name) +
+                 "&tier=" + encodeURIComponent(state.tier) + "&flight=" + encodeURIComponent(GUEST.flight) +
+                 "&route=" + encodeURIComponent("MEL→SYD");
+        return fetch(PROXY + "/fulfil?" + qs, { cache: "no-store" })
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+          .then(function (res) {
+            if (!res || res.error) throw 0;
+            showSf(res.reference);
+            spokeFlash("agentforce", "<b>Agentforce</b>: case " + res.reference + " created in Service Cloud (live) ✓", 5000);
+            return res;
+          })
+          .catch(function () { showSf(fallback.reference); spokeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned (cached) ✓", 4000); return fallback; });
+      }
+    };
+  }
+
+  /* ---------- the call: @elevenlabs/client SDK ---------- */
+  var convo = null, sdkP = null, connecting = false;   // connecting guard prevents double sessions (the "multiple voices" bug)
+  // Hannah's live self-introduction (slide 7), scripted for reliability, ends on a question to the room.
+  var INTRO = "Hi, I'm Hannah - a voice for Virgin Australia Guest Care, built on ElevenLabs. " +
+    "On a normal day, I call guests the moment their flight is disrupted: I check I'm speaking with the right person, " +
+    "look up their Velocity tier and booking, sort a rebooking or a refund, and make sure they feel properly looked after - " +
+    "all in a natural conversation, not a phone menu. In just a moment, Djordje is going to play a guest whose flight gets delayed, " +
+    "then cancelled, and you'll watch me handle it live. But first - Sarah, Tom - I'm curious: have either of you ever been " +
+    "left on hold with an airline when a flight went wrong?";
+  // Intro-mode system prompt override: keeps Hannah's warm AU persona but stops her launching the
+  // disruption call - she says hello, takes their answer, and wraps up with "enjoy the demo".
+  var INTRO_PROMPT =
+    "You are Hannah, Virgin Australia Guest Care's warm, friendly voice assistant. Speak with a warm Australian " +
+    "accent and keep it the whole way through - never slip into an American or neutral accent. You are giving a short, " +
+    "friendly hello to two people in the room, Sarah and Tom, just before a live product demo. You have already given " +
+    "your introduction and asked whether they've ever been left on hold with an airline when a flight went wrong. " +
+    "After they answer, warmly acknowledge what they said in one short sentence, then wrap up and hand over to the demo " +
+    "- say something like \"Anyway, I'll let you get to it - enjoy the demo.\" Keep everything short, warm and natural. " +
+    "Do NOT start a disruption or delay call. Do NOT ask for a date of birth, booking reference or any verification. " +
+    "Do NOT look anything up or use any tools. This is only a friendly hello before the demo. If they ask you something, " +
+    "answer briefly and kindly, then wrap up with \"enjoy the demo\".";
+  function sdk() { return sdkP || (sdkP = import(SDK_URL)); }
+  function endBtns(on) { var a = $("endCallBtn"), b = $("endMeetBtn"); if (a) a.hidden = !on; if (b) b.hidden = !on; }
+  function meetOrb(cls) { var o = $("orbMeet"); if (!o) return; o.classList.remove("incall", "speaking"); if (cls) o.classList.add(cls); }
+  function meetStatus(t) { var s = $("orbMeetStatus"); if (s) s.innerHTML = t; }
   function firstMessageFor(stage) {
-    if (stage === "cancellation") return "Hi " + GUEST.name + ", it's Hannah from Virgin Australia Guest Care again — I'm so sorry, I'm afraid I've got an update on your flight tonight.";
-    if (stage === "confirmation") return "Hi " + GUEST.name + ", it's Hannah from Virgin Australia — good news, I've got your rebooking sorted.";
-    return "Hi " + GUEST.name + ", it's Hannah calling from Virgin Australia Guest Care — do you have a quick moment? It's about your flight tonight.";
+    if (stage === "cancellation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia Guest Care again - I'm so sorry, I've got an update on your flight tonight.";
+    if (stage === "confirmation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia - good news, I've got your rebooking sorted.";
+    return "Hi " + GUEST.first + ", it's Hannah calling from Virgin Australia Guest Care - do you have a quick moment? It's about your flight tonight.";
   }
-  function mountWidget() {
-    var host = $("widgetMount"); if (!host) return;
-    host.innerHTML = "";
-    // Remove any prior instance. The widget renders a FIXED bottom-right launcher; if it lives
-    // inside a slide whose ancestor has a transform (.reveal), that transform becomes its
-    // containing block and it shifts/clips per slide. Mounting on <body> keeps it viewport-fixed
-    // and consistently on top.
-    document.querySelectorAll("elevenlabs-convai").forEach(function (e) { e.remove(); });
-    var w = document.createElement("elevenlabs-convai");
-    w.setAttribute("agent-id", AGENT_ID);
-    w.setAttribute("dynamic-variables", JSON.stringify({
-      guest_name: GUEST.name.split(" ")[0], velocity_tier: state.tier,
-      flight_number: GUEST.flight, route: "Melbourne to Sydney",
-      new_departure: "7:45 PM", call_stage: state.stage
-    }));
-    w.setAttribute("override-first-message", firstMessageFor(state.stage));
-    // Best-effort client tools + overrides via the widget's call-config event.
-    w.addEventListener("elevenlabs-convai:call", function (ev) {
-      try {
-        var cfg = ev.detail.config;
-        cfg.clientTools = Object.assign(cfg.clientTools || {}, {
-          lookup_velocity_member: function () {
-            paintMember();
-            pipeFlash("databricks", "<b>Databricks</b>: querying Velocity ⋈ Sabre (live)…");
-            var t = TIERS[state.tier];
-            // Hardcoded fallback so the call never breaks if the proxy/warehouse is unavailable.
-            var fallback = { name: GUEST.name, tier: state.tier, points: t.pts,
-                             recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
-            return fetch(PROXY + "/member?id=" + MEMBER_IDS[state.tier], { cache: "no-store" })
-              .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-              .then(function (rec) {
-                if (!rec || rec.error) throw 0;
-                pipeFlash("databricks", "<b>Databricks</b>: " + rec.name + " · " + rec.tier + " · " + rec.points + " pts · " + rec.flight_number + " (← Sabre, live)");
-                return { name: rec.name, tier: rec.tier, points: rec.points,
-                         recent_booking: (rec.recent_booking || (GUEST.flight + " " + GUEST.route)) + " tonight",
-                         source: "Databricks live (Velocity ⋈ Sabre)" };
-              })
-              .catch(function () {
-                pipeFlash("databricks", "<b>Databricks</b>: returning George's record (← Sabre)");
-                return fallback;
-              });
-          },
-          check_entitlement: function (p) {
-            var e = entitlement((p && p.tier) || state.tier, (p && p.disruption_type) || state.stage);
-            paintEntitlement(true); pipeFlash("agentforce", "<b>Agentforce</b>: applying the entitlement in Service Cloud");
-            return { gesture: e.v, detail: e.d };
-          },
-          fulfil_in_agentforce: function (p) {
-            var action = (p && p.action) || "rebook";
-            pipeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: creating case (live)…");
-            // Fallback fake reference so the call never breaks if the proxy/org is unavailable.
-            var fallback = { status: "done", action: action, reference: "SC-" + (state.tier[0]) + "48210",
-                             message: action + " completed in Service Cloud" };
-            var qs = "action=" + encodeURIComponent(action) +
-                     "&member=" + encodeURIComponent(GUEST.name) +
-                     "&tier=" + encodeURIComponent(state.tier) +
-                     "&flight=" + encodeURIComponent(GUEST.flight) +
-                     "&route=" + encodeURIComponent("MEL→SYD");
-            return fetch(PROXY + "/fulfil?" + qs, { cache: "no-store" })
-              .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-              .then(function (res) {
-                if (!res || res.error) throw 0;
-                pipeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: case " + res.reference + " created (live) ✓");
-                return res;
-              })
-              .catch(function () {
-                pipeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned in Service Cloud ✓");
-                return fallback;
-              });
-          }
-        });
-        cfg.dynamicVariables = Object.assign(cfg.dynamicVariables || {}, { call_stage: state.stage, velocity_tier: state.tier, guest_name: GUEST.name.split(" ")[0] });
-      } catch (e) { /* never let wiring break the live call */ }
-    });
-    document.body.appendChild(w);   // top-level, not inside a transformed slide
-    ensureScript();
+  function callActive() { return !!convo; }
+  function endCall() { try { if (convo) convo.endSession(); } catch (e) {} convo = null; connecting = false; orbState(""); endBtns(false); }
+
+  function startCall() {
+    if (callActive()) { endCall(); status("Call ended. Tap the orb to call again."); return; }
+    if (connecting) return;                              // ignore taps while a call is mid-connect
+    if (state.mode === "safe") { playFallback(); return; }
+    connecting = true; status("Connecting…"); orbState("incall");
+    sdk().then(function (mod) {
+      return mod.Conversation.startSession({
+        agentId: AGENT_ID,
+        connectionType: "websocket",
+        clientTools: clientTools(),
+        dynamicVariables: { guest_name: GUEST.first, velocity_tier: state.tier,
+          flight_number: GUEST.flight, route: "Melbourne to Sydney", new_departure: "7:45 PM", call_stage: state.stage },
+        overrides: { agent: { firstMessage: firstMessageFor(state.stage) } },
+        onConnect: function () { connecting = false; orbState("incall"); status("On the call with Hannah - speak as Djordje."); var e = $("endCallBtn"); if (e) e.hidden = false; },
+        onDisconnect: function () { convo = null; connecting = false; orbState(""); status("Call ended. Tap the orb to call again."); endBtns(false); },
+        onModeChange: function (m) {
+          var mode = m && m.mode;
+          if (mode === "speaking") { orbState("speaking"); status("<b>Hannah is speaking…</b>"); }
+          else { orbState("incall"); status("Listening… speak as Djordje."); }
+        },
+        onError: function (m) { connecting = false; orbState(""); console.error("[EL onError]", m); status("Call error: " + (typeof m === "string" ? m : (m && m.message) || "see console (F12)") + " - or use Fallback (left rail)."); }
+      }).then(function (c) { convo = c; });
+    }).catch(function (e) { connecting = false; orbState(""); console.error("[EL startCall failed]", e); status("Couldn't start: " + ((e && e.message) || e || "unknown") + " - or use Fallback (left rail)."); });
   }
 
-  /* ---------- fallback mode (pre-recorded) ---------- */
-  var FALLBACK = {
-    delay: "audio/fallback-call1-delay.mp3",
-    cancellation: "audio/fallback-call2-cancellation.mp3",
-    confirmation: "audio/fallback-call3-confirmation.mp3"
-  };
-  function renderFallback() {
-    var m = $("fallbackMount"); m.innerHTML = "";
-    [["delay", "Call 1 · Delay"], ["cancellation", "Call 2 · Cancellation"], ["confirmation", "Call 3 · Confirmation"]].forEach(function (p) {
-      var b = document.createElement("button");
-      b.className = "btn btn--ghost"; b.setAttribute("data-audio", FALLBACK[p[0]]); b.textContent = "▶ " + p[1];
-      m.appendChild(b);
-    });
-    // re-bind simple players for these new buttons
-    if (window.VV && window.VV.bindAudio) window.VV.bindAudio(m);
+  /* ---------- slide 7: Hannah introduces herself live ---------- */
+  function startMeet() {
+    if (callActive()) { endCall(); meetOrb(""); meetStatus("Call ended. Tap the orb to introduce Hannah again."); return; }
+    if (connecting) return;
+    connecting = true; meetStatus("Connecting…"); meetOrb("incall");
+    meetSession();
   }
-  function applyMode() {
-    var live = state.mode !== "safe";
-    $("widgetMount").hidden = !live;
-    $("fallbackMount").hidden = live;
-    $("callHint").textContent = live
-      ? "Click “Start a call”, allow the mic, and talk to Hannah — the real ElevenLabs agent configured for Virgin."
-      : "Fallback mode: pre-recorded calls if the network or mic misbehaves on the day.";
-    if (live) { mountWidget(); }
-    else { document.querySelectorAll("elevenlabs-convai").forEach(function (e) { e.remove(); }); renderFallback(); }
+  function meetSession() {
+    // Dedicated intro agent - its own first_message + prompt do the hello, the question and the
+    // hand-off to the demo. No overrides, no tools, no disruption flow.
+    sdk().then(function (mod) {
+      return mod.Conversation.startSession({
+        agentId: MEET_AGENT_ID,
+        connectionType: "websocket",
+        onConnect: function () { connecting = false; meetOrb("incall"); meetStatus("Hannah is introducing herself - say hello, then end the call when you're ready."); var b = $("endMeetBtn"); if (b) b.hidden = false; },
+        onDisconnect: function () { convo = null; connecting = false; meetOrb(""); meetStatus("That's Hannah. Tap to introduce her again, or move on to the demo."); endBtns(false); },
+        onModeChange: function (m) {
+          if (m && m.mode === "speaking") { meetOrb("speaking"); meetStatus("<b>Hannah is speaking…</b>"); }
+          else { meetOrb("incall"); meetStatus("Listening…"); }
+        },
+        onError: function (m) { connecting = false; meetOrb(""); console.error("[EL meet onError]", m); meetStatus("Call error: " + (typeof m === "string" ? m : (m && m.message) || "see console (F12)") + "."); }
+      }).then(function (c) { convo = c; });
+    }).catch(function (e) { connecting = false; meetOrb(""); console.error("[EL meet failed]", e); meetStatus("Couldn't start: " + ((e && e.message) || e || "unknown") + "."); });
   }
 
-  /* ---------- WhatsApp channel-hop simulation ---------- */
+  /* ---------- fallback (pre-recorded) for safe mode ---------- */
+  var FALLBACK = { delay: "audio/fallback-call1-delay.mp3", cancellation: "audio/fallback-call2-cancellation.mp3", confirmation: "audio/fallback-call3-confirmation.mp3" };
+  var fbAudio = null;
+  function playFallback() {
+    try { if (fbAudio) fbAudio.pause(); fbAudio = new Audio(FALLBACK[state.stage]); fbAudio.play(); } catch (e) {}
+    orbState("speaking"); status("Playing the recorded " + state.stage + " call (fallback mode).");
+    if (fbAudio) fbAudio.onended = function () { orbState(""); status("Recording finished - tap to replay."); };
+  }
+
+  /* ---------- WhatsApp channel-hop (synthetic) ---------- */
   function bubble(cls, html) { var b = document.createElement("div"); b.className = "bubble " + cls; b.innerHTML = html; return b; }
   function typing(thread, then) {
     var t = document.createElement("div"); t.className = "typing"; t.innerHTML = "<i></i><i></i><i></i>";
@@ -237,24 +255,22 @@
     setTimeout(function () { t.remove(); then(); }, 1100);
   }
   function fauxQR() {
-    // a QR-looking SVG block (illustrative, not a scannable code)
     var cells = "", n = 11;
     for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
       var corner = (x < 3 && y < 3) || (x > n - 4 && y < 3) || (x < 3 && y > n - 4);
-      var on = corner || ((x * 7 + y * 13 + x * y) % 3 === 0);
-      if (on) cells += '<rect x="' + (x * 8) + '" y="' + (y * 8) + '" width="8" height="8"/>';
+      if (corner || ((x * 7 + y * 13 + x * y) % 3 === 0)) cells += '<rect x="' + (x * 8) + '" y="' + (y * 8) + '" width="8" height="8"/>';
     }
     return '<svg class="qr" viewBox="0 0 ' + (n * 8) + ' ' + (n * 8) + '" fill="#111">' + cells + '</svg>';
   }
   var loungeDone = false;
   function showLoungePass() {
-    if (loungeDone) return;
-    if (state.tier !== "Gold" && state.tier !== "Platinum") return;
+    if (loungeDone || (state.tier !== "Gold" && state.tier !== "Platinum")) return;
     loungeDone = true;
+    spokeFlash("whatsapp", "<b>WhatsApp</b>: sending a lounge pass while Djordje waits", 4000);
     $("phone").hidden = false;
     var thread = $("thread"); thread.innerHTML = "";
     setTimeout(function () {
-      thread.appendChild(bubble("in", "Hi " + GUEST.name.split(" ")[0] + " 👋 Virgin Australia here. While you wait, here's complimentary lounge access — show this at the door:"));
+      thread.appendChild(bubble("in", "Hi " + GUEST.first + " 👋 Virgin Australia here. While you wait, here's complimentary lounge access - show this at the door:"));
       thread.scrollTop = thread.scrollHeight;
       typing(thread, function () {
         thread.appendChild(bubble("in", "<div class='qrcard'>" + fauxQR() + "<div><b>Virgin Australia Lounge</b><span>Velocity " + state.tier + " · complimentary</span></div></div>"));
@@ -265,14 +281,15 @@
   var hopDone = false;
   function runChannelHop() {
     if (hopDone) return; hopDone = true;
+    spokeFlash("whatsapp", "<b>WhatsApp</b>: continuing the conversation in writing", 4000);
     $("phone").hidden = false;
     var thread = $("thread"); thread.innerHTML = "";
     setTimeout(function () {
-      thread.appendChild(bubble("in", "Hi " + GUEST.name.split(" ")[0] + " 👋 It's Virgin Australia. Sorry your flight was cancelled — here are your options:"));
+      thread.appendChild(bubble("in", "Hi " + GUEST.first + " 👋 It's Virgin Australia. Sorry your flight was cancelled - here are your options:"));
       thread.scrollTop = thread.scrollHeight;
       typing(thread, function () {
         var opt = bubble("in", "Choose one and I'll lock it in:" +
-          "<span class='opt' data-opt='A'>✈️ Next service — 9:15 PM tonight</span>" +
+          "<span class='opt' data-opt='A'>✈️ Next service - 9:15 PM tonight</span>" +
           "<span class='opt' data-opt='B'>🛏️ Fly tomorrow AM + hotel</span>");
         thread.appendChild(opt); thread.scrollTop = thread.scrollHeight;
         opt.querySelectorAll(".opt").forEach(function (o) {
@@ -290,52 +307,69 @@
     }, 400);
   }
 
-  /* ---------- stage + ops control ---------- */
+  /* ---------- stage + tier + ops + reset ---------- */
   function setStage(stage) {
+    if (callActive()) endCall();
     state.stage = stage;
     document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === stage)); });
-    paintEntitlement(true); // entitlement card differs by stage
-    setStep(stage); // update the "do this now" cue
-    pipeline(stage); // animate the system-activity pipeline for this call
+    paintEntitlement(true);
+    setStep(stage);
     if (stage === "delay") showLoungePass();
     if (stage === "cancellation") runChannelHop();
-    if (state.mode !== "safe") mountWidget(); else renderFallback();
   }
   function setTier(tier) {
     state.tier = tier;
     document.querySelectorAll("[data-tier]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-tier") === tier)); });
     paintMember(); paintEntitlement(!$("entitlement").hidden);
-    if (state.mode !== "safe") mountWidget();
   }
-
   function ops() {
     state.opsStep++;
     var banner = $("opsBanner"), text = $("opsText"), label = $("opsBtnLabel");
     banner.hidden = false;
     if (state.opsStep === 1) {
-      text.innerHTML = "<b>VA838 MEL→SYD — DELAYED.</b> New expected departure ~7:45 PM. Proactive outbound triggered.";
+      text.innerHTML = "<b>VA838 MEL→SYD - DELAYED.</b> New departure ~7:45 PM. Instead of waiting for Djordje to call us, Virgin reaches out first.";
       label.textContent = "Escalate: flight now cancelled";
       setStage("delay");
     } else {
-      text.innerHTML = "<b>VA838 — now CANCELLED.</b> Disruption workflow escalates: refund / rebooking + member care.";
-      label.textContent = "Ops event fired";
+      text.innerHTML = "<b>VA838 - now CANCELLED.</b> The proactive call shifts to rebooking and member care.";
+      label.textContent = "Disruption fired";
       $("opsBtn").disabled = true;
       setStage("cancellation");
     }
   }
+  function resetDemo() {
+    endCall(); if (fbAudio) { try { fbAudio.pause(); } catch (e) {} }
+    state.tier = "Gold"; state.stage = "delay"; state.opsStep = 0; loungeDone = false; hopDone = false;
+    $("opsBanner").hidden = true; $("opsBtn").disabled = false; $("opsBtnLabel").textContent = "Trigger flight disruption";
+    $("entitlement").hidden = true; $("sfCard").hidden = true; $("phone").hidden = true; $("thread").innerHTML = "";
+    var src = $("memberSrc"); if (src) src.hidden = true;
+    spokeSet([]); orbState("");
+    document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === "delay")); });
+    setTier("Gold"); setStep("delay");
+    status("Hannah is Virgin's voice. Tap the orb to place the proactive call.");
+    cap("");
+  }
 
   /* ---------- wire up ---------- */
   document.addEventListener("click", function (e) {
+    if (e.target.closest("#orb")) { startCall(); return; }
+    if (e.target.closest("#orbMeet")) { startMeet(); return; }
+    if (e.target.closest("#endCallBtn")) { endCall(); status("Call ended. Tap the orb to call again."); return; }
+    if (e.target.closest("#endMeetBtn")) { endCall(); meetOrb(""); meetStatus("Call ended. Tap the orb to introduce Hannah again."); return; }
+    if (e.target.closest("#resetBtn")) { resetDemo(); return; }
     var s = e.target.closest(".stage"); if (s) { setStage(s.getAttribute("data-stage")); return; }
     var t = e.target.closest("[data-tier]"); if (t) { setTier(t.getAttribute("data-tier")); return; }
-    if (e.target.closest("#opsBtn")) ops();
+    if (e.target.closest("#opsBtn")) { ops(); return; }
   });
   document.addEventListener("demomode", function (e) {
     state.mode = e.detail.mode === "safe" ? "safe" : "live";
-    if (window.VV) window.VV.stopAllAudio && window.VV.stopAllAudio();
-    applyMode();
+    endCall();
+    status(state.mode === "safe"
+      ? "Fallback mode - tap the orb to play a pre-recorded call."
+      : "Hannah is Virgin's voice. Tap the orb to place the proactive call.");
   });
 
   // init
-  paintMember(); paintEntitlement(false); applyMode();
+  paintMember(); paintEntitlement(false); setStep("delay"); checkLive();
+  sdk();  // warm the SDK so the first orb tap connects fast (keeps the mic gesture)
 })();

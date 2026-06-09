@@ -14,5 +14,6 @@
   ],
   "workflow_agent_id": "agent_2601kt8w9rx4fp19evajw1m1nfxk",
   "live_widget_agent_id": "agent_6701kt8w3svzen8ajsxjnk852mrj",
-  "embed_snippet": "<elevenlabs-convai agent-id=\"agent_6701kt8w3svzen8ajsxjnk852mrj\"></elevenlabs-convai>\n<script src=\"https://unpkg.com/@elevenlabs/convai-widget-embed\" async type=\"text/javascript\"></script>"
+  "embed_snippet": "<elevenlabs-convai agent-id=\"agent_6701kt8w3svzen8ajsxjnk852mrj\"></elevenlabs-convai>\n<script src=\"https://unpkg.com/@elevenlabs/convai-widget-embed\" async type=\"text/javascript\"></script>",
+  "meet_hannah_intro_agent_id": "agent_0501ktn3jtvver39s7vxwj7wjpxd"
 }
