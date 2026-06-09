@@ -103,7 +103,7 @@
         <p class="fineprint muted"><span class="tag">audio is ElevenLabs TTS; the screen is illustrative</span></p>
         <aside class="snote">
           <p><b>Play the call and let it breathe.</b> The IVR loop, the hold, the wrong transfer do the work - don't talk over it.</p>
-          <p>One line afterwards: this is the most emotional and most expensive moment in the business, and it's the channel no one has fixed yet. That hands you straight into the opportunity slide.</p>
+          <p>One line afterwards: this is the most emotional and most expensive moment in the business, and it's the channel no one has fixed yet. Then into the agenda: "here's how we'll spend the next 40 minutes fixing it."</p>
         </aside>
       </div>
       <span class="slide__index">03</span>
@@ -260,7 +260,7 @@
             <div class="persona__tier">★ Velocity Gold · VA838 · MEL → SYD</div>
           </div>
           <div class="persona__body">
-            <p class="lede">I'm flying Melbourne to Sydney this morning, and I'm busy. Laptop open, between meetings, half-listening to the gate announcements.</p>
+            <p class="lede">I'm flying Melbourne to Sydney this evening, and I'm busy. Laptop open, between meetings, half-listening to the gate announcements.</p>
             <ul class="persona__list">
               <li><b>My flight just got disrupted.</b> A push notification, a vague apology, no clear next step.</li>
               <li><b>I don't want to download anything,</b> dig through a help centre, or sit in a phone queue listening to hold music.</li>
@@ -290,7 +290,7 @@
           <li class="trail__stop"><span class="trail__ic" data-ic="chat"></span><span class="trail__k">Auto</span><b>WhatsApp confirmation</b><p class="muted">The new flight + hotel land automatically, with a real Salesforce case behind it.</p><span class="tag">auto</span></li>
         </ol>
         <aside class="snote">
-          <p>This primes the room before the demo: one disruption, three short calls, one looked-after guest. Trigger the event, start each call, narrate lightly, and invite questions.</p>
+          <p>This primes the room before the demo: one disruption, two short calls, one automatic confirmation, one looked-after guest. Trigger the event, start each call, narrate lightly, and invite questions.</p>
         </aside>
       </div>
       <span class="slide__index">07</span>
@@ -330,9 +330,12 @@
               <div class="feed__body">
                 <div class="feed__head"><b>Reads the member</b><span class="feed__tag">Databricks</span></div>
                 <div class="feed__fill">
-                  <span class="feed__name"><span class="tier-chip tier-chip--Gold" id="memberTier">GOLD</span><span id="memberName">Djordje Gvozdenovic</span></span>
-                  <span class="feed__meta"><b id="memberPts">82,450</b> pts · <span id="memberBkg">VA838 · MEL→SYD · tonight</span></span>
-                  <span class="feed__ent" id="entVal" hidden></span>
+                  <span class="feed__wait" id="memberWait">waiting for the member lookup…</span>
+                  <div id="memberFill" hidden>
+                    <span class="feed__name"><span class="tier-chip tier-chip--Gold" id="memberTier">GOLD</span><span id="memberName">Djordje Gvozdenovic</span></span>
+                    <span class="feed__meta"><b id="memberPts">82,450</b> pts · <span id="memberBkg">VA838 · MEL→SYD · tonight</span></span>
+                    <span class="feed__ent" id="entVal" hidden></span>
+                  </div>
                 </div>
               </div>
             </li>
@@ -344,7 +347,7 @@
               </div>
             </li>
             <li class="feed__item" data-feed="whatsapp">
-              <span class="feed__num">3</span>
+              <span class="feed__num feed__num--wa" data-ic="chat" aria-label="WhatsApp"></span>
               <div class="feed__body">
                 <div class="feed__head"><b>Confirms on WhatsApp</b><span class="feed__tag">channel hop</span></div>
                 <div class="feed__thread" id="thread"></div>
@@ -379,8 +382,8 @@
           <li class="trail__stop"><span class="trail__ic" data-ic="zap"></span><span class="trail__k">Trigger</span><b>Disruption fired</b><p class="muted">VA838 delayed, then cancelled - Virgin reached out first.</p></li>
           <li class="trail__stop"><span class="trail__ic" data-ic="phone"></span><span class="trail__k">Looked up</span><b>Databricks</b><p class="muted">Djordje's Velocity tier and booking, pulled with a real live query.</p><span class="tag tag--live">live</span></li>
           <li class="trail__stop"><span class="trail__ic" data-ic="check"></span><span class="trail__k">Decided</span><b>Entitlement tool</b><p class="muted">The lounge and hotel gesture came from a rules engine, not the model's guess.</p></li>
-          <li class="trail__stop"><span class="trail__ic" data-ic="chat"></span><span class="trail__k">Confirmed</span><b>WhatsApp</b><p class="muted">After the call, the new flight + hotel landed automatically in writing.</p></li>
           <li class="trail__stop"><span class="trail__ic" data-ic="zap"></span><span class="trail__k">Actioned</span><b>Salesforce</b><p class="muted">The rebooking became a real Service Cloud case, owned in Salesforce.</p><span class="tag tag--live">live</span></li>
+          <li class="trail__stop"><span class="trail__ic" data-ic="chat"></span><span class="trail__k">Confirmed</span><b>WhatsApp</b><p class="muted">After the call, the new flight + hotel landed automatically in writing.</p></li>
         </ol>
         <p class="fineprint muted">Two live integrations, one natural conversation. The voice orchestrated; your systems did the work. We go a level deeper next.</p>
         <aside class="snote">
@@ -415,6 +418,10 @@
         <div id="flowDiagram" class="diagram flowsvg"></div>
         <div class="flow-steps" id="flowSteps"></div>
         <p class="fineprint muted" id="flowNote"></p>
+        <aside class="snote">
+          <p><b>You arrive here straight from the live ElevenLabs platform walkthrough.</b> In the platform, show in order: <b>Tests</b> (12 attached) → <b>Past Test Runs</b> (the iteration history) → <b>Analysis → Evaluation criteria</b> (5 live) → <b>Procedures</b>. Then land on this slide: "and here's how it all wires together."</p>
+          <p>Drive in <b>Manual</b> with Next - land each beat as you say it. Show <b>Proactive outbound</b> first (what they just watched), then flip to <b>Reactive inbound</b>: "same pattern, the trigger just starts from the customer." The middle never changes - that's the point.</p>
+        </aside>
       </div>
       <span class="slide__index">09</span>
     </section>

@@ -193,6 +193,8 @@
   // live agent calls its tools): she reads the member, then - on the delay call - texts a lounge pass.
   function onCallConnected() {
     paintMember(); paintEntitlement(true); feedOn("databricks");
+    var w = $("memberWait"), f = $("memberFill");
+    if (w) w.hidden = true; if (f) f.hidden = false;
     if (state.stage === "delay") {
       cap("<b>Databricks</b>: Hannah reads Djordje's tier &amp; booking, live.");
       showLoungePass();
@@ -355,6 +357,8 @@
     if ($("opsBtn")) $("opsBtn").disabled = false;
     if ($("opsBtnLabel")) $("opsBtnLabel").textContent = "Trigger the disruption";
     var v = $("entVal"); if (v) v.hidden = true;
+    var mw = $("memberWait"), mf = $("memberFill");
+    if (mw) mw.hidden = false; if (mf) mf.hidden = true;
     var sf = $("sfVal"); if (sf) { sf.textContent = "waiting for the rebooking…"; sf.className = "feed__wait"; }
     if ($("thread")) $("thread").innerHTML = "";
     feedReset(); orbState(""); setStepper("trigger");

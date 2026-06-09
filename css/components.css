@@ -780,6 +780,9 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
 .tier-chip--Silver { background: linear-gradient(135deg, #aeb6c2, #e7ebf1); color: #16191f; }
 .tier-chip--Gold { background: linear-gradient(135deg, #b8862b, #f0c860); color: #211802; }
 .tier-chip--Platinum { background: linear-gradient(135deg, #2D054E, #512698); color: #fff; }
+#memberFill { display: flex; flex-direction: column; gap: 0.15rem; }
+.feed__num--wa .ic { width: 14px; height: 14px; }
+.feed__item.on .feed__num--wa { background: #25D366; }
 .feed__thread { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; min-height: 1.2em; max-height: 200px; overflow-y: auto; }
 .feed__thread:empty::before { content: "waiting for the confirmation…"; font-size: 0.82rem; color: var(--ink-2); font-style: italic; }
 .feed__thread .bubble { max-width: 92%; }
