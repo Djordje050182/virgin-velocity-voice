@@ -791,3 +791,38 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
   .stepper li::after { display: none; }
   .demo2 .live-badge { margin-left: 0; }
 }
+
+/* ============================================================
+   ANIMATED ARCHITECTURE (#arch .arch2) - two call flows, live
+   ============================================================ */
+.arch2__toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-2); }
+.arch2 .seg--arch button { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; padding: 0.45rem 0.95rem; }
+.arch2 .seg--arch button small { font-size: 0.6rem; opacity: 0.75; font-weight: 400; letter-spacing: 0.02em; }
+.flow-play { font-size: 0.78rem; padding: 0.5rem 0.9rem; }
+.arch2 .live-badge { margin-left: auto; }
+
+.flow-svg .flnode rect { fill: var(--paper); stroke: var(--line); stroke-width: 1.5; transition: stroke .3s, filter .3s; }
+.flow-svg .flnode .nlabel { font-weight: 600; }
+.flow-svg .flnode--accent rect { fill: color-mix(in srgb, var(--vel-violet) 8%, var(--paper)); }
+.flow-svg .flnode--data rect { fill: color-mix(in srgb, #FF6A1A 9%, var(--paper)); }
+.flow-svg .flnode--act rect  { fill: color-mix(in srgb, #00A1E0 9%, var(--paper)); }
+.flow-svg .flnode--tool rect { fill: color-mix(in srgb, var(--ink) 4%, var(--paper)); }
+.flow-svg .flnode.act rect { stroke: var(--primary); stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--primary) 55%, transparent)); }
+.flow-svg .fltag { font: 700 9px "Space Grotesk", sans-serif; fill: var(--ink-2); letter-spacing: .08em; }
+.flow-svg .edge-f { fill: none; stroke: var(--line); stroke-width: 2; opacity: .4; transition: opacity .3s, stroke .3s; }
+.flow-svg .edge-f.flow { opacity: 1; stroke: var(--primary); stroke-dasharray: 7 6; animation: flowdash .55s linear infinite; }
+@keyframes flowdash { to { stroke-dashoffset: -13; } }
+.flow-svg .pkt { fill: var(--primary); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--primary) 70%, transparent)); }
+@media (prefers-reduced-motion: reduce) { .flow-svg .edge-f.flow { animation: none; } }
+
+.flow-steps { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: var(--sp-2) 0 0; }
+.flow-step { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--line); border-radius: 100px;
+  padding: 0.22rem 0.6rem 0.22rem 0.28rem; background: var(--paper); cursor: pointer; font-size: 0.72rem; color: var(--ink-2);
+  transition: border-color .2s, color .2s; }
+.flow-step__n { width: 18px; height: 18px; border-radius: 50%; background: var(--line); color: var(--ink-2);
+  display: inline-flex; align-items: center; justify-content: center; font: 700 0.66rem "Space Grotesk", sans-serif; flex: none; }
+.flow-step.on { border-color: var(--primary); color: var(--primary); }
+.flow-step.on .flow-step__n { background: var(--primary); color: #fff; }
+.flow-step__t { white-space: nowrap; }
+#flowNote { min-height: 2.6em; margin-top: var(--sp-2); }

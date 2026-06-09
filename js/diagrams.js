@@ -316,4 +316,125 @@
       var b = e.target.closest("#archToggle button"); if (b) setArch(b.getAttribute("data-arch"));
     });
   }
+
+  /* ============================================================
+     ANIMATED ARCHITECTURE - two call patterns over one stack.
+     Genesys <-> ElevenLabs (Hannah) <-> webhook tools <-> Databricks / Salesforce.
+     A packet flows along the active leg each step; the step rail + caption narrate.
+     ============================================================ */
+  var flowHost = document.getElementById("flowDiagram");
+  if (flowHost) {
+    var FW = 1200, FH = 430;
+
+    // node that returns its <g> (so we can toggle .act) plus edge anchor points
+    function fnode(g, x, y, w, h, label, lines, cls, tag) {
+      var ng = el("g", { class: "flnode " + (cls || ""), transform: "translate(" + x + "," + y + ")" });
+      ng.appendChild(el("rect", { x: 0, y: 0, width: w, height: h, rx: 8 }));
+      var lt = el("text", { x: 14, y: 25, class: "nlabel", "text-anchor": "start" }); lt.textContent = label; ng.appendChild(lt);
+      (lines || []).forEach(function (ln, i) {
+        var s = el("text", { x: 14, y: 45 + i * 17, class: "nsub", "text-anchor": "start" }); s.style.fontSize = "11px"; s.textContent = ln; ng.appendChild(s);
+      });
+      if (tag) { var tg = el("text", { x: w - 12, y: 23, class: "fltag", "text-anchor": "end" }); tg.textContent = tag; ng.appendChild(tg); }
+      g.appendChild(ng);
+      return { g: ng, cx: x + w / 2, cy: y + h / 2,
+               left: { x: x, y: y + h / 2 }, right: { x: x + w, y: y + h / 2 } };
+    }
+
+    var fsvg = frame(FW, FH); fsvg.setAttribute("class", "flow-svg");
+    var eg = el("g", {}), nodeg = el("g", {}); fsvg.appendChild(eg); fsvg.appendChild(nodeg);
+    var N = {};
+    N.cust = fnode(nodeg, 24, 170, 140, 92, "Customer", ["mobile / phone"], "");
+    N.gen  = fnode(nodeg, 250, 92, 210, 246, "Genesys Cloud", ["Cloud telephony · CCaaS", "Architect call flow", "Audio Connector", "Dialer + AMD (outbound)"], "flnode--tool");
+    N.el   = fnode(nodeg, 540, 116, 240, 198, "ElevenLabs", ["Hannah · Conversational AI", "Bidirectional WSS audio", "Reason on a fast model", "Webhook / server tools"], "flnode--accent");
+    N.tool = fnode(nodeg, 852, 188, 150, 74, "Webhook tools", ["secure proxy", "holds credentials"], "flnode--tool");
+    N.dbx  = fnode(nodeg, 1046, 84, 150, 92, "Databricks", ["SQL Statement", "Execution API"], "flnode--data", "READ");
+    N.sf   = fnode(nodeg, 1046, 270, 150, 92, "Salesforce", ["Service Cloud", "Support Case"], "flnode--act", "ACT");
+
+    var E = {};
+    function edge(id, a, b) { var p = cord(a.x, a.y, b.x, b.y, "edge-f"); p.id = id; eg.appendChild(p); E[id] = p; }
+    edge("e_cust_gen", N.cust.right, N.gen.left);
+    edge("e_gen_el",   N.gen.right,  N.el.left);
+    edge("e_el_tool",  N.el.right,   N.tool.left);
+    edge("e_tool_dbx", N.tool.right, N.dbx.left);
+    edge("e_tool_sf",  N.tool.right, N.sf.left);
+    flowHost.appendChild(fsvg);
+
+    var FLOWS = {
+      outbound: [
+        { n: ["gen", "cust"], e: [["e_cust_gen", "rev"]], t: "Dialer places the call", c: "The <b>Genesys outbound dialer</b> calls the customer. <b>Answering Machine Detection</b> confirms a live human before connecting." },
+        { n: ["gen", "el"], e: [["e_gen_el", "fwd"]], t: "Audio Connector → ElevenLabs", c: "Genesys triggers the <b>Call Audio Connector</b>, opens a <b>bidirectional WebSocket</b> to ElevenLabs and passes context - name, flight - as <b>input session variables</b>." },
+        { n: ["el", "cust"], e: [["e_gen_el", "fwd"], ["e_cust_gen", "rev"]], t: "Hannah greets, personally", c: "Hannah opens with a <b>personalised greeting</b> using the passed variables - a real conversation, not a phone menu." },
+        { n: ["el", "tool", "dbx"], e: [["e_el_tool", "fwd"], ["e_tool_dbx", "fwd"]], t: "Webhook → Databricks", c: "Hannah calls a <b>webhook tool</b> through the secure proxy into <b>Databricks</b> (SQL Statement Execution API) for real-time status - the flight delay." },
+        { n: ["dbx", "el"], e: [["e_tool_dbx", "rev"], ["e_el_tool", "rev"]], t: "Live status returns", c: "<b>Databricks</b> returns the live status to ElevenLabs, mid-call." },
+        { n: ["el", "tool", "sf"], e: [["e_el_tool", "fwd"], ["e_tool_sf", "fwd"]], t: "Webhook → Salesforce", c: "If the customer wants a change, Hannah logs or updates a <b>Support Case</b> in <b>Salesforce Service Cloud</b> via a webhook tool." },
+        { n: ["sf", "el"], e: [["e_tool_sf", "rev"], ["e_el_tool", "rev"]], t: "Case ID returns", c: "<b>Salesforce</b> returns the Case ID to ElevenLabs." },
+        { n: ["el", "gen"], e: [["e_gen_el", "rev"]], t: "Output variables → Genesys", c: "The call ends. ElevenLabs passes <b>output session variables</b> back to Genesys to update the <b>campaign contact list</b>." }
+      ],
+      inbound: [
+        { n: ["cust", "gen"], e: [["e_cust_gen", "fwd"]], t: "Customer dials in", c: "The customer dials your number - the call lands in <b>Genesys Cloud</b> telephony." },
+        { n: ["gen", "el"], e: [["e_gen_el", "fwd"]], t: "Audio Connector → ElevenLabs", c: "The <b>Genesys Architect flow</b> triggers the <b>Call Audio Connector</b> and opens a <b>bidirectional WebSocket</b> to ElevenLabs." },
+        { n: ["el", "cust"], e: [["e_gen_el", "fwd"], ["e_cust_gen", "fwd"]], t: "Hannah answers", c: "Hannah picks up and starts the conversation naturally - the <b>same agent</b> as outbound." },
+        { n: ["el", "tool", "dbx"], e: [["e_el_tool", "fwd"], ["e_tool_dbx", "fwd"]], t: "Webhook → Databricks", c: "Hannah calls a <b>webhook tool</b> into <b>Databricks</b> to look up the customer's profile and history." },
+        { n: ["dbx", "el"], e: [["e_tool_dbx", "rev"], ["e_el_tool", "rev"]], t: "Profile returns", c: "<b>Databricks</b> returns the customer profile; Hannah uses it to resolve the issue." },
+        { n: ["el", "tool", "sf"], e: [["e_el_tool", "fwd"], ["e_tool_sf", "fwd"]], t: "Webhook → Salesforce", c: "At the end of the call, Hannah creates a <b>Support Case</b> in <b>Salesforce Service Cloud</b> via a webhook tool." },
+        { n: ["sf", "el"], e: [["e_tool_sf", "rev"], ["e_el_tool", "rev"]], t: "Case ID returns", c: "<b>Salesforce</b> returns the Case ID." },
+        { n: ["el", "gen", "cust"], e: [["e_gen_el", "rev"], ["e_cust_gen", "rev"]], t: "Call ends", c: "The call ends and <b>Genesys updates the call record</b>." }
+      ]
+    };
+
+    var stepsHost = document.getElementById("flowSteps");
+    var noteHost = document.getElementById("flowNote");
+    var playBtn = document.getElementById("flowPlay");
+    var fmode = "outbound", fidx = 0, ftimer = null, fplaying = true;
+
+    function fclear() {
+      Object.keys(E).forEach(function (k) { E[k].classList.remove("flow"); });
+      Object.keys(N).forEach(function (k) { N[k].g.classList.remove("act"); });
+    }
+    function firePacket(pathId, dir) {
+      var path = document.getElementById(pathId); if (!path) return;
+      var c = el("circle", { r: 5, class: "pkt" });
+      var am = el("animateMotion", { dur: "1.2s", begin: "indefinite", fill: "remove" });
+      if (dir === "rev") { am.setAttribute("keyPoints", "1;0"); am.setAttribute("keyTimes", "0;1"); am.setAttribute("calcMode", "linear"); }
+      var mp = el("mpath", {}); mp.setAttribute("href", "#" + pathId); mp.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + pathId);
+      am.appendChild(mp); c.appendChild(am); path.parentNode.appendChild(c);
+      try { am.beginElement(); } catch (e) {}
+      setTimeout(function () { if (c.parentNode) c.parentNode.removeChild(c); }, 1350);
+    }
+    function frender() {
+      if (!stepsHost) return;
+      stepsHost.innerHTML = "";
+      FLOWS[fmode].forEach(function (s, i) {
+        var b = document.createElement("button");
+        b.className = "flow-step"; b.setAttribute("data-i", i);
+        b.innerHTML = "<span class='flow-step__n'>" + (i + 1) + "</span><span class='flow-step__t'>" + s.t + "</span>";
+        stepsHost.appendChild(b);
+      });
+    }
+    function fshow(i) {
+      var steps = FLOWS[fmode]; i = (i % steps.length + steps.length) % steps.length;
+      fclear();
+      var s = steps[i];
+      s.n.forEach(function (k) { if (N[k]) N[k].g.classList.add("act"); });
+      s.e.forEach(function (pair) { var p = E[pair[0]]; if (p) p.classList.add("flow"); firePacket(pair[0], pair[1]); });
+      if (noteHost) noteHost.innerHTML = "<b>Step " + (i + 1) + " of " + steps.length + "</b> · " + s.c;
+      if (stepsHost) stepsHost.querySelectorAll(".flow-step").forEach(function (b, bi) { b.classList.toggle("on", bi === i); });
+    }
+    function ftick() { fshow(fidx); fidx = (fidx + 1) % FLOWS[fmode].length; if (fplaying) ftimer = setTimeout(ftick, 2600); }
+    function fstop() { if (ftimer) { clearTimeout(ftimer); ftimer = null; } }
+    function fstart() { fstop(); fplaying = true; if (playBtn) playBtn.textContent = "❚❚ Pause"; ftick(); }
+
+    frender(); fstart();
+    document.addEventListener("click", function (e) {
+      var tb = e.target.closest("#flowToggle button");
+      if (tb) {
+        fmode = tb.getAttribute("data-flow"); fidx = 0;
+        document.querySelectorAll("#flowToggle button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-flow") === fmode)); });
+        frender(); fstart(); return;
+      }
+      var sb = e.target.closest(".flow-step");
+      if (sb) { fstop(); fplaying = false; if (playBtn) playBtn.textContent = "▶ Play"; fidx = +sb.getAttribute("data-i"); fshow(fidx); fidx = (fidx + 1) % FLOWS[fmode].length; return; }
+      if (e.target.closest("#flowPlay")) { if (fplaying) { fstop(); fplaying = false; playBtn.textContent = "▶ Play"; } else { fstart(); } return; }
+    });
+  }
 })();

@@ -447,12 +447,22 @@
       <span class="slide__index">10</span>
     </section>
 
-    <!-- ARCHITECTURE -->
+    <!-- ARCHITECTURE - animated dual-flow -->
     <section class="slide" id="arch" data-title="Architecture">
-      <div class="slide__inner reveal">
-        <span class="kicker">Where it fits</span>
-        <h2 style="max-width:20ch">A voice layer on top of your stack, not a rip-and-replace.</h2>
-        <div id="archDiagram" class="diagram"></div>
+      <div class="slide__inner reveal arch2">
+        <span class="kicker">How it all comes together</span>
+        <h2 style="max-width:26ch">One voice layer, two ways in - the same Genesys → ElevenLabs → your systems pattern.</h2>
+        <div class="arch2__toolbar">
+          <div class="seg seg--arch" id="flowToggle" role="group" aria-label="Call pattern">
+            <button data-flow="outbound" aria-pressed="true">Proactive outbound <small>what we demoed</small></button>
+            <button data-flow="inbound">Reactive inbound <small>the same pattern</small></button>
+          </div>
+          <button class="btn btn--reset flow-play" id="flowPlay" title="Play or pause the animation">❚❚ Pause</button>
+          <span class="live-badge ok" title="Proven live in today's demo"><span class="ld"></span>Databricks read &amp; Salesforce case proven live</span>
+        </div>
+        <div id="flowDiagram" class="diagram flowsvg"></div>
+        <div class="flow-steps" id="flowSteps"></div>
+        <p class="fineprint muted" id="flowNote"></p>
       </div>
       <span class="slide__index">09</span>
     </section>
