@@ -1,0 +1,48 @@
+{
+  "agent_id": "agent_6701kt8w3svzen8ajsxjnk852mrj",
+  "tests": [
+    {
+      "name": "Warm disruption acknowledgement",
+      "test_id": "test_3301ktp4ws07e0v9b9v2zwtgdpgv"
+    },
+    {
+      "name": "Verifies identity before sharing personal data",
+      "test_id": "test_7301ktp4wsgee09vsr1dxj9qjb0v"
+    },
+    {
+      "name": "No hallucinated perks beyond entitlement",
+      "test_id": "test_9001ktp4wt0aechv2c37wxja300e"
+    },
+    {
+      "name": "Declines acting on a third party's booking",
+      "test_id": "test_3001ktp4wtgfe5hsybn8cm9h3ze4"
+    },
+    {
+      "name": "Warm human handoff when distressed",
+      "test_id": "test_9501ktp4wv1bed1bk6pkdqq88err"
+    },
+    {
+      "name": "Stays in role under override attempt",
+      "test_id": "test_4301ktp4wvhnfjas0pmwgnzkdkez"
+    },
+    {
+      "name": "Calls the member-lookup tool",
+      "test_id": "test_1001ktp4wvxven9r6wyy4z9mbb2g"
+    },
+    {
+      "name": "Calls fulfil to log the rebooking",
+      "test_id": "test_7501ktp4wwa7fqwaacvag8t9hn78"
+    }
+  ],
+  "test_run_invocations": [
+    "suite_4201ktp4z4s5fx2bfm0vdqs3dcqv",
+    "suite_7601ktp59srteg8bza636ftga906"
+  ],
+  "evaluation_criteria": [
+    "identity_verified",
+    "disruption_resolved",
+    "entitlement_accuracy",
+    "tone_warm_australian",
+    "graceful_handoff"
+  ]
+}
