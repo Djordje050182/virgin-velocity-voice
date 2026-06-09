@@ -706,3 +706,88 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
   .seg--arch button { flex: 1; }
   .btn { width: 100%; justify-content: center; }
 }
+
+/* ============================================================
+   LIVE DEMO - version 2 (#demo .demo2)
+   stepper (map) · orb (voice) · feed (systems do the work) · slim controls
+   ============================================================ */
+.demo2 h2 { margin-bottom: var(--sp-3); }
+
+/* --- stepper: the map across the top --- */
+.stepper { list-style: none; display: flex; align-items: center; gap: 0; margin: 0 0 var(--sp-2); padding: 0; }
+.stepper li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--ink-2); white-space: nowrap; }
+.stepper li::after { content: ""; flex: 1; height: 1px; min-width: 18px; background: var(--line); margin: 0 0.7rem; }
+.stepper li:last-child::after { display: none; }
+.stepper li:last-child { flex: 0; }
+.stepper li:not(:last-child) { flex: 1; }
+.stepper__dot { width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--line); flex: none; transition: all var(--t-fast); }
+.stepper__t { transition: color var(--t-fast); }
+.stepper li.done .stepper__dot { background: var(--ink-2); border-color: var(--ink-2); }
+.stepper li.done .stepper__t { color: var(--ink-2); }
+.stepper li.active .stepper__dot { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent); }
+.stepper li.active .stepper__t { color: var(--primary); font-weight: 600; }
+
+/* --- live caption line --- */
+.demo2__caption { font-size: 0.88rem; color: var(--ink); min-height: 1.4em; margin-bottom: var(--sp-3); }
+.demo2__caption b { color: var(--primary); }
+
+/* --- stage: voice (left) | systems (right) --- */
+.demo2__stage { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: var(--sp-4); align-items: stretch; }
+
+/* left: the voice */
+.callpanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem;
+  border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-3); background:
+  radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--vel-lilac) 30%, var(--paper)), var(--paper) 70%); }
+.callpanel__k { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2); }
+.demo2 .orb { width: clamp(150px, 16vw, 196px); }
+.demo2 .orb-status { font-size: 0.86rem; color: var(--ink-2); text-align: center; max-width: 30ch; min-height: 2.6em; }
+.demo2 .orb-status b { color: var(--primary); }
+
+/* right: the systems feed (builds top -> down) */
+.feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.feed__item { display: grid; grid-template-columns: 30px 1fr; gap: 0.8rem; align-items: start;
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 0.9rem; background: var(--paper);
+  opacity: 0.5; filter: saturate(0.5); transition: opacity var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
+.feed__item.on { opacity: 1; filter: none; border-color: color-mix(in srgb, var(--primary) 35%, var(--line)); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+.feed__num { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font: 700 0.8rem "Space Grotesk", sans-serif; background: var(--line); color: var(--ink-2); transition: all var(--t-fast); }
+.feed__item.on .feed__num { background: var(--primary); color: #fff; }
+.feed__body { min-width: 0; }
+.feed__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+.feed__head b { font-size: 0.95rem; }
+.feed__tag { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2);
+  border: 1px solid var(--line); border-radius: 100px; padding: 0.1rem 0.5rem; flex: none; }
+.feed__item.on .feed__tag { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, var(--line)); }
+.feed__fill { margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.feed__name { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+.feed__meta { font-size: 0.8rem; color: var(--ink-2); }
+.feed__ent { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem; }
+.feed__wait { font-size: 0.82rem; color: var(--ink-2); font-style: italic; }
+.tier-chip { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.12rem 0.45rem; border-radius: 4px; }
+.tier-chip--Red { background: linear-gradient(135deg, #7A0000, #E10A0A); color: #fff; }
+.tier-chip--Silver { background: linear-gradient(135deg, #aeb6c2, #e7ebf1); color: #16191f; }
+.tier-chip--Gold { background: linear-gradient(135deg, #b8862b, #f0c860); color: #211802; }
+.tier-chip--Platinum { background: linear-gradient(135deg, #2D054E, #512698); color: #fff; }
+.feed__thread { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; min-height: 1.2em; max-height: 200px; overflow-y: auto; }
+.feed__thread:empty::before { content: "waiting for the confirmation…"; font-size: 0.82rem; color: var(--ink-2); font-style: italic; }
+.feed__thread .bubble { max-width: 92%; }
+
+/* --- slim control bar --- */
+.demo2__controls { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-3);
+  padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.tier-mini { display: inline-flex; align-items: center; gap: 0.5rem; }
+.tier-mini__l { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
+.demo2 .seg--tier { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.demo2 .seg--tier button { width: 30px; padding: 0.35rem 0; background: transparent; border: 0; border-right: 1px solid var(--line);
+  font-size: 0.78rem; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.demo2 .seg--tier button:last-child { border-right: 0; }
+.demo2 .seg--tier button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.demo2 .live-badge { margin-left: auto; }
+
+@media (max-width: 900px) {
+  .demo2__stage { grid-template-columns: 1fr; }
+  .stepper { flex-wrap: wrap; gap: 0.4rem 0; }
+  .stepper li:not(:last-child) { flex: none; }
+  .stepper li::after { display: none; }
+  .demo2 .live-badge { margin-left: 0; }
+}

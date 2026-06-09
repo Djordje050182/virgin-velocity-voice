@@ -326,77 +326,74 @@
 
     <!-- LIVE DEMO -->
     <section class="slide" id="demo" data-title="The live demo">
-      <div class="slide__inner reveal demo">
+      <div class="slide__inner reveal demo2">
         <span class="kicker">The live demo</span>
-        <h2>From reactive comms to a proactive conversation.</h2>
+        <h2>One disruption, handled end to end.</h2>
 
-        <div class="demo__controls">
-          <button class="btn" id="opsBtn"><span class="dot"></span><span id="opsBtnLabel">Trigger flight disruption</span></button>
-          <div class="tier-pick" id="tierPick" aria-label="Velocity tier">
-            <span class="label">Velocity tier</span>
-            <div class="seg seg--tier">
-              <button data-tier="Red">Red</button><button data-tier="Silver">Silver</button>
-              <button data-tier="Gold" aria-pressed="true">Gold</button><button data-tier="Platinum">Platinum</button>
-            </div>
-          </div>
-          <button class="btn btn--reset" id="resetBtn" title="Reset the demonstration">⟲ Reset</button>
-          <span class="live-badge" id="liveBadge"><span class="ld"></span><span id="liveBadgeText">checking live link…</span></span>
-        </div>
-        <div class="ops-banner" id="opsBanner" hidden><span class="ops-dot"></span><span id="opsText">-</span></div>
+        <ol class="stepper" id="stepper" aria-label="Where we are">
+          <li data-step="trigger"><span class="stepper__dot"></span><span class="stepper__t">Disruption</span></li>
+          <li data-step="delay"><span class="stepper__dot"></span><span class="stepper__t">Call 1 · Delay</span></li>
+          <li data-step="cancellation"><span class="stepper__dot"></span><span class="stepper__t">Call 2 · Rebooking</span></li>
+          <li data-step="confirmed"><span class="stepper__dot"></span><span class="stepper__t">Confirmed</span></li>
+        </ol>
 
-        <div class="stage-row" id="stageRow">
-          <button class="stage" data-stage="delay" aria-pressed="true"><b>Call 1</b><span>Delay</span></button>
-          <button class="stage" data-stage="cancellation"><b>Call 2</b><span>Cancellation + rebooking</span></button>
-        </div>
+        <div class="demo2__caption" id="pipeCaption">Trigger the disruption to begin - Virgin reaches out before Djordje ever has to call.</div>
 
-        <div class="demo-step demo-step--slim" id="demoStep"><span class="demo-step__dot" aria-hidden="true">▸</span><span id="demoStepText">Press <b>Trigger flight disruption</b> to begin - then tap the orb to take Hannah's call.</span></div>
-
-        <div class="demo-stage demo-stage--live">
-          <div class="ds-side">
-            <div class="member-card member-card--Gold" id="memberCard">
-              <div class="member-card__top"><span>VELOCITY</span><span class="member-tier" id="memberTier">GOLD</span></div>
-              <div class="member-card__name" id="memberName">Djordje Gvozdenovic</div>
-              <div class="member-card__row"><span>Points</span><b id="memberPts">82,450</b></div>
-              <div class="member-card__row"><span>Booking</span><b id="memberBkg">VA838 · MEL→SYD · tonight</b></div>
-              <div class="member-card__src" id="memberSrc" hidden><b>●</b> live from Databricks · Velocity ⋈ Sabre</div>
-            </div>
-            <div class="entitlement" id="entitlement" hidden>
-              <div class="entitlement__k">Entitlement · deterministic tool</div>
-              <div class="entitlement__v" id="entVal">-</div>
-              <div class="entitlement__d" id="entDetail"></div>
-            </div>
-            <div class="sf-card" id="sfCard" hidden>
-              <div class="entitlement__k">Salesforce · workflow owned in Service Cloud</div>
-              <div class="entitlement__v" id="sfVal">-</div>
-              <div class="entitlement__d" id="sfDetail">The voice agent orchestrates; Salesforce owns and runs the case.</div>
-            </div>
-          </div>
-          <div class="orb-wrap">
+        <div class="demo2__stage">
+          <!-- LEFT: the voice -->
+          <div class="callpanel">
+            <div class="callpanel__k">The voice</div>
             <button class="orb" id="orb" aria-label="Tap to talk to Hannah">
               <span class="orb__grad"></span>
               <span class="orb__core"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm7-3a7 7 0 0 1-6 6.92V22h-2v-3.08A7 7 0 0 1 5 12h2a5 5 0 0 0 10 0h2Z"/></svg></span>
             </button>
-            <div class="orb-status" id="orbStatus">Hannah is Virgin's voice. Tap the orb to place the proactive call.</div>
+            <div class="orb-status" id="orbStatus">Press <b>Trigger the disruption</b> to begin.</div>
             <button class="btn btn--reset" id="endCallBtn" hidden>■ End call</button>
-            <div class="callbox__meta" id="callMeta">Velocity Gold · VA838 MEL→SYD</div>
-            <div class="spokes" id="spokes">
-              <span class="spoke spoke--data" data-spoke="databricks"><span class="spoke__dot"></span><b>Databricks</b><small>reads the booking</small></span>
-              <span class="spoke spoke--act" data-spoke="agentforce"><span class="spoke__dot"></span><b>Salesforce</b><small>runs the workflow</small></span>
-              <span class="spoke spoke--wa" data-spoke="whatsapp"><span class="spoke__dot"></span><b>WhatsApp</b><small>channel hop</small></span>
-              <span class="spoke spoke--human" data-spoke="human"><span class="spoke__dot"></span><b>Human</b><small>handoff if needed</small></span>
-            </div>
           </div>
-          <div class="ds-side ds-side--right">
-            <div class="phone" id="phone" hidden>
-              <div class="phone__notch"></div>
-              <div class="phone__head"><span class="phone__av"></span><div><div class="phone__name">Virgin Australia</div><div class="phone__sub">WhatsApp · Business</div></div></div>
-              <div class="phone__thread" id="thread"></div>
-            </div>
-          </div>
+
+          <!-- RIGHT: the systems doing the work -->
+          <ol class="feed" id="feed" aria-label="Live activity">
+            <li class="feed__item" data-feed="databricks">
+              <span class="feed__num">1</span>
+              <div class="feed__body">
+                <div class="feed__head"><b>Reads the member</b><span class="feed__tag">Databricks</span></div>
+                <div class="feed__fill">
+                  <span class="feed__name"><span class="tier-chip tier-chip--Gold" id="memberTier">GOLD</span><span id="memberName">Djordje Gvozdenovic</span></span>
+                  <span class="feed__meta"><b id="memberPts">82,450</b> pts · <span id="memberBkg">VA838 · MEL→SYD · tonight</span></span>
+                  <span class="feed__ent" id="entVal" hidden></span>
+                </div>
+              </div>
+            </li>
+            <li class="feed__item" data-feed="agentforce">
+              <span class="feed__num">2</span>
+              <div class="feed__body">
+                <div class="feed__head"><b>Acts in Salesforce</b><span class="feed__tag">Service Cloud</span></div>
+                <div class="feed__fill"><span id="sfVal" class="feed__wait">waiting for the rebooking…</span></div>
+              </div>
+            </li>
+            <li class="feed__item" data-feed="whatsapp">
+              <span class="feed__num">3</span>
+              <div class="feed__body">
+                <div class="feed__head"><b>Confirms on WhatsApp</b><span class="feed__tag">channel hop</span></div>
+                <div class="feed__thread" id="thread"></div>
+              </div>
+            </li>
+          </ol>
         </div>
 
-        <div class="pipe-caption" id="pipeCaption"></div>
-
+        <!-- control bar -->
+        <div class="demo2__controls">
+          <button class="btn" id="opsBtn"><span class="dot"></span><span id="opsBtnLabel">Trigger the disruption</span></button>
+          <button class="btn btn--reset" id="resetBtn" title="Reset the demonstration">⟲ Reset</button>
+          <div class="tier-mini" aria-label="Velocity tier">
+            <span class="tier-mini__l">Tier</span>
+            <div class="seg seg--tier">
+              <button data-tier="Red" title="Red">R</button><button data-tier="Silver" title="Silver">S</button>
+              <button data-tier="Gold" aria-pressed="true" title="Gold">G</button><button data-tier="Platinum" title="Platinum">P</button>
+            </div>
+          </div>
+          <span class="live-badge" id="liveBadge"><span class="ld"></span><span id="liveBadgeText">checking…</span></span>
+        </div>
       </div>
       <span class="slide__index">07</span>
     </section>

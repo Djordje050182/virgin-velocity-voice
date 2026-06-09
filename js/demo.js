@@ -37,22 +37,24 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
-  /* ---------- spokes + caption ---------- */
+  /* ---------- caption + the live activity feed ---------- */
   function cap(html) { var c = $("pipeCaption"); if (c) c.innerHTML = html; }
-  function spokeSet(names) {
-    document.querySelectorAll(".spoke").forEach(function (s) {
-      s.classList.toggle("on", names.indexOf(s.getAttribute("data-spoke")) > -1);
+  // the feed cards (Databricks / Salesforce / WhatsApp) light up as each system does its work
+  function feedOn(name) { var el = document.querySelector('.feed__item[data-feed="' + name + '"]'); if (el) el.classList.add("on"); }
+  function feedReset() { document.querySelectorAll(".feed__item").forEach(function (el) { el.classList.remove("on"); }); }
+  // kept the spoke* names so the client tools don't change - they now drive the feed
+  function spokeSet(names) { if (!names || !names.length) feedReset(); }
+  function spokeFlash(name, html) { feedOn(name); if (html) cap(html); }
+
+  /* ---------- stepper: the map across the top ---------- */
+  var STEPS = ["trigger", "delay", "cancellation", "confirmed"];
+  function setStepper(active) {
+    var ai = STEPS.indexOf(active);
+    document.querySelectorAll("#stepper li").forEach(function (li) {
+      var i = STEPS.indexOf(li.getAttribute("data-step"));
+      li.classList.toggle("done", i < ai);
+      li.classList.toggle("active", i === ai);
     });
-  }
-  var spokeTimers = {};
-  function spokeFlash(name, html, hold) {
-    var el = document.querySelector('.spoke[data-spoke="' + name + '"]');
-    if (el) {
-      el.classList.add("on");
-      clearTimeout(spokeTimers[name]);
-      spokeTimers[name] = setTimeout(function () { el.classList.remove("on"); }, hold || 2500);
-    }
-    if (html) cap(html);
   }
 
   /* ---------- orb visual state ---------- */
@@ -63,35 +65,32 @@
   }
   function status(html) { var s = $("orbStatus"); if (s) s.innerHTML = html; }
 
-  /* ---------- "do this now" cue ---------- */
+  /* ---------- "do this now" cue (shown under the orb) ---------- */
   var STEP = {
-    delay:        [2, "Tap the orb - Hannah calls about the delay. She looks Djordje up (Databricks) and texts a <b>lounge pass</b> on WhatsApp."],
-    cancellation: [3, "Tap the orb - Hannah handles the cancellation and rebooks Djordje on the call, logging a <b>real Salesforce case</b>. <b>Hang up</b> and the WhatsApp confirmation - new flight + hotel - arrives automatically."]
+    delay:        "Tap the orb - Hannah calls Djordje about the delay.",
+    cancellation: "Tap the orb - Hannah rebooks on the call. <b>Hang up</b> and the confirmation sends itself."
   };
   function setStep(stage) {
-    var s = STEP[stage]; if (!s) return;
-    var t = $("demoStepText"); if (t) t.innerHTML = s[1];
+    var s = STEP[stage]; if (s) status(s);
   }
 
   /* ---------- cards ---------- */
   function paintMember() {
     var t = TIERS[state.tier];
-    $("memberTier").textContent = t.label;
-    $("memberName").textContent = GUEST.name;
-    $("memberPts").textContent = t.pts;
-    $("memberBkg").textContent = GUEST.flight + " · " + GUEST.route + " · tonight";
-    var card = $("memberCard"); if (card) card.className = "member-card member-card--" + state.tier;
-    $("callMeta").textContent = "Velocity " + state.tier + " · " + GUEST.flight + " " + GUEST.route;
+    var tier = $("memberTier"); if (tier) { tier.textContent = t.label; tier.className = "tier-chip tier-chip--" + state.tier; }
+    if ($("memberName")) $("memberName").textContent = GUEST.name;
+    if ($("memberPts")) $("memberPts").textContent = t.pts;
+    if ($("memberBkg")) $("memberBkg").textContent = GUEST.flight + " · " + GUEST.route + " · tonight";
   }
   function paintEntitlement(show) {
     var e = entitlement(state.tier, state.stage);
-    $("entVal").textContent = e.v; $("entDetail").textContent = e.d;
-    $("entitlement").hidden = !show;
+    var v = $("entVal"); if (!v) return;
+    v.textContent = "Entitled to: " + e.v + (e.d ? " (" + e.d + ")" : "");
+    v.hidden = !show;
   }
   function showSf(ref) {
-    var c = $("sfCard"); if (!c) return;
-    c.hidden = false;
-    $("sfVal").textContent = "Case " + ref + " · created";
+    feedOn("agentforce");
+    var v = $("sfVal"); if (v) { v.textContent = "Case " + ref + " created · rebooking"; v.className = "feed__done"; }
   }
   // Create the real Salesforce case once - shared by the agent's tool call and the
   // automatic post-hang-up confirmation, memoised so we never raise two cases.
@@ -134,8 +133,8 @@
   function clientTools() {
     return {
       lookup_velocity_member: function () {
-        paintMember();
-        spokeFlash("databricks", "<b>Databricks</b>: querying Velocity ⋈ Sabre (live)…", 4000);
+        paintMember(); paintEntitlement(true);
+        spokeFlash("databricks", "<b>Databricks</b>: querying Velocity ⋈ Sabre (live)…");
         var t = TIERS[state.tier];
         var fallback = { name: GUEST.name, tier: state.tier, points: t.pts,
                          recent_booking: GUEST.flight + " " + GUEST.route + " tonight" };
@@ -143,8 +142,7 @@
           .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
           .then(function (rec) {
             if (!rec || rec.error) throw 0;
-            var src = $("memberSrc"); if (src) src.hidden = false;
-            spokeFlash("databricks", "<b>Databricks</b> returned " + rec.name + " · " + rec.tier + " · " + rec.points + " pts · " + rec.flight_number + " (live)", 4500);
+            spokeFlash("databricks", "<b>Databricks</b> returned " + rec.name + " · " + rec.tier + " · " + rec.points + " pts · " + rec.flight_number + " (live)");
             return { name: rec.name, tier: rec.tier, points: rec.points,
                      recent_booking: (rec.recent_booking || (GUEST.flight + " " + GUEST.route)) + " tonight",
                      source: "Databricks live (Velocity ⋈ Sabre)" };
@@ -272,27 +270,28 @@
   function showLoungePass() {
     if (loungeDone || (state.tier !== "Gold" && state.tier !== "Platinum")) return;
     loungeDone = true;
-    spokeFlash("whatsapp", "<b>WhatsApp</b>: sending a lounge pass while Djordje waits", 4000);
-    $("phone").hidden = false;
-    var thread = $("thread"); thread.innerHTML = "";
+    feedOn("whatsapp");
+    cap("<b>WhatsApp</b>: a lounge pass while Djordje waits.");
+    var thread = $("thread"); if (!thread) return;
     setTimeout(function () {
-      thread.appendChild(bubble("in", "Hi " + GUEST.first + " 👋 Virgin Australia here. While you wait, here's complimentary lounge access - show this at the door:"));
+      thread.appendChild(bubble("in", "Hi " + GUEST.first + " 👋 Virgin Australia here. While you wait, here's complimentary lounge access:"));
       thread.scrollTop = thread.scrollHeight;
       typing(thread, function () {
         thread.appendChild(bubble("in", "<div class='qrcard'>" + fauxQR() + "<div><b>Virgin Australia Lounge</b><span>Velocity " + state.tier + " · complimentary</span></div></div>"));
         thread.scrollTop = thread.scrollHeight;
       });
-    }, 400);
+    }, 300);
   }
   // After the cancellation call ends (the guest hangs up), the confirmation lands
   // automatically on WhatsApp: new flight + hotel, with the real Salesforce case behind it.
   var confirmDone = false;
   function sendConfirmation() {
     if (confirmDone) return; confirmDone = true;
+    setStepper("confirmed");
     var hotel = (state.tier === "Gold" || state.tier === "Platinum");
     createCase("rebook").then(function () {
-      $("phone").hidden = false;
-      var thread = $("thread");
+      feedOn("whatsapp");
+      var thread = $("thread"); if (!thread) return;
       setTimeout(function () {
         thread.appendChild(bubble("in", "All sorted, " + GUEST.first + " 🙏 You're rebooked - here's your confirmation:"));
         thread.scrollTop = thread.scrollHeight;
@@ -315,42 +314,44 @@
   function setStage(stage) {
     if (callActive()) endCall();
     state.stage = stage;
-    document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === stage)); });
-    paintEntitlement(true);
+    paintEntitlement(false);   // text refreshes; the line reveals once Hannah reads the member
     setStep(stage);
     if (stage === "delay") showLoungePass();
   }
   function setTier(tier) {
     state.tier = tier;
     document.querySelectorAll("[data-tier]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-tier") === tier)); });
-    paintMember(); paintEntitlement(!$("entitlement").hidden);
+    paintMember();
+    var v = $("entVal"); paintEntitlement(!!(v && !v.hidden));
   }
   function ops() {
     state.opsStep++;
-    var banner = $("opsBanner"), text = $("opsText"), label = $("opsBtnLabel");
-    banner.hidden = false;
+    var label = $("opsBtnLabel");
     if (state.opsStep === 1) {
-      text.innerHTML = "<b>VA838 MEL→SYD - DELAYED.</b> New departure ~7:45 PM. Instead of waiting for Djordje to call us, Virgin reaches out first.";
-      label.textContent = "Escalate: flight now cancelled";
+      cap("<b>VA838 delayed</b> - new departure ~7:45 PM. Virgin reaches out first, before Djordje has to call.");
+      if (label) label.textContent = "Escalate: flight cancelled";
+      setStepper("delay");
       setStage("delay");
     } else {
-      text.innerHTML = "<b>VA838 - now CANCELLED.</b> The proactive call shifts to rebooking and member care.";
-      label.textContent = "Disruption fired";
-      $("opsBtn").disabled = true;
+      cap("<b>VA838 cancelled</b> - the call shifts to rebooking and member care.");
+      if (label) label.textContent = "Disruption live";
+      if ($("opsBtn")) $("opsBtn").disabled = true;
+      setStepper("cancellation");
       setStage("cancellation");
     }
   }
   function resetDemo() {
     endCall(); if (fbAudio) { try { fbAudio.pause(); } catch (e) {} }
     state.tier = "Gold"; state.stage = "delay"; state.opsStep = 0; loungeDone = false; confirmDone = false; casePromise = null;
-    $("opsBanner").hidden = true; $("opsBtn").disabled = false; $("opsBtnLabel").textContent = "Trigger flight disruption";
-    $("entitlement").hidden = true; $("sfCard").hidden = true; $("phone").hidden = true; $("thread").innerHTML = "";
-    var src = $("memberSrc"); if (src) src.hidden = true;
-    spokeSet([]); orbState("");
-    document.querySelectorAll(".stage").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-stage") === "delay")); });
-    setTier("Gold"); setStep("delay");
-    status("Hannah is Virgin's voice. Tap the orb to place the proactive call.");
-    cap("");
+    if ($("opsBtn")) $("opsBtn").disabled = false;
+    if ($("opsBtnLabel")) $("opsBtnLabel").textContent = "Trigger the disruption";
+    var v = $("entVal"); if (v) v.hidden = true;
+    var sf = $("sfVal"); if (sf) { sf.textContent = "waiting for the rebooking…"; sf.className = "feed__wait"; }
+    if ($("thread")) $("thread").innerHTML = "";
+    feedReset(); orbState(""); setStepper("trigger");
+    setTier("Gold"); paintMember();
+    status("Press <b>Trigger the disruption</b> to begin.");
+    cap("Trigger the disruption to begin - Virgin reaches out before Djordje ever has to call.");
   }
 
   /* ---------- wire up ---------- */
@@ -373,6 +374,8 @@
   });
 
   // init
-  paintMember(); paintEntitlement(false); setStep("delay"); checkLive();
+  paintMember(); paintEntitlement(false); setStepper("trigger");
+  status("Press <b>Trigger the disruption</b> to begin.");
+  checkLive();
   sdk();  // warm the SDK so the first orb tap connects fast (keeps the mic gesture)
 })();
