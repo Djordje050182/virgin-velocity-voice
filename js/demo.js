@@ -189,6 +189,15 @@
     if (stage === "cancellation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia Guest Care again - I'm so sorry, your flight tonight has been cancelled. Let me sort a rebooking for you right now.";
     return "Hi " + GUEST.first + ", it's Hannah calling from Virgin Australia Guest Care - do you have a quick moment? It's about your flight tonight.";
   }
+  // When Hannah picks up, light the feed deterministically (independent of whether the
+  // live agent calls its tools): she reads the member, then - on the delay call - texts a lounge pass.
+  function onCallConnected() {
+    paintMember(); paintEntitlement(true); feedOn("databricks");
+    if (state.stage === "delay") {
+      cap("<b>Databricks</b>: Hannah reads Djordje's tier &amp; booking, live.");
+      showLoungePass();
+    }
+  }
   function callActive() { return !!convo; }
   function endCall() { try { if (convo) convo.endSession(); } catch (e) {} convo = null; connecting = false; orbState(""); endBtns(false); }
 
@@ -205,7 +214,7 @@
         dynamicVariables: { guest_name: GUEST.first, velocity_tier: state.tier,
           flight_number: GUEST.flight, route: "Melbourne to Sydney", new_departure: "7:45 PM", call_stage: state.stage },
         overrides: { agent: { firstMessage: firstMessageFor(state.stage) } },
-        onConnect: function () { connecting = false; orbState("incall"); status("On the call with Hannah - speak as Djordje."); var e = $("endCallBtn"); if (e) e.hidden = false; },
+        onConnect: function () { connecting = false; orbState("incall"); status("On the call with Hannah - speak as Djordje."); var e = $("endCallBtn"); if (e) e.hidden = false; onCallConnected(); },
         onDisconnect: function () { convo = null; connecting = false; orbState(""); status("Call ended. Tap the orb to call again."); endBtns(false); if (state.stage === "cancellation") sendConfirmation(); },
         onModeChange: function (m) {
           var mode = m && m.mode;
@@ -246,9 +255,10 @@
   var FALLBACK = { delay: "audio/fallback-call1-delay.mp3", cancellation: "audio/fallback-call2-cancellation.mp3", confirmation: "audio/fallback-call3-confirmation.mp3" };
   var fbAudio = null;
   function playFallback() {
+    onCallConnected();
     try { if (fbAudio) fbAudio.pause(); fbAudio = new Audio(FALLBACK[state.stage]); fbAudio.play(); } catch (e) {}
     orbState("speaking"); status("Playing the recorded " + state.stage + " call (fallback mode).");
-    if (fbAudio) fbAudio.onended = function () { orbState(""); status("Recording finished - tap to replay."); };
+    if (fbAudio) fbAudio.onended = function () { orbState(""); if (state.stage === "cancellation") sendConfirmation(); status("Recording finished - tap to replay."); };
   }
 
   /* ---------- WhatsApp channel-hop (synthetic) ---------- */
@@ -316,7 +326,6 @@
     state.stage = stage;
     paintEntitlement(false);   // text refreshes; the line reveals once Hannah reads the member
     setStep(stage);
-    if (stage === "delay") showLoungePass();
   }
   function setTier(tier) {
     state.tier = tier;
