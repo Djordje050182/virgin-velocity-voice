@@ -14,8 +14,7 @@
       volume: +$("roiVolume").value,
       contain: +$("roiContain").value / 100,
       cost: +$("roiCost").value,
-      ai: +$("roiAi").value,
-      plat: +$("roiPlat").value
+      ai: +$("roiAi").value
     };
   }
   function recalc() {
@@ -24,18 +23,13 @@
     $("outContain").textContent = Math.round(v.contain * 100) + "%";
     $("outCost").textContent = "$" + v.cost.toFixed(2);
     $("outAi").textContent = "$" + v.ai.toFixed(2);
-    $("outPlat").textContent = money(v.plat);
 
     var deflected = v.volume * v.contain;
-    var gross = deflected * (v.cost - v.ai);
-    var net = gross - v.plat;
-    var paybackMonths = gross > 0 ? (v.plat / (gross / 12)) : Infinity;
+    var saving = deflected * (v.cost - v.ai);
     var hours = deflected * (AHT_MIN / 60);
 
     $("roiDeflect").textContent = fmtNum.format(Math.round(deflected));
-    $("roiSaving").textContent = money(net);
-    $("roiSaving").style.color = net >= 0 ? "" : "var(--va-red-deep)";
-    $("roiPayback").textContent = isFinite(paybackMonths) ? (paybackMonths < 1 ? "<1 month" : paybackMonths.toFixed(1) + " months") : "—";
+    $("roiSaving").textContent = money(saving);
     $("roiHours").textContent = fmtNum.format(Math.round(hours)) + " hrs";
   }
   host.querySelectorAll("input[type=range]").forEach(function (i) { i.addEventListener("input", recalc); });

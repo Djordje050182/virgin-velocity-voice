@@ -177,7 +177,7 @@
     var ht = el("text", { x: hw / 2, y: 38, "text-anchor": "middle", class: "nlabel" }); ht.textContent = "ElevenLabs"; hg.appendChild(ht);
     var hs = el("text", { x: hw / 2, y: 60, "text-anchor": "middle", class: "nsub" }); hs.textContent = "the orchestration layer - conducts every turn"; hg.appendChild(hs);
     [["Listen", "speech-to-text"],
-     ["Reason", "a fast model picks the next action"],
+     ["Reason", "any fast model - Gemini, GPT, Claude, Qwen"],
      ["Read or act", "calls the right system as a tool"],
      ["Speak", "text-to-speech · ~75 ms"]].forEach(function (r, i) {
       var ry = 110 + i * 56;
@@ -194,8 +194,8 @@
       "<b>Tool / action layer</b><br>A secure proxy holds the credentials and brokers each tool call - Databricks SQL and Salesforce REST today, MCP-ready for production. <b>The voice agent never holds a secret.</b>");
     var dbx = b(950, 70, 210, 64, "Databricks", "READ · live", "node--data",
       "<b>Databricks - live read</b><br>Velocity ⋈ Sabre · Amadeus, harmonised. The member lookup runs a <b>real SQL join</b> here, mid-call.");
-    var sf = b(950, 330, 210, 64, "Agentforce", "Service Cloud · ACT · live", "node--act",
-      "<b>Agentforce / Service Cloud - live act</b><br>ElevenLabs calls in to <b>create a real Case</b> / rebook. Voice inside Agentforce, not versus it.");
+    var sf = b(950, 330, 210, 64, "Salesforce", "Service Cloud · ACT · live", "node--act",
+      "<b>Salesforce · Service Cloud - live act</b><br>ElevenLabs calls in to <b>create a real Case</b> / rebook. Voice inside Salesforce, not versus it.");
 
     // cords: in (guest/telephony/ops → hub), out to tools, return path
     ae.appendChild(cord(guest.x + guest.w, guest.cy, hub.x, hub.cy - 130));
@@ -209,10 +209,10 @@
     // the 1→7 story, around the path
     badge(250, ops.cy, "1", "disruption → call", "<b>1 · Disruption fires the call</b><br>The ops system flags VA838 - delayed, then cancelled - and ElevenLabs places a <b>proactive outbound call</b>. Virgin reaches out first, before the guest ever has to.");
     badge(250, gen.cy, "2", "caller speaks", "<b>2 · The guest speaks</b><br>The call connects over Genesys telephony and the guest talks naturally. ElevenLabs transcribes in real time (speech-to-text).");
-    badge(672, 150, "3", "reason", "<b>3 · Reason</b><br>ElevenLabs reasons on a fast model - <b>Gemini 2.5 Flash</b> - and decides the next best action.");
+    badge(672, 150, "3", "reason", "<b>3 · Reason</b><br>ElevenLabs reasons on a fast model - <b>Gemini 2.5 Flash here</b>, but it's <b>model-agnostic</b>: swap in GPT, Claude or an open model like Qwen. It decides the next best action.");
     badge(905, 104, "4", "read - live", "<b>4 · Read, live</b><br>A real SQL query into <b>Databricks</b> joins the guest's Velocity loyalty record with their Sabre &amp; Amadeus booking - returned mid-call.");
     badge(672, 300, "5", "decide", "<b>5 · Decide</b><br>It reasons over what came back, applies the deterministic entitlement rule, and decides to act.");
-    badge(905, 364, "6", "act - live", "<b>6 · Act, live</b><br>It creates a <b>real Case in Salesforce</b> Service Cloud via Agentforce - rebooking, refund or case - and waits for the result.");
+    badge(905, 364, "6", "act - live", "<b>6 · Act, live</b><br>It creates a <b>real Case in Salesforce</b> Service Cloud - rebooking, refund or case - and waits for the result.");
     badge(250, guest.cy, "7", "Hannah speaks", "<b>7 · Hannah speaks</b><br>It composes the answer and Hannah speaks it back - all inside one natural voice turn.");
     return svg;
   }

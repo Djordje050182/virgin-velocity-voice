@@ -23,7 +23,7 @@
   };
   // Deterministic entitlement rules - never LLM-improvised.
   function entitlement(tier, stage) {
-    var cancel = (stage === "cancellation" || stage === "confirmation");
+    var cancel = (stage === "cancellation");
     if (tier === "Platinum") return cancel
       ? { v: "Complimentary upgrade", d: "on the rebooked flight + hotel night if overnight" }
       : { v: "Lounge access + concierge", d: "while you wait" };
@@ -66,8 +66,7 @@
   /* ---------- "do this now" cue ---------- */
   var STEP = {
     delay:        [2, "Tap the orb - Hannah calls about the delay. She looks Djordje up (Databricks) and texts a <b>lounge pass</b> on WhatsApp."],
-    cancellation: [3, "Tap the orb - Hannah handles the cancellation, then sends <b>rebooking options</b> on WhatsApp. Pick one."],
-    confirmation: [4, "Tap the orb - Hannah confirms the rebooking and logs a <b>real Salesforce case</b>."]
+    cancellation: [3, "Tap the orb - Hannah handles the cancellation and rebooks Djordje on the call, logging a <b>real Salesforce case</b>. <b>Hang up</b> and the WhatsApp confirmation - new flight + hotel - arrives automatically."]
   };
   function setStep(stage) {
     var s = STEP[stage]; if (!s) return;
@@ -93,6 +92,29 @@
     var c = $("sfCard"); if (!c) return;
     c.hidden = false;
     $("sfVal").textContent = "Case " + ref + " · created";
+  }
+  // Create the real Salesforce case once - shared by the agent's tool call and the
+  // automatic post-hang-up confirmation, memoised so we never raise two cases.
+  var casePromise = null;
+  function createCase(action) {
+    if (casePromise) return casePromise;
+    action = action || "rebook";
+    spokeFlash("agentforce", "<b>Salesforce → Service Cloud</b>: running the rebooking workflow (live)…", 5000);
+    var fallback = { status: "done", action: action, reference: "SC-" + state.tier[0] + "48210",
+                     message: action + " completed in Service Cloud" };
+    var qs = "action=" + encodeURIComponent(action) + "&member=" + encodeURIComponent(GUEST.name) +
+             "&tier=" + encodeURIComponent(state.tier) + "&flight=" + encodeURIComponent(GUEST.flight) +
+             "&route=" + encodeURIComponent("MEL→SYD");
+    casePromise = fetch(PROXY + "/fulfil?" + qs, { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (res) {
+        if (!res || res.error) throw 0;
+        showSf(res.reference);
+        spokeFlash("agentforce", "<b>Salesforce</b>: case " + res.reference + " created in Service Cloud (live) ✓", 5000);
+        return res;
+      })
+      .catch(function () { showSf(fallback.reference); spokeFlash("agentforce", "<b>Salesforce</b>: " + action + " actioned (cached) ✓", 4000); return fallback; });
+    return casePromise;
   }
 
   /* ---------- live connection badge ---------- */
@@ -135,22 +157,7 @@
         return { gesture: e.v, detail: e.d };
       },
       fulfil_in_agentforce: function (p) {
-        var action = (p && p.action) || "rebook";
-        spokeFlash("agentforce", "<b>Agentforce → Service Cloud</b>: running the workflow (live)…", 5000);
-        var fallback = { status: "done", action: action, reference: "SC-" + state.tier[0] + "48210",
-                         message: action + " completed in Service Cloud" };
-        var qs = "action=" + encodeURIComponent(action) + "&member=" + encodeURIComponent(GUEST.name) +
-                 "&tier=" + encodeURIComponent(state.tier) + "&flight=" + encodeURIComponent(GUEST.flight) +
-                 "&route=" + encodeURIComponent("MEL→SYD");
-        return fetch(PROXY + "/fulfil?" + qs, { cache: "no-store" })
-          .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-          .then(function (res) {
-            if (!res || res.error) throw 0;
-            showSf(res.reference);
-            spokeFlash("agentforce", "<b>Agentforce</b>: case " + res.reference + " created in Service Cloud (live) ✓", 5000);
-            return res;
-          })
-          .catch(function () { showSf(fallback.reference); spokeFlash("agentforce", "<b>Agentforce</b>: " + action + " actioned (cached) ✓", 4000); return fallback; });
+        return createCase((p && p.action) || "rebook");
       }
     };
   }
@@ -181,8 +188,7 @@
   function meetOrb(cls) { var o = $("orbMeet"); if (!o) return; o.classList.remove("incall", "speaking"); if (cls) o.classList.add(cls); }
   function meetStatus(t) { var s = $("orbMeetStatus"); if (s) s.innerHTML = t; }
   function firstMessageFor(stage) {
-    if (stage === "cancellation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia Guest Care again - I'm so sorry, I've got an update on your flight tonight.";
-    if (stage === "confirmation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia - good news, I've got your rebooking sorted.";
+    if (stage === "cancellation") return "Hi " + GUEST.first + ", it's Hannah from Virgin Australia Guest Care again - I'm so sorry, your flight tonight has been cancelled. Let me sort a rebooking for you right now.";
     return "Hi " + GUEST.first + ", it's Hannah calling from Virgin Australia Guest Care - do you have a quick moment? It's about your flight tonight.";
   }
   function callActive() { return !!convo; }
@@ -202,7 +208,7 @@
           flight_number: GUEST.flight, route: "Melbourne to Sydney", new_departure: "7:45 PM", call_stage: state.stage },
         overrides: { agent: { firstMessage: firstMessageFor(state.stage) } },
         onConnect: function () { connecting = false; orbState("incall"); status("On the call with Hannah - speak as Djordje."); var e = $("endCallBtn"); if (e) e.hidden = false; },
-        onDisconnect: function () { convo = null; connecting = false; orbState(""); status("Call ended. Tap the orb to call again."); endBtns(false); },
+        onDisconnect: function () { convo = null; connecting = false; orbState(""); status("Call ended. Tap the orb to call again."); endBtns(false); if (state.stage === "cancellation") sendConfirmation(); },
         onModeChange: function (m) {
           var mode = m && m.mode;
           if (mode === "speaking") { orbState("speaking"); status("<b>Hannah is speaking…</b>"); }
@@ -278,33 +284,31 @@
       });
     }, 400);
   }
-  var hopDone = false;
-  function runChannelHop() {
-    if (hopDone) return; hopDone = true;
-    spokeFlash("whatsapp", "<b>WhatsApp</b>: continuing the conversation in writing", 4000);
-    $("phone").hidden = false;
-    var thread = $("thread"); thread.innerHTML = "";
-    setTimeout(function () {
-      thread.appendChild(bubble("in", "Hi " + GUEST.first + " 👋 It's Virgin Australia. Sorry your flight was cancelled - here are your options:"));
-      thread.scrollTop = thread.scrollHeight;
-      typing(thread, function () {
-        var opt = bubble("in", "Choose one and I'll lock it in:" +
-          "<span class='opt' data-opt='A'>✈️ Next service - 9:15 PM tonight</span>" +
-          "<span class='opt' data-opt='B'>🛏️ Fly tomorrow AM + hotel</span>");
-        thread.appendChild(opt); thread.scrollTop = thread.scrollHeight;
-        opt.querySelectorAll(".opt").forEach(function (o) {
-          o.addEventListener("click", function () {
-            thread.appendChild(bubble("out", o.getAttribute("data-opt") === "A" ? "The 9:15 tonight, please 🙏" : "Tomorrow morning + the hotel, thanks 🙏"));
-            thread.scrollTop = thread.scrollHeight;
-            typing(thread, function () {
-              thread.appendChild(bubble("in", "Done! Hannah will call you in a moment to confirm and sort your Velocity " + state.tier + " gesture. ❤️"));
-              thread.scrollTop = thread.scrollHeight;
-              setStage("confirmation");
-            });
-          });
+  // After the cancellation call ends (the guest hangs up), the confirmation lands
+  // automatically on WhatsApp: new flight + hotel, with the real Salesforce case behind it.
+  var confirmDone = false;
+  function sendConfirmation() {
+    if (confirmDone) return; confirmDone = true;
+    var hotel = (state.tier === "Gold" || state.tier === "Platinum");
+    createCase("rebook").then(function () {
+      $("phone").hidden = false;
+      var thread = $("thread");
+      setTimeout(function () {
+        thread.appendChild(bubble("in", "All sorted, " + GUEST.first + " 🙏 You're rebooked - here's your confirmation:"));
+        thread.scrollTop = thread.scrollHeight;
+        typing(thread, function () {
+          var flight = hotel ? "VA842 · tomorrow 7:50 AM · MEL → SYD" : "VA840 · tonight 9:15 PM · MEL → SYD";
+          var extra = hotel
+            ? "<span>🛏️ Hotel tonight: PARKROYAL Melbourne Airport - booked &amp; paid</span>"
+            : "<span>💳 Fare difference refunded automatically</span>";
+          thread.appendChild(bubble("in", "<div class='qrcard'>" + fauxQR() +
+            "<div><b>Rebooking confirmed</b><span>" + flight + "</span>" + extra +
+            "<span>Velocity " + state.tier + " · e-ticket emailed</span></div></div>"));
+          thread.scrollTop = thread.scrollHeight;
+          cap("<b>Done.</b> Two calls, one hang-up - the confirmation lands on WhatsApp" + (hotel ? " with the new flight and hotel" : " with the new flight") + ", and a real Salesforce case sits behind it.");
         });
-      });
-    }, 400);
+      }, 500);
+    });
   }
 
   /* ---------- stage + tier + ops + reset ---------- */
@@ -315,7 +319,6 @@
     paintEntitlement(true);
     setStep(stage);
     if (stage === "delay") showLoungePass();
-    if (stage === "cancellation") runChannelHop();
   }
   function setTier(tier) {
     state.tier = tier;
@@ -339,7 +342,7 @@
   }
   function resetDemo() {
     endCall(); if (fbAudio) { try { fbAudio.pause(); } catch (e) {} }
-    state.tier = "Gold"; state.stage = "delay"; state.opsStep = 0; loungeDone = false; hopDone = false;
+    state.tier = "Gold"; state.stage = "delay"; state.opsStep = 0; loungeDone = false; confirmDone = false; casePromise = null;
     $("opsBanner").hidden = true; $("opsBtn").disabled = false; $("opsBtnLabel").textContent = "Trigger flight disruption";
     $("entitlement").hidden = true; $("sfCard").hidden = true; $("phone").hidden = true; $("thread").innerHTML = "";
     var src = $("memberSrc"); if (src) src.hidden = true;
