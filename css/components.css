@@ -46,7 +46,7 @@
 .lede { font-size: var(--step-1); line-height: 1.45; margin: 0.6rem 0 0.4rem; }
 
 /* why ElevenLabs - icon-led tiles */
-.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin: var(--sp-3) 0; }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); margin: var(--sp-3) 0; }
 .why-tile { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-3); background: var(--paper);
   display: flex; flex-direction: column; gap: 0.3rem; transition: border-color .2s, box-shadow .2s, transform .2s; }
 .why-tile:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--line)); box-shadow: 0 8px 22px rgba(0,0,0,.06); transform: translateY(-2px); }
@@ -495,7 +495,9 @@ body.notes-on .notes-panel { transform: translateY(0); }
 .benefit { border-left: 2px solid var(--va-red); padding-left: 0.9rem; }
 .benefit b { display: block; margin-bottom: 0.2rem; font-size: 1rem; }
 .benefit p { margin: 0; font-size: 0.9rem; }
-@media (max-width: 820px) { .benefits { grid-template-columns: 1fr; } }
+.benefits--3 { grid-template-columns: repeat(3, 1fr); }
+.benefits--4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 820px) { .benefits, .benefits--3, .benefits--4 { grid-template-columns: 1fr; } }
 
 /* agenda styled like the Virgin Australia booking search bar */
 .va-search { margin-top: var(--sp-3); max-width: 940px; }
@@ -840,6 +842,14 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
 @keyframes flowdash { to { stroke-dashoffset: -13; } }
 .flow-svg .pkt { fill: var(--primary); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--primary) 70%, transparent)); }
 @media (prefers-reduced-motion: reduce) { .flow-svg .edge-f.flow { animation: none; } }
+
+/* numbered step markers pinned on the diagram - mirror the step rail below */
+.flow-svg .flmark { cursor: pointer; }
+.flow-svg .flmark circle { fill: var(--paper); stroke: var(--line); stroke-width: 1.5; transition: fill .25s, stroke .25s; }
+.flow-svg .flmark text { font: 700 11px "Space Grotesk", sans-serif; fill: var(--ink-2); text-anchor: middle; transition: fill .25s; }
+.flow-svg .flmark.on circle { fill: var(--primary); stroke: var(--primary);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--primary) 55%, transparent)); }
+.flow-svg .flmark.on text { fill: #fff; }
 
 .flow-steps { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: var(--sp-2) 0 0; }
 .flow-step { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--line); border-radius: 100px;

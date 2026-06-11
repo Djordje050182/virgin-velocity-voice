@@ -204,7 +204,7 @@
   function endCall() { try { if (convo) convo.endSession(); } catch (e) {} convo = null; connecting = false; orbState(""); endBtns(false); }
 
   function startCall() {
-    if (callActive()) { endCall(); status("Call ended. Tap the orb to call again."); return; }
+    if (callActive()) { endCall(); status("Call ended. Tap the orb to call again."); if (state.stage === "cancellation") sendConfirmation(); return; }
     if (connecting) return;                              // ignore taps while a call is mid-connect
     if (state.mode === "safe") { playFallback(); return; }
     connecting = true; status("Connecting…"); orbState("incall");
@@ -215,7 +215,7 @@
         clientTools: clientTools(),
         dynamicVariables: { guest_name: GUEST.first, velocity_tier: state.tier,
           flight_number: GUEST.flight, route: "Melbourne to Sydney", new_departure: "7:45 PM", call_stage: state.stage,
-          member_dob: "12 March 1985" },
+          member_dob: "5 January 1982" },
         overrides: { agent: { firstMessage: firstMessageFor(state.stage) } },
         onConnect: function () { connecting = false; orbState("incall"); status("On the call with Hannah - speak as Djordje."); var e = $("endCallBtn"); if (e) e.hidden = false; onCallConnected(); },
         onDisconnect: function () { convo = null; connecting = false; orbState(""); status("Call ended. Tap the orb to call again."); endBtns(false); if (state.stage === "cancellation") sendConfirmation(); },
@@ -372,7 +372,7 @@
   document.addEventListener("click", function (e) {
     if (e.target.closest("#orb")) { startCall(); return; }
     if (e.target.closest("#orbMeet")) { startMeet(); return; }
-    if (e.target.closest("#endCallBtn")) { endCall(); status("Call ended. Tap the orb to call again."); return; }
+    if (e.target.closest("#endCallBtn")) { endCall(); status("Call ended. Tap the orb to call again."); if (state.stage === "cancellation") sendConfirmation(); return; }
     if (e.target.closest("#endMeetBtn")) { endCall(); meetOrb(""); meetStatus("Call ended. Tap the orb to introduce Hannah again."); return; }
     if (e.target.closest("#resetBtn")) { resetDemo(); return; }
     var s = e.target.closest(".stage"); if (s) { setStage(s.getAttribute("data-stage")); return; }
@@ -390,6 +390,6 @@
   // init
   paintMember(); paintEntitlement(false); setStepper("trigger");
   status("Press <b>Trigger the disruption</b> to begin.");
-  checkLive();
+  checkLive(); setInterval(checkLive, 20000);   // badge recovers if the proxy starts after the deck loads
   sdk();  // warm the SDK so the first orb tap connects fast (keeps the mic gesture)
 })();

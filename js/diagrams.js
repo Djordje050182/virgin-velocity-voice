@@ -357,6 +357,23 @@
     edge("e_el_tool",  N.el.right,   N.tool.left);
     edge("e_tool_dbx", N.tool.right, N.dbx.left);
     edge("e_tool_sf",  N.tool.right, N.sf.left);
+
+    // numbered step markers pinned on the diagram, so the audience knows where to look.
+    // Positions sit on the leg each step travels (computed on the bezier cords).
+    var MARKS = [[187, 218], [415, 218], [601, 124], [984, 197], [996, 162], [984, 248], [996, 291], [434, 247]];
+    var mgroup = el("g", {}); fsvg.appendChild(mgroup);
+    var marks = [];
+    function mrender() {
+      while (mgroup.firstChild) mgroup.removeChild(mgroup.firstChild);
+      marks = [];
+      FLOWS[fmode].forEach(function (s, i) {
+        var p = MARKS[i]; if (!p) return;
+        var g = el("g", { class: "flmark", "data-i": i, transform: "translate(" + p[0] + "," + p[1] + ")" });
+        g.appendChild(el("circle", { r: 10 }));
+        var t = el("text", { y: 3.5 }); t.textContent = i + 1; g.appendChild(t);
+        mgroup.appendChild(g); marks.push(g);
+      });
+    }
     flowHost.appendChild(fsvg);
 
     var FLOWS = {
@@ -409,6 +426,7 @@
         b.innerHTML = "<span class='flow-step__n'>" + (i + 1) + "</span><span class='flow-step__t'>" + s.t + "</span>";
         stepsHost.appendChild(b);
       });
+      mrender();
     }
     function fshow(i) {
       var steps = FLOWS[fmode]; fcur = (i % steps.length + steps.length) % steps.length;
@@ -418,6 +436,7 @@
       s.e.forEach(function (pair) { var p = E[pair[0]]; if (p) p.classList.add("flow"); firePacket(pair[0], pair[1]); });
       if (noteHost) noteHost.innerHTML = "<b>Step " + (fcur + 1) + " of " + steps.length + "</b> · " + s.c;
       if (stepsHost) stepsHost.querySelectorAll(".flow-step").forEach(function (b, bi) { b.classList.toggle("on", bi === fcur); });
+      marks.forEach(function (m, mi) { m.classList.toggle("on", mi === fcur); });
     }
     function setMode(m) { document.querySelectorAll("#flowMode button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === m)); }); }
     function fstop() { if (ftimer) { clearTimeout(ftimer); ftimer = null; } }
@@ -439,6 +458,8 @@
       if (e.target.closest("#flowPrev")) { fmanual(); fshow(fcur - 1); return; }
       var sb = e.target.closest(".flow-step");
       if (sb) { fmanual(); fshow(+sb.getAttribute("data-i")); return; }
+      var mk = e.target.closest(".flmark");
+      if (mk) { fmanual(); fshow(+mk.getAttribute("data-i")); return; }
     });
   }
 })();

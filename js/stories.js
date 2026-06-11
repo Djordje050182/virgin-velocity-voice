@@ -14,8 +14,8 @@
       { name: "Built on us", metric: "Meta · Twilio", line: "ElevenLabs voice underpins products across consumer and platform", el: true }
     ],
     anz: [
+      { name: "LOT Polish Airlines", metric: "1st", line: "among the first airlines in the world on ElevenLabs Agents - hotline bookings, changes and flight status, live mid-2026", el: true },
       { name: "Air New Zealand", metric: "CX", line: "conversational AI for customer experience in the region", el: false },
-      { name: "Telus Digital", metric: "at scale", line: "BPO voice operations across millions of interactions", el: false },
       { name: "Travel & hospitality", metric: "24/7", line: "ElevenLabs receptionist / guest-service agents for bookings and recovery", el: true },
       { name: "Time to live", metric: "<3 wks", line: "most ElevenLabs agents go live in under three weeks", el: true },
       { name: "Regional reach", metric: "ANZ", line: "we operate across Australia and New Zealand, with local data options", el: true },
@@ -39,5 +39,5 @@
   document.addEventListener("click", function (e) {
     var b = e.target.closest("#storyToggle button"); if (b) render(b.getAttribute("data-story"));
   });
-  render("global");
+  render(location.search.indexOf("story=anz") > -1 ? "anz" : "global");   // ?story=anz: screenshot hook
 })();
