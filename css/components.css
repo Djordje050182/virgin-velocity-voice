@@ -875,3 +875,32 @@ body.rail-hidden .brandmark-fixed { right: 1.3rem; }
 .flow-step.on .flow-step__n { background: var(--primary); color: #fff; }
 .flow-step__t { white-space: nowrap; }
 #flowNote { min-height: 2.6em; margin-top: var(--sp-2); }
+
+/* ============================================================
+   MOBILE POLISH - phones & small tablets
+   ============================================================ */
+@media (max-width: 880px) {
+  /* hero slides (cold open, thank-you) still fill the screen */
+  .slide.cold { min-height: 100vh; min-height: 100svh; }
+  /* slide-out rail tracks the real visible viewport on iOS Safari */
+  .rail { height: 100vh; height: 100dvh; }
+  /* mutual action plan: five columns become two */
+  .map__steps { grid-template-columns: 1fr 1fr; }
+  /* buyer lenses stack */
+  .lenses { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .map__steps { grid-template-columns: 1fr; }
+  /* agenda tabs scroll sideways instead of crushing */
+  .va-search__tabs { overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .va-tab { flex: none; }
+  /* demo: smaller stepper labels, feed heads may wrap */
+  .stepper li { font-size: 0.74rem; }
+  .feed__head { flex-wrap: wrap; }
+  /* type tightens one more notch on small phones */
+  h2 { font-size: clamp(1.55rem, 7.5vw, 2.1rem); }
+  .cold__title { font-size: clamp(2rem, 10vw, 2.9rem); }
+  .why-grid { grid-template-columns: 1fr; }
+  /* panning diagrams scroll smoothly under touch */
+  .diagram, .flowsvg { -webkit-overflow-scrolling: touch; }
+}

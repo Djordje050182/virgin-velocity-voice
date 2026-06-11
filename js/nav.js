@@ -127,8 +127,19 @@
     window.addEventListener("load", function () {
       requestAnimationFrame(function () {
         var data = slides().map(function (s) { return { id: s.id, over: s.scrollHeight - window.innerHeight }; });
+        // horizontal offenders: elements whose right edge pokes past the viewport
+        var vw = window.innerWidth, wide = [];
+        document.querySelectorAll(".slide *").forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.width && r.right - vw > 4 && wide.length < 40) {
+            var sl = el.closest(".slide");
+            wide.push((sl ? sl.id : "?") + ":" + el.tagName.toLowerCase() +
+              (el.className && typeof el.className === "string" ? "." + el.className.split(" ")[0] : "") +
+              "+" + Math.round(r.right - vw));
+          }
+        });
         var pre = document.createElement("pre"); pre.id = "MEASURE";
-        pre.textContent = "VH=" + window.innerHeight + " " + JSON.stringify(data);
+        pre.textContent = "VH=" + window.innerHeight + " VW=" + vw + " " + JSON.stringify(data) + " WIDE=" + JSON.stringify(wide);
         document.body.appendChild(pre);
       });
     });
