@@ -8,9 +8,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<meta name="robots" content="noindex" />
 <link rel="stylesheet" href="css/tokens.css" />
 <link rel="stylesheet" href="css/base.css" />
 <link rel="stylesheet" href="css/components.css" />
+<script>/* hide the deck before first paint unless local or already unlocked - gate.js takes it from here */
+try { if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && sessionStorage.getItem("vvv_ok") !== "1") document.documentElement.classList.add("lock-pending"); } catch (e) {}</script>
 </head>
 <body>
 <button class="rail-toggle" id="railToggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -573,6 +576,7 @@
   </main>
 </div>
 
+<script src="js/gate.js"></script>
 <script src="js/theme.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/players.js"></script>

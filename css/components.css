@@ -490,6 +490,20 @@ body.notes-on .notes-panel { transform: translateY(0); }
 .wh-list li { position: relative; padding-left: 1.1rem; margin-bottom: 0.7rem; line-height: 1.5; font-size: 0.95rem; }
 .wh-list li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: var(--va-red); }
 
+/* password gate (public URL only - skipped on localhost) */
+html.lock-pending .app, html.locked .app, html.locked .notes-panel { visibility: hidden; }
+.gate { position: fixed; inset: 0; z-index: 9999; background: var(--paper); display: flex; align-items: center; justify-content: center; }
+.gate__card { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; text-align: center; padding: var(--sp-4); }
+.gate__word { font-weight: 700; letter-spacing: 0.01em; }
+.gate__word small { display: block; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); margin-top: 0.15rem; }
+.gate__hint { margin: 0; color: var(--ink-2); font-size: 0.9rem; max-width: 36ch; }
+.gate__form { display: flex; gap: 0.5rem; }
+.gate__form input { padding: 0.6rem 0.9rem; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); font-size: 1rem; min-width: 200px; }
+.gate__form button { padding: 0.6rem 1.2rem; border: none; border-radius: 9px; background: var(--va-red); color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+.gate__err { margin: 0; color: var(--va-red); font-size: 0.85rem; }
+.gate__card.shake { animation: gateshake 0.4s; }
+@keyframes gateshake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+
 /* opportunity: benefits cards (slide 5) */
 .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2) var(--sp-3); margin-top: var(--sp-3); }
 .benefit { border-left: 2px solid var(--va-red); padding-left: 0.9rem; }
