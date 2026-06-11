@@ -304,7 +304,7 @@ elevenlabs-convai { position: fixed; z-index: 2147483000; }
 /* ---------- mutual action plan (close) ---------- */
 .map { margin-top: var(--sp-3); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-2) var(--sp-3); background: var(--paper-2); }
 .map__k { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.7rem; }
-.map__steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
+.map__steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--sp-2); }
 .map__steps li { border-left: 2px solid var(--line); padding-left: 0.8rem; }
 .map__steps span { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
 .map__steps b { display: block; font-weight: 500; margin: 0.15rem 0; }
